@@ -46,7 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/fonts.c,v 3.14 2003/11/08 02:02:07 dawes Exp $ */
+/* $XFree86: xc/programs/xfs/difs/fonts.c,v 3.13 2001/12/14 20:01:34 dawes Exp $ */
 
 #include        "FS.h"
 #include        "FSproto.h"
