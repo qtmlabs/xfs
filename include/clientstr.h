@@ -44,6 +44,7 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/include/clientstr.h,v 1.7 2001/12/14 20:01:37 dawes Exp $ */
 
 #ifndef _CLIENTSTR_H_
 #define	_CLIENTSTR_H_
@@ -57,13 +58,13 @@ typedef struct _Client {
     int         index;
     pointer     osPrivate;
     int         noClientException;
-    int         (**requestVector) ();
+    int         (**requestVector) (ClientPtr);
     pointer     requestBuffer;
     int         clientGone;
     int         sequence;
     Bool        swapped;
     long        last_request_time;
-    void        (*pSwapReplyFunc) ();
+    void        (*pSwapReplyFunc) (ClientPtr, int, short *);
     AuthContextPtr auth;
     int		auth_generation;
     AuthContextPtr default_auth;
@@ -78,12 +79,20 @@ typedef struct _Client {
 
 typedef struct _WorkQueue {
     struct _WorkQueue *next;
-    Bool        (*function) ();
+    Bool        (*function) (ClientPtr, pointer);
     ClientPtr   client;
     pointer     closure;
 }           WorkQueueRec;
 
-
-extern void CloseDownClient();
+#ifndef CloseDownClient
+#ifdef DEBUG
+#define CloseDownClient(client)	\
+	fprintf(stderr, "CloseDownClient %s %d\n", __FILE__, __LINE__),\
+	DoCloseDownClient(client)
+#else
+#define CloseDownClient DoCloseDownClient
+#endif
+extern void DoCloseDownClient(ClientPtr client);
+#endif
 
 #endif				/* _CLIENTSTR_H_ */

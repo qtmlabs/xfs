@@ -44,6 +44,8 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/include/servermd.h,v 1.5 2001/12/19 21:37:35 dawes Exp $ */
+
 #ifndef _SERVERMD_H_
 #define _SERVERMD_H_
 
@@ -52,7 +54,7 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #ifndef VENDOR_STRING
-#define VENDOR_STRING "The X.Org Group"
+#define VENDOR_STRING "The XFree86 Project (experimental version)"
 #endif
 
 #ifndef DEFAULT_FS_PORT

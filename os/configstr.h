@@ -47,13 +47,16 @@ in this Software without prior written authorization from The Open Group.
  * @(#)configstr.h	4.1	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/os/configstr.h,v 1.5 2001/12/14 20:01:41 dawes Exp $ */
 #ifndef _CONFIGSTR_H_
 #define _CONFIGSTR_H_
 #include	"config.h"
 
-typedef struct _config_options {
+typedef struct _config_options ConfigOptionRec, *ConfigOptionPtr;
+
+struct _config_options {
     char       *parm_name;
-    char       *(*set_func) ();
-}           ConfigOptionRec, *ConfigOptionPtr;
+    char       *(*set_func) (ConfigOptionPtr, char *);
+};
 
 #endif				/* _CONFIGSTR_H_ */

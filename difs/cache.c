@@ -47,6 +47,8 @@ in this Software without prior written authorization from The Open Group.
  * @(#)cache.c	4.2	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/difs/cache.c,v 1.7 2002/10/15 01:45:02 dawes Exp $ */
+
 #include	"cachestr.h"
 #include	"misc.h"
 
@@ -79,8 +81,7 @@ static int  num_caches = 1;
  */
 
 Cache
-CacheInit(maxsize)
-    unsigned long maxsize;
+CacheInit(unsigned long maxsize)
 {
     Cache       id = (Cache) num_caches;
     CachePtr    cache;
@@ -108,8 +109,7 @@ CacheInit(maxsize)
 }
 
 static int
-hash(cid)
-    CacheID     cid;
+hash(CacheID cid)
 {
     CachePtr    cache = caches[CACHE_ID(cid)];
 
@@ -141,8 +141,7 @@ hash(cid)
 }
 
 static void
-rebuild_cache(cache)
-    CachePtr    cache;
+rebuild_cache(CachePtr cache)
 {
     int         j;
     CacheEntryPtr cp,
@@ -186,7 +185,7 @@ rebuild_cache(cache)
  * throws out all existing entries
  */
 void
-CacheReset()
+CacheReset(void)
 {
     CacheEntryPtr cp;
     CachePtr    cache;
@@ -211,15 +210,13 @@ CacheReset()
 }
 
 static void
-flush_cache(cache, needed)
-    CachePtr    cache;
-    unsigned long needed;
+flush_cache(CachePtr cache, unsigned long needed)
 {
 /* XXX -- try to set oldprev properly inside search loop */
     CacheEntryPtr cp,
                 oldest,
                *oldprev;
-    int         oldbucket,
+    int         oldbucket = -1,
                 i;
 
     while ((cache->cursize + needed) > cache->maxsize) {
@@ -234,19 +231,19 @@ flush_cache(cache, needed)
 		oldest = cp;
 	    }
 	    while (cp) {
-	    if (cp->timestamp < oldest->timestamp) {
+		if (cp->timestamp < oldest->timestamp) {
 		oldest = cp;
 		    oldbucket = i;
-	    }
+		}
 		cp = cp->next;
-	}
+	    }
 	}
 	/* fixup list */
 	oldprev = &cache->entries[oldbucket];
 	cp = *oldprev;
-	for (; cp = *oldprev; oldprev = &cp->next) {
+	for (; (cp = *oldprev) != 0; oldprev = &cp->next) {
 	    if (cp == oldest) {
-	*oldprev = oldest->next;
+		*oldprev = oldest->next;
 		break;
 	    }
 	}
@@ -259,8 +256,7 @@ flush_cache(cache, needed)
 }
 
 void
-CacheResize(cid, newsize)
-    Cache       cid;
+CacheResize(Cache cid, unsigned newsize)
 {
     CachePtr    cache = caches[cid];
 
@@ -275,11 +271,11 @@ CacheResize(cid, newsize)
 }
 
 CacheID
-CacheStoreMemory(cid, data, size, free_func)
-    Cache       cid;
-    pointer     data;
-    unsigned long size;
-    CacheFree   free_func;
+CacheStoreMemory(
+    Cache       cid,
+    pointer     data,
+    unsigned long size,
+    CacheFree   free_func)
 {
     CacheID     id;
     CacheEntryPtr cp,
@@ -317,9 +313,9 @@ CacheStoreMemory(cid, data, size, free_func)
 }
 
 pointer
-CacheFetchMemory(cid, update)
-    CacheID     cid;
-    Bool        update;
+CacheFetchMemory(
+    CacheID     cid,
+    Bool        update)
 {
     CachePtr    cache = caches[CACHE_ID(cid)];
     CacheEntryPtr cp,
@@ -341,10 +337,10 @@ CacheFetchMemory(cid, update)
     return (pointer) 0;
 }
 
-int
-CacheFreeMemory(cid, notify)
-    CacheID     cid;
-    Bool        notify;
+void
+CacheFreeMemory(
+    CacheID     cid,
+    Bool        notify)
 {
     CachePtr    cache = caches[CACHE_ID(cid)];
     CacheEntryPtr cp,
@@ -374,15 +370,15 @@ CacheFreeMemory(cid, notify)
 	}
     }
     if (!found)
-	FatalError("Freeing cache entry %d which isn't there\n", cid);
+	FatalError("freeing cache entry %d which isn't there\n", cid);
 }
 
 /* ARGSUSED */
 void
-CacheSimpleFree(cid, data, reason)
-    CacheID     cid;
-    pointer     data;
-    int         reason;
+CacheSimpleFree(
+    CacheID     cid,
+    pointer     data,
+    int         reason)
 {
     fsfree(data);
 }

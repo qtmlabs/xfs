@@ -46,16 +46,23 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/main.c,v 3.12 2002/10/15 01:45:02 dawes Exp $ */
 
+#include	<stdlib.h>
+#include	<sys/types.h>
+#include	<sys/stat.h>
 #include	"FS.h"
 #include	"FSproto.h"
 #include	"clientstr.h"
-#include	"resource.h"
+#include	"fsresource.h"
 #include	"misc.h"
 #include	"globals.h"
 #include	"servermd.h"
 #include	"cache.h"
 #include	"site.h"
+#include	"dispatch.h"
+#include	"extentst.h"
+#include	"difs.h"
 
 char       *ConnectionInfo;
 int         ConnInfoLen;
@@ -68,26 +75,18 @@ Cache       serverCache;
 
 #define	SERVER_CACHE_SIZE	10000	/* for random server cacheables */
 
-extern void InitProcVectors();
-extern void InitFonts();
-extern void InitAtoms();
-extern void InitExtensions();
-extern void ProcessCmdLine();
-static Bool create_connection_block();
+static Bool create_connection_block(void);
 
-extern ClientPtr currentClient;
 char       *configfilename;
 extern Bool drone_server;
 
 extern OldListenRec *OldListen;
 extern int 	     OldListenCount;
 
-
-main(argc, argv)
-    int         argc;
-    char      **argv;
+int
+main(int argc, char *argv[])
 {
-    int         i;
+    int         i, oldumask;
 
     argcGlobal = argc;
     argvGlobal = argv;
@@ -97,14 +96,21 @@ main(argc, argv)
     /* init stuff */
     ProcessCmdLine(argc, argv);
     InitErrors();
+
     /*
-     * do this first thing, to get any options that only take effect at
-     * startup time.  it is erad again each time the server resets
+     * Do this first thing, to get any options that only take effect at
+     * startup time.  It is read again each time the server resets.
      */
     if (ReadConfigFile(configfilename) != FSSuccess) {
-	ErrorF("fatal: couldn't read config file\n");
-	exit(1);
+	FatalError("couldn't read config file\n");
     }
+
+    /* make sure at least world write access is disabled */
+    if (((oldumask = umask(022)) & 002) == 002)
+	(void)umask(oldumask);
+
+    SetDaemonState();
+    SetUserId();
 
     while (1) {
 	serverGeneration++;
@@ -169,15 +175,18 @@ main(argc, argv)
     exit(0);
 }
 
-void
-NotImplemented()
+int
+NotImplemented(void)
 {
     NoopDDA();			/* dummy to get difsutils.o to link */
-    FatalError("Not implemented\n");
+    /* Getting here can become the next xfs exploit... so don't exit */
+    ErrorF("not implemented\n");
+
+    return (FSBadImplementation);
 }
 
 static Bool
-create_connection_block()
+create_connection_block(void)
 {
     fsConnSetupAccept setup;
     char       *pBuf;

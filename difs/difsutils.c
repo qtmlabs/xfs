@@ -46,8 +46,12 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/difsutils.c,v 1.7 2001/12/14 20:01:33 dawes Exp $ */
 
 #define	XK_LATIN1
+
+#include	<difsutils.h>
+
 #include	<stdio.h>
 #include	<ctype.h>
 #include	"misc.h"
@@ -67,14 +71,13 @@ static int  num_resolutions;
 static int  default_point_size = 120;
 
 AuthContextPtr
-GetClientAuthorization()
+GetClientAuthorization(void)
 {
     return currentClient->auth;
 }
 
 void
-SetDefaultPointSize(ps)
-    int         ps;
+SetDefaultPointSize(int ps)
 {
     int         i;
 
@@ -84,8 +87,7 @@ SetDefaultPointSize(ps)
 }
 
 int
-SetDefaultResolutions(str)
-    char       *str;
+SetDefaultResolutions(char *str)
 {
     int         num,
                 numr = 0,
@@ -151,8 +153,7 @@ SetDefaultResolutions(str)
 }
 
 FontResolutionPtr
-GetClientResolutions(num)
-    int        *num;
+GetClientResolutions(int *num)
 {
     /* return the client's if it has them, otherwise the default values */
     if (currentClient->num_resolutions) {
@@ -165,7 +166,7 @@ GetClientResolutions(num)
 }
 
 int
-GetDefaultPointSize()
+GetDefaultPointSize(void)
 {
     FontResolutionPtr res;
     int         num;
@@ -178,25 +179,19 @@ GetDefaultPointSize()
 }
 
 Bool
-XpClientIsBitmapClient(client)
-    ClientPtr client;
+XpClientIsBitmapClient(ClientPtr client)
 {
     return TRUE;
 }
 
 Bool
-XpClientIsPrintClient(client, fpe)
-    ClientPtr client;
-    FontPathElementPtr fpe;
+XpClientIsPrintClient(ClientPtr client, FontPathElementPtr fpe)
 {
     return FALSE;
 }
 
 void
-CopyISOLatin1Lowered(dest, source, length)
-    register unsigned char *dest,
-               *source;
-    int         length;
+CopyISOLatin1Lowered(unsigned char *dest, unsigned char *source, int length)
 {
     register int i;
 
@@ -214,10 +209,10 @@ CopyISOLatin1Lowered(dest, source, length)
 }
 
 int
-strncmpnocase(first, second, n)
+strncmpnocase(
     char       *first,
-               *second;
-    int         n;
+    char       *second,
+    int         n)
 {
     register unsigned char *ap,
                *bp;
@@ -256,15 +251,15 @@ strncmpnocase(first, second, n)
 }
 
 void
-NoopDDA()
+NoopDDA(void)
 {
 }
 
 /* host list manipulation */
 int
-AddHost(list, addr)
-    HostList   *list;
-    HostAddress *addr;
+AddHost(
+    HostList   *list,
+    HostAddress *addr)
 {
     HostAddress *new;
 
@@ -286,9 +281,9 @@ AddHost(list, addr)
 }
 
 int
-RemoveHost(list, addr)
-    HostList   *list;
-    HostAddress *addr;
+RemoveHost(
+    HostList   *list,
+    HostAddress *addr)
 {
     HostAddress *t,
                *last;
@@ -316,9 +311,9 @@ RemoveHost(list, addr)
 }
 
 Bool
-ValidHost(list, addr)
-    HostList    list;
-    HostAddress *addr;
+ValidHost(
+    HostList    list,
+    HostAddress *addr)
 {
     HostAddress *t;
 
@@ -337,10 +332,10 @@ ValidHost(list, addr)
 /* block & wakeup handlers */
 
 typedef struct _BlockHandler {
-    void        (*BlockHandler) ();
-    void        (*WakeupHandler) ();
-    pointer     blockData;
-    Bool        deleted;
+    BlockHandlerProcPtr	BlockHandler;
+    DifsWakeupFunc	WakeupHandler;
+    pointer     	blockData;
+    Bool        	deleted;
 }           BlockHandlerRec, *BlockHandlerPtr;
 
 static BlockHandlerPtr handlers;
@@ -350,10 +345,11 @@ static Bool inHandler;
 static Bool handlerDeleted;
 
 /* called from the OS layer */
-BlockHandler(pTimeout, pReadmask)
-    pointer     pTimeout;	/* DIX doesn't want to know how OS represents
+void
+BlockHandler(
+    OSTimePtr   pTimeout,	/* DIX doesn't want to know how OS represents
 				 * time */
-    pointer     pReadmask;	/* nor how it represents the set of
+    pointer     pReadmask)	/* nor how it represents the set of
 				 * descriptors */
 {
     register int i,
@@ -376,9 +372,10 @@ BlockHandler(pTimeout, pReadmask)
 }
 
 
-WakeupHandler(result, pReadmask)
-    int		result;		/* result from the wait */
-    pointer     pReadmask;	/* the resulting descriptor mask */
+void
+WakeupHandler(
+    int		result,		/* result from the wait */
+    unsigned long * pReadmask)	/* the resulting descriptor mask */
 {
     register int i,
                 j;
@@ -404,10 +401,10 @@ WakeupHandler(result, pReadmask)
  */
 
 Bool
-RegisterBlockAndWakeupHandlers(blockHandler, wakeupHandler, blockData)
-    void        (*blockHandler) ();
-    void        (*wakeupHandler) ();
-    pointer     blockData;
+RegisterBlockAndWakeupHandlers(
+    BlockHandlerProcPtr blockHandler,
+    DifsWakeupFunc wakeupHandler,
+    pointer     blockData)
 {
     BlockHandlerPtr new;
 
@@ -427,10 +424,10 @@ RegisterBlockAndWakeupHandlers(blockHandler, wakeupHandler, blockData)
 }
 
 void
-RemoveBlockAndWakeupHandlers(blockHandler, wakeupHandler, blockData)
-    void        (*blockHandler) ();
-    void        (*wakeupHandler) ();
-    pointer     blockData;
+RemoveBlockAndWakeupHandlers(
+    BlockHandlerProcPtr blockHandler,
+    DifsWakeupFunc wakeupHandler,
+    pointer     blockData)
 {
     int         i;
 
@@ -450,7 +447,8 @@ RemoveBlockAndWakeupHandlers(blockHandler, wakeupHandler, blockData)
 	}
 }
 
-InitBlockAndWakeupHandlers()
+void
+InitBlockAndWakeupHandlers(void)
 {
     fsfree(handlers);
     handlers = (BlockHandlerPtr) 0;
@@ -468,7 +466,7 @@ static WorkQueuePtr *workQueueLast = &workQueue;
 
 /* ARGSUSED */
 void
-ProcessWorkQueue()
+ProcessWorkQueue(void)
 {
     WorkQueuePtr q,
                 n,
@@ -503,10 +501,10 @@ ProcessWorkQueue()
 }
 
 Bool
-QueueWorkProc(function, client, data)
-    Bool        (*function) ();
-    ClientPtr   client;
-    pointer     data;
+QueueWorkProc(
+    Bool        (*function) (ClientPtr, pointer),
+    ClientPtr   client,
+    pointer     data)
 {
     WorkQueuePtr q;
 
@@ -533,17 +531,17 @@ QueueWorkProc(function, client, data)
 typedef struct _SleepQueue {
     struct _SleepQueue *next;
     ClientPtr   client;
-    Bool        (*function) ();
+    Bool        (*function) (ClientPtr, pointer);
     pointer     closure;
 }           SleepQueueRec, *SleepQueuePtr;
 
 static SleepQueuePtr sleepQueue = NULL;
 
 Bool
-ClientSleep(client, function, data)
-    ClientPtr   client;
-    Bool        (*function) ();
-    pointer     data;
+ClientSleep(
+    ClientPtr   client,
+    Bool        (*function) (ClientPtr, pointer),
+    pointer     data)
 {
     SleepQueuePtr q;
 
@@ -561,8 +559,7 @@ ClientSleep(client, function, data)
 }
 
 Bool
-ClientSignal(client)
-    ClientPtr   client;
+ClientSignal(ClientPtr client)
 {
     SleepQueuePtr q;
 
@@ -573,8 +570,8 @@ ClientSignal(client)
     return FALSE;
 }
 
-ClientWakeup(client)
-    ClientPtr   client;
+void
+ClientWakeup(ClientPtr client)
 {
     SleepQueuePtr q,
                *prev;
@@ -595,8 +592,7 @@ ClientWakeup(client)
 }
 
 Bool
-ClientIsAsleep(client)
-    ClientPtr   client;
+ClientIsAsleep(ClientPtr client)
 {
     SleepQueuePtr q;
 
@@ -606,33 +602,37 @@ ClientIsAsleep(client)
     return FALSE;
 }
 
-unsigned long *
-Xalloc(m)
-    unsigned long m;
+pointer
+Xalloc(unsigned long m)
 {
     return fsalloc(m);
 }
 
-unsigned long *
-Xrealloc(n, m)
-    unsigned long *n,
-                m;
+pointer
+Xrealloc(pointer n, unsigned long m)
 {
     return fsrealloc(n, m);
 }
 
 void
-Xfree(n)
-    unsigned long *n;
+Xfree(unsigned long *n)
 {
     fsfree(n);
 }
 
+pointer
+Xcalloc(unsigned long n)
+{
+    pointer ret;
+
+    ret = fsalloc(n);
+    if (ret && n)
+	bzero(ret, n);
+    return ret;
+}
+
 int
-set_font_authorizations(authorizations, authlen, client)
-char **authorizations;
-int *authlen;
-ClientPtr client;
+set_font_authorizations(char **authorizations, int *authlen, ClientPtr client)
 {
 #define AUTH1_NAME "hp-hostname-1"
 #define AUTH2_NAME "hp-printername-1"
@@ -666,8 +666,7 @@ ClientPtr client;
 }
 
 int
-client_auth_generation(client)
-ClientPtr client;
+client_auth_generation(ClientPtr client)
 {
     return client->auth_generation;
 }

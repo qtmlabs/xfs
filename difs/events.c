@@ -46,22 +46,24 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/events.c,v 3.7 2001/12/14 20:01:34 dawes Exp $ */
+
+#include	<swaprep.h>
 
 #include	"clientstr.h"
 #include	"FSproto.h"
 #include	"globals.h"
-#include	"events.h"
+#include	"fsevents.h"
+#include	"dispatch.h"
+#include	"difs.h"
 
-extern void (*EventSwapVector[NUM_EVENT_VECTORS]) ();
 
 static Mask lastEventMask = FontChangeNotifyMask;
 
 #define	AllEventMasks	(lastEventMask | (lastEventMask - 1))
 
 void
-WriteErrorToClient(client, error)
-    ClientPtr   client;
-    fsError    *error;
+WriteErrorToClient(ClientPtr client, fsError *error)
 {
     if (client->swapped) {
 	fsError     errorTo;
@@ -75,14 +77,13 @@ WriteErrorToClient(client, error)
 }
 
 int
-ProcSetEventMask(client)
-    ClientPtr   client;
+ProcSetEventMask(ClientPtr client)
 {
     REQUEST(fsSetEventMaskReq);
     REQUEST_AT_LEAST_SIZE(fsSetEventMaskReq);
 
     if (stuff->event_mask & ~AllEventMasks) {
-	SendErrToClient(client, FSBadEventMask, (pointer) stuff->event_mask);
+	SendErrToClient(client, FSBadEventMask, (pointer) &stuff->event_mask);
 	return FSBadEventMask;
     }
     client->eventmask = stuff->event_mask;
@@ -90,8 +91,7 @@ ProcSetEventMask(client)
 }
 
 int
-ProcGetEventMask(client)
-    ClientPtr   client;
+ProcGetEventMask(ClientPtr client)
 {
     fsGetEventMaskReply rep;
 
@@ -107,8 +107,7 @@ ProcGetEventMask(client)
 }
 
 void
-SendKeepAliveEvent(client)
-    ClientPtr   client;
+SendKeepAliveEvent(ClientPtr client)
 {
     fsKeepAliveEvent ev;
 

@@ -43,30 +43,22 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/include/misc.h,v 3.9 2001/12/14 20:01:38 dawes Exp $ */
 
 #ifndef _MISC_H_
 #define _MISC_H_
 
 #include	<X11/Xosdefs.h>
 #include	<X11/Xfuncs.h>
+#include	<X11/Xdefs.h>
 
 #include	"assert.h"	/* so its everywhere */
 
 #ifndef NULL
-
-#ifndef X_NOT_STDC_ENV
 #include	<stddef.h>
-#else
-#define	NULL	0
-#endif
-
 #endif
 
 #define	MAXCLIENTS	128
-
-typedef unsigned char *pointer;
-typedef int Bool;
-typedef unsigned long Atom;
 
 #define	MILLI_PER_SECOND	(1000)
 #define	MILLI_PER_MINUTE	(1000 * 60)
@@ -78,7 +70,6 @@ typedef unsigned long Atom;
 
 #define	min(a, b)	(((a) < (b)) ? (a) : (b))
 #define	max(a, b)	(((a) > (b)) ? (a) : (b))
-#define	abs(a)		((a) > 0 ? (a) : -(a))
 
 #include	"os.h"
 
@@ -122,20 +113,14 @@ typedef unsigned long Atom;
 		 ((char *) &(dst))[1] = ((char *) &(src))[0];
 
 
-extern void SwapLongs();
-extern void SwapShorts();
-
-extern void CopyIsoLatin1Lowered();
-extern void NoopDDA();
-extern char *NameForAtom();
-extern void BitOrderInvert();
-extern void TwoByteInvert();
-extern void FourByteInvert();
-
-extern long GetTimeInMillis();
+#if 0
+extern void NoopDDA(void);
+extern char *NameForAtom(Atom atom);
+#endif
+extern void BitOrderInvert(unsigned char *buf, int nbytes);
 
 
-#if (defined(__STDC__) && !defined(UNIXCPP)) || defined(ANSICPP)
+#if !defined(UNIXCPP) || defined(ANSICPP)
 #define fsCat(x,y) x##_##y
 #else
 #define fsCat(x,y) x/**/_/**/y
@@ -191,5 +176,7 @@ typedef struct {		/* when cloning, need old transport info */
     int portnum;
 } OldListenRec;
 
+/* os/connection.c */
+extern	void	CreateSockets(int old_listen_count, OldListenRec *old_listen);
 
 #endif				/* _MISC_H_ */

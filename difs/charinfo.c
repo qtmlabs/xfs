@@ -49,16 +49,19 @@ in this Software without prior written authorization from The Open Group.
  * This file was once on the other side of
  * the font library interface as util/fsfuncs.c.
  */
+/* $XFree86: xc/programs/xfs/difs/charinfo.c,v 1.12 2001/12/14 20:01:33 dawes Exp $ */
 
 #include <X11/Xos.h>
 #include "misc.h"
 #include "fontstruct.h"
+#include "fontutil.h"
 #include "clientstr.h"
 #define FSMD_H
 #include "FSproto.h"
+#include "difs.h"
 
-extern void TwoByteSwap();
-extern void FourByteSwap();
+extern void TwoByteSwap(unsigned char *, int);
+extern void FourByteSwap(unsigned char *, int);
 
 #define GLWIDTHBYTESPADDED(bits,nbytes) \
 	((nbytes) == 1 ? (((bits)+7)>>3)        /* pad to 1 byte */ \
@@ -74,16 +77,21 @@ extern void FourByteSwap();
 #define n2dChars(pfi)   (((pfi)->lastRow - (pfi)->firstRow + 1) * \
                          ((pfi)->lastCol - (pfi)->firstCol + 1))
 
+#if 0
 static CharInfoRec  junkDefault;
+#endif
+
+typedef int (*MetricsFunc)(FontPtr, unsigned long, unsigned char *, 
+			   FontEncoding, unsigned long *, CharInfoPtr *);
 
 static int
-getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
-    FontPtr	pfont;
-    int		num_ranges;
-    fsRange	*range;
-    Bool	ink_metrics;
-    int		*nump;		/* return */
-    CharInfoPtr	**retp;		/* return */
+getCharInfos (
+    FontPtr	pfont,
+    int		num_ranges,
+    fsRange	*range,
+    Bool	ink_metrics,
+    int		*nump,		/* return */
+    CharInfoPtr	**retp)		/* return */
 {
     CharInfoPtr	*xchars, *xci;
     int		nchars;
@@ -94,8 +102,6 @@ getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
     int         firstRow = pinfo->firstRow;
     int         lastRow = pinfo->lastRow;
     int         lastCol = pinfo->lastCol;
-    int		minCol, maxCol;
-    int         num_cols = lastCol - firstCol + 1;
     fsRange	local_range, *rp;
     int		i;
     FontEncoding    encoding;
@@ -103,7 +109,7 @@ getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
     unsigned long   glyphCount;
     unsigned short  defaultCh;
     CharInfoPtr	    defaultPtr;
-    int (*metrics_func) ();
+    MetricsFunc	    metrics_func;
     
     /*
      * compute nchars
@@ -133,9 +139,10 @@ getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
     xchars = (CharInfoPtr *) fsalloc (sizeof (CharInfoPtr) * nchars);
     if (!xchars)
 	return AllocError;
+    bzero (xchars, sizeof (CharInfoPtr) * nchars);
 
     if (ink_metrics)
-	metrics_func = pfont->get_metrics;
+	metrics_func = (MetricsFunc)pfont->get_metrics;
     else
 	metrics_func = pfont->get_glyphs;
 
@@ -168,9 +175,11 @@ getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
 		    fsfree (xchars);
 		    return err;
 		}
+#if 0
 		if (glyphCount != 1 || 
-		    *xci == defaultPtr && defaultCh != ((r<<8)+c))
+		   (*xci == defaultPtr && defaultCh != ((r<<8)+c)))
 		    *xci = &junkDefault;
+#endif
 		xci++;
 	    }
 	}
@@ -181,14 +190,14 @@ getCharInfos (pfont, num_ranges, range, ink_metrics, nump, retp)
 }
 
 int
-GetExtents(client, pfont, flags, num_ranges, range, num_extents, data)
-    ClientPtr     client;
-    FontPtr     pfont;
-    Mask        flags;
-    unsigned long num_ranges;
-    fsRange    *range;
-    unsigned long *num_extents;	/* return */
-    fsXCharInfo **data;		/* return */
+GetExtents(
+    ClientPtr   client,
+    FontPtr     pfont,
+    Mask        flags,
+    unsigned long num_ranges,
+    fsRange    *range,
+    unsigned long *num_extents,	/* return */
+    fsXCharInfo **data)		/* return */
 {
     unsigned long size;
     fsXCharInfo *ci;
@@ -239,36 +248,35 @@ GetExtents(client, pfont, flags, num_ranges, range, num_extents, data)
 }
 
 static int
-packGlyphs (client, pfont, format, flags, num_ranges, range, tsize, num_glyphs,
-		offsets, data, freeData)
-    ClientPtr   client;
-    FontPtr     pfont;
-    int         format;
-    Mask        flags;
-    unsigned long num_ranges;
-    fsRange    *range;
-    int        *tsize;
-    unsigned long *num_glyphs;
-    fsOffset32  **offsets;
-    pointer    *data;
-    int		*freeData;
+packGlyphs (
+    ClientPtr   client,
+    FontPtr     pfont,
+    int         format,
+    Mask        flags,
+    unsigned long num_ranges,
+    fsRange    *range,
+    int        *tsize,
+    unsigned long *num_glyphs,
+    fsOffset32  **offsets,
+    pointer     *data,
+    int		*freeData)
 {
     int         i;
     fsOffset32	*lengths, *l;
     unsigned long size = 0;
-    pointer     gdata,
-    gd;
+    pointer     gdata;
+    unsigned char *gd;
     int         bitorder, byteorder, scanlinepad, scanlineunit, mappad;
-    int		height, dstbpr, charsize;
-    int		dst_off, src_off;
+    int		height = 0, dstbpr = 0, charsize = 0;
+    int		dst_off = 0, src_off;
     Bool	contiguous, reformat;
-    long	nchars;
+    int		nchars;
     int         src_glyph_pad = pfont->glyph;
     int         src_bit_order = pfont->bit;
     int         src_byte_order = pfont->byte;
     int         err;
-    int		max_ascent, max_descent;
-    int		min_left, max_right;
+    int		max_ascent = 0, max_descent = 0;
+    int		min_left = 0, max_right;
     int		srcbpr;
     int		lshift = 0, rshift = 0, dst_left_bytes = 0, src_left_bytes = 0;
     unsigned char   *srcp;
@@ -599,19 +607,18 @@ packGlyphs (client, pfont, format, flags, num_ranges, range, tsize, num_glyphs,
 
 /* ARGSUSED */
 int
-GetBitmaps(client, pfont, format, flags, num_ranges, range,
-		 size, num_glyphs, offsets, data, freeData)
-    ClientPtr     client;
-    FontPtr     pfont;
-    fsBitmapFormat format;
-    Mask        flags;
-    unsigned long num_ranges;
-    fsRange    *range;
-    int        *size;
-    unsigned long *num_glyphs;
-    fsOffset32  **offsets;
-    pointer    *data;
-    int		*freeData;
+GetBitmaps(
+    ClientPtr   client,
+    FontPtr     pfont,
+    fsBitmapFormat format,
+    Mask        flags,
+    unsigned long num_ranges,
+    fsRange    *range,
+    int        *size,
+    unsigned long *num_glyphs,
+    fsOffset32  **offsets,
+    pointer    *data,
+    int		*freeData)
 {
     int err;
 
@@ -620,7 +627,8 @@ GetBitmaps(client, pfont, format, flags, num_ranges, range,
     *size = 0;
     *data = (pointer) 0;
 
-    err = LoadGlyphRanges(client, pfont, TRUE, num_ranges * 2, 0, range);
+    err = LoadGlyphRanges(client, pfont, TRUE, num_ranges * 2, 0, 
+			  (fsChar2b *)range);
 
     if (err != Successful)
 	return err;

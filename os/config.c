@@ -44,35 +44,53 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDId: @(#)config.c,v 4.6 1991/07/09 14:08:09 lemke Exp $
+ * $NCDXorg: @(#)config.c,v 4.6 1991/07/09 14:08:09 lemke Exp $
  *
  */
+/* $XFree86: xc/programs/xfs/os/config.c,v 3.16 2002/10/15 01:45:03 dawes Exp $ */
 
 #include	<stdio.h>
+#include	<stdlib.h>
 #include	<ctype.h>
+#include	<X11/Xtrans.h>
 #include	<X11/Xos.h>
 #include	"misc.h"
 #include	"configstr.h"
 #include	"osdep.h"
 #include	"globals.h"
 #include	"access.h"
+#include	"difsutils.h"
+#ifdef FONTCACHE
+#include	<X11/extensions/fontcacheP.h>
+#endif
+#include	"fontutil.h"
+#include	"difs.h"
+#include	"snfstr.h"
+
+extern int portFromCmdline;
 
 static char *font_catalogue = NULL;
 
-static char *config_set_int(),
-           *config_set_bool(),
-           *config_set_catalogue(),
-           *config_set_glyph_caching_mode(),
-           *config_set_list(),
-           *config_set_file(),
-           *config_set_resolutions(),
-	   *config_set_snf_format();
+static char *config_set_int(ConfigOptionPtr parm, char *val);
+static char *config_set_bool(ConfigOptionPtr parm, char *val);
+static char *config_set_catalogue(ConfigOptionPtr parm, char *val);
+static char *config_set_glyph_caching_mode(ConfigOptionPtr parm, char *val);
+static char *config_set_list(ConfigOptionPtr parm, char *val);
+static char *config_set_file(ConfigOptionPtr parm, char *val);
+static char *config_set_resolutions(ConfigOptionPtr parm, char *val);
+static char *config_set_ignored_transports(ConfigOptionPtr parm, char *val);
+static char *config_set_snf_format(ConfigOptionPtr parm, char *val);
 
 /* these need to be in lower case and alphabetical order so a
  * binary search lookup can be used
  */
 static ConfigOptionRec config_options[] = {
     {"alternate-servers", config_set_list},
+#ifdef FONTCACHE
+    {"cache-balance", config_set_int},
+    {"cache-hi-mark", config_set_int},
+    {"cache-low-mark", config_set_int},
+#endif
     {"catalogue", config_set_catalogue},
     {"client-limit", config_set_int},
     {"clone-self", config_set_bool},
@@ -80,6 +98,7 @@ static ConfigOptionRec config_options[] = {
     {"default-resolutions", config_set_resolutions},
     {"deferglyphs", config_set_glyph_caching_mode},
     {"error-file", config_set_file},
+    {"no-listen", config_set_ignored_transports},
     {"port", config_set_int},
     {"server-number", config_set_int},
     {"snf-format", config_set_snf_format},
@@ -112,8 +131,7 @@ char       *ConfigErrors[] = {
 						*(c)++= ' ';
 
 static char *
-next_assign(c)
-    char       *c;
+next_assign(char *c)
 {
     int         nesting = 0;
 
@@ -130,8 +148,7 @@ next_assign(c)
 }
 
 static void
-strip_comments(data)
-    char       *data;
+strip_comments(char *data)
 {
     char       *c;
 
@@ -145,9 +162,8 @@ strip_comments(data)
     }
 }
 
-static      ConfigOptionPtr
-match_param_name(name)
-    char       *name;
+static ConfigOptionPtr
+match_param_name(char *name)
 {
     int         pos,
                 rc,
@@ -173,11 +189,10 @@ match_param_name(name)
 }
 
 static int
-parse_config(data)
-    char       *data;
+parse_config(char *data)
 {
     char       *c,
-               *val,
+               *val = NULL,
                *next_eq,
                *consumed,
                *p;
@@ -266,14 +281,14 @@ parse_config(data)
  * handles anything that should be set once the file is parsed
  */
 void
-SetConfigValues()
+SetConfigValues(void)
 {
     int         err,
                 num;
 
     err = SetFontCatalogue(font_catalogue, &num);
     if (err != FSSuccess) {
-	FatalError("Element #%d (starting at 0) of font path is bad or has a bad font:\n\"%s\"\n",
+	FatalError("element #%d (starting at 0) of font path is bad or has a bad font:\n\"%s\"\n",
 		   num, font_catalogue);
     }
     InitErrors();
@@ -281,9 +296,28 @@ SetConfigValues()
     font_catalogue = NULL;
 }
 
+#ifdef __UNIXOS2__
+char *__XFSRedirRoot(char *fname)
+{
+    static char redirname[300]; /* enough for long filenames */
+    char *root;
+
+    /* if name does not start with /, assume it is not root-based */
+    if (fname==0 || !(fname[0]=='/' || fname[0]=='\\'))
+	return fname;
+
+    root = (char*)getenv("X11ROOT");
+    if (root==0 ||
+	(fname[1]==':' && isalpha(fname[0])) ||
+	((strlen(fname)+strlen(root)+2) > 300))
+	return fname;
+    sprintf(redirname,"%s%s",root,fname);
+    return redirname;
+}
+#endif
+
 int
-ReadConfigFile(filename)
-    char       *filename;
+ReadConfigFile(char *filename)
 {
     FILE       *fp;
     int         ret;
@@ -295,6 +329,9 @@ ReadConfigFile(filename)
 	ErrorF(ConfigErrors[CONFIG_ERR_MEMORY], filename);
 	return FSBadAlloc;
     }
+#ifdef __UNIXOS2__
+    filename = __XFSRedirRoot(filename);
+#endif
     if ((fp = fopen(filename, "r")) == NULL) {
 	fsfree(data);
 	ErrorF(ConfigErrors[CONFIG_ERR_OPEN], filename);
@@ -327,11 +364,11 @@ struct nameVal {
 };
 
 static char *
-config_parse_nameVal (c, ret, pval, name_val)
-    char       *c;
-    int        *ret;
-    int		*pval;
-    struct nameVal   *name_val;
+config_parse_nameVal (
+    char       *c,
+    int        *ret,
+    int		*pval,
+    struct nameVal   *name_val)
 {
     char       *start,
                 t;
@@ -359,30 +396,30 @@ config_parse_nameVal (c, ret, pval, name_val)
 }
 
 static char *
-config_parse_bool (c, ret, pval)
-    char	*c;
-    int		*ret;
-    Bool	*pval;
+config_parse_bool (
+    char	*c,
+    int		*ret,
+    Bool	*pval)
 {
     static struct nameVal bool_val[] = {
-    	    "yes", TRUE,
-    	    "on", TRUE,
-    	    "1", TRUE,
-    	    "true", TRUE,
-    	    "no", FALSE,
-    	    "off", FALSE,
-    	    "0", FALSE,
-    	    "false", FALSE,
-    	    (char *) 0, 0,
+    	    { "yes",   TRUE },
+    	    { "on",    TRUE },
+    	    { "1",     TRUE },
+    	    { "true",  TRUE },
+    	    { "no",    FALSE },
+    	    { "off",   FALSE },
+    	    { "0",     FALSE },
+    	    { "false", FALSE },
+    	    { (char *) 0, 0 },
     };
     return config_parse_nameVal (c, ret, pval, bool_val);
 }
 
 static char *
-config_parse_int(c, ret, pval)
-    char       *c;
-    int        *ret;
-    int        *pval;
+config_parse_int(
+    char       *c,
+    int        *ret,
+    int        *pval)
 {
     char       *start,
                 t;
@@ -412,41 +449,45 @@ config_parse_int(c, ret, pval)
 /* config option sets */
 /* these have to know how to do the real work and tweak the proper things */
 static char *
-config_set_int(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_int(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     int         ival,
                 ret;
-    extern int  ListenPort;
-    extern void SetDefaultPointSize();
 
     val = config_parse_int(val, &ret, &ival);
     if (ret == -1)
 	return val;
 
     /* now do individual attribute checks */
-    if (!strcmp(parm->parm_name, "port")) {
+    if (!strcmp(parm->parm_name, "port") && !portFromCmdline) {
 	ListenPort = ival;
     } else if (!strcmp(parm->parm_name, "client-limit")) {
 	AccessSetConnectionLimit(ival);
     } else if (!strcmp(parm->parm_name, "default-point-size")) {
 	SetDefaultPointSize(ival);
     }
+#ifdef FONTCACHE
+    else if (!strcmp(parm->parm_name, "cache-balance")) {
+	cacheSettings.balance = ival;
+    } else if (!strcmp(parm->parm_name, "cache-hi-mark")) {
+	cacheSettings.himark = ival * 1024;
+    } else if (!strcmp(parm->parm_name, "cache-low-mark")) {
+	cacheSettings.lowmark = ival * 1024;
+    }
+#endif
     return val;
 }
 
 static char *
-config_set_bool(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_bool(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     int
                 ret;
     Bool        bval;
-    extern int  ClientLimit;
-    extern Bool UseSyslog,
-                CloneSelf;
 
     val = config_parse_bool(val, &ret, &bval);
     if (ret == -1)
@@ -462,11 +503,10 @@ config_set_bool(parm, val)
 }
 
 static char *
-config_set_file(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_file(
+    ConfigOptionPtr parm,
+    char       *val)
 {
-    extern char ErrorFile[];
     char       *start = val,
                 t;
 
@@ -474,16 +514,20 @@ config_set_file(parm, val)
     t = *val;
     *val = '\0';
     if (!strcmp(parm->parm_name, "error-file")) {
+#ifndef __UNIXOS2__
 	memmove( ErrorFile, start, val - start + 1);
+#else
+	strcpy( ErrorFile, __XFSRedirRoot(start));
+#endif
     }
     *val = t;
     return val;
 }
 
 static char *
-config_set_catalogue(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_catalogue(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     char       *b;
 
@@ -492,7 +536,7 @@ config_set_catalogue(parm, val)
 	fsfree((char *) font_catalogue);	/* dump any previous one */
 	b = font_catalogue = (char *) fsalloc(strlen(val) + 1);
 	if (!font_catalogue)
-	    FatalError("Insufficent memory for font catalogue\n");
+	    FatalError("insufficent memory for font catalogue\n");
 	while (*val) {		/* remove all the gunk */
 	    if (!isspace(*val)) {
 		*b++ = *val;
@@ -505,9 +549,9 @@ config_set_catalogue(parm, val)
 }
 
 static char *
-config_set_list(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_list(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     char       *start = val,
                 t;
@@ -523,9 +567,25 @@ config_set_list(parm, val)
 }
 
 static char *
-config_set_glyph_caching_mode(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_ignored_transports(
+    ConfigOptionPtr parm,
+    char       *val)
+{
+    char       *start = val,
+                t;
+
+    skip_list_val(val);
+    t = *val;
+    *val = '\0';
+    _FontTransNoListen(start);
+    *val = t;
+    return val;
+}
+
+static char *
+config_set_glyph_caching_mode(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     char       *start = val,
                 t;
@@ -541,9 +601,9 @@ config_set_glyph_caching_mode(parm, val)
 }
 
 static char *
-config_set_resolutions(parm, val)
-    ConfigOptionPtr parm;
-    char       *val;
+config_set_resolutions(
+    ConfigOptionPtr parm,
+    char       *val)
 {
     char       *start = val,
                 t;
@@ -555,7 +615,7 @@ config_set_resolutions(parm, val)
     if (!strcmp(parm->parm_name, "default-resolutions")) {
 	err = SetDefaultResolutions(start);
 	if (err != FSSuccess) {
-	    FatalError("Bogus resolution list \"%s\"\n", start);
+	    FatalError("bogus resolution list \"%s\"\n", start);
 	}
     }
     *val = t;
@@ -564,28 +624,28 @@ config_set_resolutions(parm, val)
 
 
 static char *
-config_parse_endian(c, ret, pval)
-    char       *c;
-    int        *ret;
-    int		*pval;
+config_parse_endian(
+    char       *c,
+    int        *ret,
+    int		*pval)
 {
     static struct nameVal endian_val[] = {
-	"lsb",	LSBFirst,
-	"little",   LSBFirst,
-	"lsbfirst", LSBFirst,
-	"msb",	    MSBFirst,
-	"big",	    MSBFirst,
-	"msbfirst", MSBFirst,
-	(char *) 0, 0,
+	{ "lsb",      LSBFirst },
+	{ "little",   LSBFirst },
+	{ "lsbfirst", LSBFirst },
+	{ "msb",      MSBFirst },
+	{ "big",      MSBFirst },
+	{ "msbfirst", MSBFirst },
+	{ (char *) 0, 0 },
     };
     return config_parse_nameVal (c, ret, pval, endian_val);
 }
 
 /* ARGSUSED */
 static char *
-config_set_snf_format (parm, val)
-    ConfigOptionPtr parm;
-    char	    *val;
+config_set_snf_format (
+    ConfigOptionPtr parm,
+    char	    *val)
 {
     int	    bit, byte, glyph, scan;
     int	    ret;

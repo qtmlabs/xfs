@@ -47,20 +47,26 @@ in this Software without prior written authorization from The Open Group.
  * @(#)access.h	4.1	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/include/access.h,v 1.5 2001/12/14 20:01:36 dawes Exp $ */
 
 #ifndef _ACCESS_H_
 #define _ACCESS_H_
 
 typedef struct _hostaddress *HostList;
 
+#include <os.h>
+#include <client.h>
+
 #define	HOST_AF_INET	1
 #define	HOST_AF_DECnet	2
 
-extern int  AddHost();
-extern int  RemoveHost();
-extern int  ValidHost();
-extern int  GetHostAddress();
-extern int  CheckClientAuthorization();
-extern void AccessSetConnectionLimit();
+extern int  CheckClientAuthorization(
+		ClientPtr   client,
+		AuthPtr     client_auth,
+		int        *accept,
+		int        *index,
+		int        *size,
+		char      **auth_data);
+extern void AccessSetConnectionLimit(int num);
 
 #endif				/* _ACCESS_H_ */

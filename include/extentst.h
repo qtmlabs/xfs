@@ -47,13 +47,14 @@ in this Software without prior written authorization from The Open Group.
  * @(#)extentst.h	4.1	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/include/extentst.h,v 1.6 2001/12/14 20:01:38 dawes Exp $ */
 
 #ifndef _EXTENTST_H_
 #define _EXTENTST_H_
 
 typedef struct _ExtensionEntry {
     int         index;
-    void        (*CloseDown) ();
+    void        (*CloseDown) (struct _ExtensionEntry*);
     char       *name;
     int         base;
     int         eventBase;
@@ -63,11 +64,12 @@ typedef struct _ExtensionEntry {
     int         num_aliases;
     char      **aliases;
     pointer     extPrivate;
-    unsigned short (*MinorOpcode) ();
+    unsigned short (*MinorOpcode) (ClientPtr);
 }           ExtensionEntry;
 
-extern void (*EventSwapVector[]) ();
+extern void (*EventSwapVector[]) (fsError *, fsError *);
 
+#if 0
 typedef void (*ExtensionLookupProc) ();
 
 typedef struct _ProcEntry {
@@ -75,14 +77,19 @@ typedef struct _ProcEntry {
     ExtensionLookupProc proc;
 }           ProcEntryRec, *ProcEntryPtr;
 
-extern void InitExtensions();
-extern int  ProcQueryExtension();
-extern int  ProcListExtensions();
 extern ExtensionEntry *AddExtension();
-extern Bool AddExtensionAlias();
 extern ExtensionLookupProc LookupProc();
 extern Bool RegisterProc();
-extern unsigned short MinorOpcodeOfRequest();
-extern unsigned short StandardMinorOpcode();
+#endif
+
+extern ExtensionEntry * AddExtension ( char *name, int num_events, int num_errors, int (*main_proc) (ClientPtr), int (*smain_proc) (ClientPtr), void (*closedown_proc) (struct _ExtensionEntry *), unsigned short (*minorop_proc) (ClientPtr) );
+
+extern Bool AddExtensionAlias(char *alias, ExtensionEntry *ext);
+extern int  ProcListExtensions(ClientPtr client);
+extern int  ProcQueryExtension(ClientPtr client);
+extern unsigned short MinorOpcodeOfRequest(ClientPtr client);
+extern unsigned short StandardMinorOpcode(ClientPtr client);
+extern void CloseDownExtensions(void);
+extern void InitExtensions(void);
 
 #endif				/* _EXTENTST_H_ */

@@ -44,53 +44,120 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDId: @(#)os.h,v 4.2 1991/05/10 07:59:16 lemke Exp $
+ * $NCDXorg: @(#)os.h,v 4.2 1991/05/10 07:59:16 lemke Exp $
  *
  */
+/* $XFree86: xc/programs/xfs/include/os.h,v 3.14 2002/10/15 01:45:03 dawes Exp $ */
 
 #ifndef	_OS_H_
 #define	_OS_H_
 
+typedef struct _FontPathRec *FontPathPtr;
+typedef struct _alt_server *AlternateServerPtr;
+typedef struct _auth *AuthPtr;
+
 #include "FSproto.h"
+#include "client.h"
 #include "misc.h"
+
+typedef pointer FID;
+
 #define ALLOCATE_LOCAL_FALLBACK(_size) FSalloc((unsigned long)_size)
 #define DEALLOCATE_LOCAL_FALLBACK(_ptr) FSfree((pointer)_ptr)
+
 #include "X11/Xalloca.h"
 
-#define	MAX_REQUEST_SIZE	16384
+#define	MAX_REQUEST_SIZE	8192
 
-extern unsigned long *FSalloc();
-extern unsigned long *FSrealloc();
-extern void FSfree();
+#ifdef SIGNALRETURNSINT
+#define SIGVAL int
+#else
+#define SIGVAL void
+#endif
 
 #define	fsalloc(size)		FSalloc((unsigned long)size)
 #define	fsrealloc(ptr, size)	FSrealloc((pointer)ptr, (unsigned long)size)
 #define	fsfree(ptr)		FSfree((pointer)ptr)
 
-int         ReadRequest();
+extern int  ListenPort;
+extern Bool UseSyslog;
+extern Bool CloneSelf;
+extern char ErrorFile[];
+#ifdef FONTCACHE
+#include <X11/extensions/fontcacheP.h>
+extern FontCacheSettings cacheSettings;
+#endif
 
-Bool        CloseDownConnection();
-void        CreateSockets();
-void        CloseSockets();
-void        FlushAllOuput();
-long        GetTimeInMIllis();
-void        Error();
-void        InitErrors();
-void        CloseErrors();
-void        NoticeF();
-void        ErrorF();
-void        FatalError();
-void        SetConfigValues();
+struct _osComm;	/* FIXME: osCommPtr */
 
-typedef pointer FID;
-typedef struct _FontPathRec *FontPathPtr;
+/* os/config.c */
+extern	int	ReadConfigFile(char *filename);
 
-FontPathPtr expand_font_name_pattern();
+/* os/connection.c */
+extern	void	AttendClient(ClientPtr client);
+extern	void	CheckConnections(void);
+extern	void	CloseDownConnection(ClientPtr client);
+extern	void	IgnoreClient(ClientPtr client);
+extern	void	MakeNewConnections(void);
+extern	void	ReapAnyOldClients(void);
+extern	void	ResetSockets(void);
+extern	void	CloseSockets(void);
+extern	void	StopListening(void);
 
-typedef struct _alt_server *AlternateServerPtr;
-typedef struct _auth *AuthPtr;
+/* os/daemon.c */
+extern	void	BecomeOrphan(void);
+extern	void	BecomeDaemon(void);
 
-extern int  ListCatalogues();
-extern int  ListAlternateServers();
+/* os/error.c */
+extern void	Error(char *str);
+extern void	InitErrors(void);
+extern void	CloseErrors(void);
+extern void	NoticeF(char *f, ...);
+extern void	ErrorF(char * f, ...);
+extern void	FatalError(char* f, ...);
+
+/* os/io.c */
+extern	Bool	InsertFakeRequest(ClientPtr client, char *data, int count);
+extern	int	FlushClient(ClientPtr client, struct _osComm *oc, char *extraBuf, int extraCount, int padsize);
+extern	int	ReadRequest(ClientPtr client);
+extern	void	FlushAllOutput(void);
+extern	void	FreeOsBuffers(struct _osComm *oc);
+extern	void	ResetCurrentRequest(ClientPtr client);
+extern	void	ResetOsBuffers(void);
+extern	void	WriteToClient(ClientPtr client, int count, char *buf);
+extern	void	WriteToClientUnpadded(ClientPtr client, int count, char *buf);
+
+/* os/osglue.c */
+extern int 	ListCatalogues(char *pattern, int patlen, int maxnames, char **catalogues, int *len);
+extern int 	ValidateCatalogues(int *num, char *cats);
+extern int 	SetAlternateServers(char *list);
+extern int 	ListAlternateServers(AlternateServerPtr *svrs);
+extern int 	CloneMyself(void);
+
+/* os/osinit.c */
+extern	void	OsInit(void);
+
+/* os/utils.c */
+extern	SIGVAL	AutoResetServer (int n);
+extern	SIGVAL	CleanupChild (int n);
+extern	SIGVAL	GiveUp (int n);
+extern	SIGVAL	ServerCacheFlush (int n);
+extern	SIGVAL	ServerReconfig (int n);
+extern	long	GetTimeInMillis (void);
+extern	pointer	FSalloc(unsigned long);
+extern	pointer	FScalloc (unsigned long amount);
+extern	pointer	FSrealloc(pointer, unsigned long);
+extern	void	FSfree(pointer);
+extern	void	OsInitAllocator (void);
+extern	void	ProcessCmdLine (int argc, char **argv);
+extern	void	ProcessLSoption (char *str);
+extern	void	SetUserId(void);
+extern	void	SetDaemonState(void);
+
+/* os/waitfor.c */
+extern	int	WaitForSomething(int *pClientsReady);
+
+extern void	SetConfigValues(void);
+
 
 #endif				/* _OS_H_ */

@@ -46,18 +46,17 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/swapreq.c,v 1.7 2001/12/14 20:01:35 dawes Exp $ */
 
-#include	"misc.h"
+#include	<swapreq.h>
+
 #include	"FSproto.h"
 #include	"clientstr.h"
 #include	"globals.h"
-
-extern int  (*ProcVector[NUM_PROC_VECTORS]) ();
+#include	"dispatch.h"
 
 void
-SwapLongs(list, count)
-    long       *list;
-    unsigned long count;
+SwapLongs(long *list, unsigned long count)
 {
     int         n;
     register char *longs = (char *)list;
@@ -85,9 +84,7 @@ SwapLongs(list, count)
 /* Byte swap a list of shorts */
 
 void
-SwapShorts(list, count)
-    short *list;
-    register unsigned long count;
+SwapShorts(short *list, unsigned long count)
 {
     register char *shorts = (char *)list;
     register int n;
@@ -124,8 +121,7 @@ SwapShorts(list, count)
  * used for all requests that have nothing but 'length' swapped
  */
 int
-SProcSimpleRequest(client)
-    ClientPtr   client;
+SProcSimpleRequest(ClientPtr client)
 {
     REQUEST(fsReq);
     stuff->length = lswaps(stuff->length);
@@ -136,8 +132,7 @@ SProcSimpleRequest(client)
  * used for all requests that have nothing but 'length' & a resource id swapped
  */
 int
-SProcResourceRequest(client)
-    ClientPtr   client;
+SProcResourceRequest(ClientPtr client)
 {
     REQUEST(fsResourceReq);
     stuff->length = lswaps(stuff->length);
@@ -145,12 +140,10 @@ SProcResourceRequest(client)
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
-static void
-swap_auth(data, num)
-    pointer     data;
-    int         num;
+static int
+swap_auth(ClientPtr client, pointer data, int num, int length)
 {
-    pointer     p;
+    unsigned char *p;
     unsigned char t;
     CARD16      namelen,
                 datalen;
@@ -158,6 +151,12 @@ swap_auth(data, num)
 
     p = data;
     for (i = 0; i < num; i++) {
+	if (p - (unsigned char *)data > length - 4) {
+	    int lengthword = length;
+
+            SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+            return (FSBadLength);
+	}
 	namelen = *(CARD16 *) p;
 	t = p[0];
 	p[0] = p[1];
@@ -171,26 +170,42 @@ swap_auth(data, num)
 	p += (namelen + 3) & ~3;
 	p += (datalen + 3) & ~3;
     }
+    if (!num)
+	p += 4;
+    if (p - (unsigned char *)data != length) {
+	int lengthword = length;
+
+	SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	return (FSBadLength);
+    }
+
+    return (FSSuccess);
 }
 
 int
-SProcCreateAC(client)
-    ClientPtr   client;
+SProcCreateAC(ClientPtr client)
 {
+    int status;
+	
     REQUEST(fsCreateACReq);
     stuff->length = lswaps(stuff->length);
     stuff->acid = lswapl(stuff->acid);
-    swap_auth((pointer) &stuff[1], stuff->num_auths);
+    status = swap_auth(client, (pointer) &stuff[1],
+	    	       stuff->num_auths, stuff->length);
+    if (status != FSSuccess)
+	return (status);
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
 int
-SProcSetResolution(client)
-    ClientPtr   client;
+SProcSetResolution(ClientPtr client)
 {
     REQUEST(fsSetResolutionReq);
     stuff->length = lswaps(stuff->length);
     stuff->num_resolutions = lswaps(stuff->num_resolutions);
+    if ((int)stuff->length - (&stuff[1] - &stuff[0]) !=
+	stuff->num_resolutions * sizeof(fsResolution))
+	return (FSBadLength);
     SwapShorts((short *) &stuff[1], stuff->num_resolutions);
 
     return ((*ProcVector[stuff->reqType]) (client));
@@ -198,8 +213,7 @@ SProcSetResolution(client)
 
 
 int
-SProcQueryExtension(client)
-    ClientPtr   client;
+SProcQueryExtension(ClientPtr client)
 {
     REQUEST(fsQueryExtensionReq);
     stuff->length = lswaps(stuff->length);
@@ -207,8 +221,7 @@ SProcQueryExtension(client)
 }
 
 int
-SProcListCatalogues(client)
-    ClientPtr   client;
+SProcListCatalogues(ClientPtr client)
 {
     REQUEST(fsListCataloguesReq);
     stuff->length = lswaps(stuff->length);
@@ -218,8 +231,7 @@ SProcListCatalogues(client)
 }
 
 int
-SProcListFonts(client)
-    ClientPtr   client;
+SProcListFonts(ClientPtr client)
 {
     REQUEST(fsListFontsReq);
     stuff->length = lswaps(stuff->length);
@@ -229,8 +241,7 @@ SProcListFonts(client)
 }
 
 int
-SProcListFontsWithXInfo(client)
-    ClientPtr   client;
+SProcListFontsWithXInfo(ClientPtr client)
 {
     REQUEST(fsListFontsWithXInfoReq);
     stuff->length = lswaps(stuff->length);
@@ -240,8 +251,7 @@ SProcListFontsWithXInfo(client)
 }
 
 int
-SProcOpenBitmapFont(client)
-    ClientPtr   client;
+SProcOpenBitmapFont(ClientPtr client)
 {
     REQUEST(fsOpenBitmapFontReq);
     stuff->length = lswaps(stuff->length);
@@ -252,8 +262,7 @@ SProcOpenBitmapFont(client)
 }
 
 int
-SProcQueryXExtents(client)
-    ClientPtr   client;
+SProcQueryXExtents(ClientPtr client)
 {
     REQUEST(fsQueryXExtents8Req); /* 8 and 16 are the same here */
     stuff->length = lswaps(stuff->length);
@@ -264,8 +273,7 @@ SProcQueryXExtents(client)
 }
 
 int
-SProcQueryXBitmaps(client)
-    ClientPtr   client;
+SProcQueryXBitmaps(ClientPtr client)
 {
     REQUEST(fsQueryXBitmaps8Req); /* 8 and 16 are the same here */
     stuff->length = lswaps(stuff->length);
@@ -276,11 +284,14 @@ SProcQueryXBitmaps(client)
     return ((*ProcVector[stuff->reqType]) (client));
 }
 
-SwapConnClientPrefix(pCCP)
-    fsConnClientPrefix *pCCP;
+int
+SwapConnClientPrefix(ClientPtr client, fsConnClientPrefix *pCCP)
 {
+    REQUEST(fsFakeReq);
+	
     pCCP->major_version = lswaps(pCCP->major_version);
     pCCP->minor_version = lswaps(pCCP->minor_version);
     pCCP->auth_len = lswaps(pCCP->auth_len);
-    swap_auth((pointer) &pCCP[1], pCCP->num_auths);
+    return (swap_auth(client, (pointer) &pCCP[1],
+		      pCCP->num_auths, stuff->length));
 }

@@ -43,10 +43,15 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/os/access.c,v 3.7 2001/12/14 20:01:40 dawes Exp $ */
 
 #include	<X11/Xos.h>
+#ifndef Lynx
 #include        <sys/param.h>
 #include	<sys/socket.h>
+#else
+#include	<socket.h>
+#endif
 #include	<netdb.h>
 #include	<netinet/in.h>
 #include	"clientstr.h"
@@ -55,12 +60,12 @@ in this Software without prior written authorization from The Open Group.
 #include	"accstr.h"
 #include	"osdep.h"
 #include	"osstruct.h"
+#include	"accstr.h"
 
 long        MaxClients = DEFAULT_CLIENT_LIMIT;
 
 void
-AccessSetConnectionLimit(num)
-    int         num;
+AccessSetConnectionLimit(int num)
 {
     num++;	/* take serverClient into account */
     if (num > MAXSOCKS) {
@@ -77,8 +82,7 @@ AccessSetConnectionLimit(num)
  * needs massive amounts of OS-dependent work (big surprise)
  */
 int
-GetHostAddress(addr)
-    HostAddress *addr;
+GetHostAddress(HostAddress *addr)
 {
     char        hname[64];
     struct hostent *hp;
@@ -101,13 +105,13 @@ GetHostAddress(addr)
 
 /* ARGSUSED */
 int
-CheckClientAuthorization(client, client_auth, accept, index, size, auth_data)
-    ClientPtr   client;
-    AuthPtr     client_auth;
-    int        *accept;
-    int        *index;
-    int        *size;
-    char      **auth_data;
+CheckClientAuthorization(
+    ClientPtr   client,
+    AuthPtr     client_auth,
+    int        *accept,
+    int        *index,
+    int        *size,
+    char      **auth_data)
 {
     OsCommPtr	oc;
     int i;
@@ -125,10 +129,10 @@ CheckClientAuthorization(client, client_auth, accept, index, size, auth_data)
 #define AUTH1_NAME "hp-hostname-1"
 #define AUTH2_NAME "hp-printername-1"
     for (i = 0; i < *index; i++)
-	if (client_auth[i].namelen == sizeof(AUTH1_NAME) &&
-	    !strcmp(client_auth[i].name, AUTH1_NAME) ||
-	    client_auth[i].namelen == sizeof(AUTH2_NAME) &&
-	    !strcmp(client_auth[i].name, AUTH2_NAME)) break;
+	if ((client_auth[i].namelen == sizeof(AUTH1_NAME) &&
+	    !strcmp(client_auth[i].name, AUTH1_NAME)) ||
+	    (client_auth[i].namelen == sizeof(AUTH2_NAME) &&
+	    !strcmp(client_auth[i].name, AUTH2_NAME))) break;
     if (i == *index)
 	i = 0;
     else

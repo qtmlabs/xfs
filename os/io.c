@@ -46,23 +46,27 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/os/io.c,v 3.19 2002/05/31 18:46:12 dawes Exp $ */
 
 #include	<X11/Xtrans.h>
 #include	<stdio.h>
 #include	<errno.h>
 #include	<sys/types.h>
+#ifndef Lynx
 #include	<sys/param.h>
+#ifndef __UNIXOS2__
 #include	<sys/uio.h>
+#endif
+#else
+#include	<uio.h>
+#endif
 
 #include	"FSproto.h"
 #include	"clientstr.h"
 #include	"X11/Xpoll.h"
 #include	"osdep.h"
 #include	"globals.h"
-
-#ifdef X_NOT_STDC_ENV
-extern int errno;
-#endif
+#include	"dispatch.h"
 
 
 /* check for both EAGAIN and EWOULDBLOCK, because some supposedly POSIX
@@ -98,8 +102,8 @@ static ConnectionInputPtr FreeInputs = (ConnectionInputPtr) NULL;
 static ConnectionOutputPtr FreeOutputs = (ConnectionOutputPtr) NULL;
 static OsCommPtr AvailableInput = (OsCommPtr) NULL;
 
-static ConnectionInputPtr AllocateInputBuffer();
-static ConnectionOutputPtr AllocateOutputBuffer();
+static ConnectionInputPtr AllocateInputBuffer(void);
+static ConnectionOutputPtr AllocateOutputBuffer(void);
 
 
 #define		MAX_TIMES_PER	10
@@ -119,17 +123,26 @@ static ConnectionOutputPtr AllocateOutputBuffer();
 	((int)((client)->swapped ? lswaps((req)->length) : (req)->length) << 2)
 
 int
-ReadRequest(client)
-    ClientPtr   client;
+ReadRequest(ClientPtr client)
 {
-    OsCommPtr   oc = (OsCommPtr) client->osPrivate;
-    ConnectionInputPtr oci = oc->input;
+    OsCommPtr   oc;
+    ConnectionInputPtr oci;
     fsReq      *request;
-    int         fd = oc->fd;
-    int         result,
+    int         fd,
+                result,
                 gotnow,
                 needed = 0;
 
+    if (client == NULL)
+	return -1;
+    oc = (OsCommPtr) client->osPrivate;
+    if (oc == NULL)
+	return -1;
+    oci = oc->input;
+    fd = oc->fd;
+    if (oci != NULL && fd < 0)
+	return -1;
+		
     if (AvailableInput) {
 	if (AvailableInput != oc) {
 	    ConnectionInputPtr aci = AvailableInput->input;
@@ -202,13 +215,21 @@ ReadRequest(client)
 	    oci->bufcnt = gotnow;
 	}
 	/* fill 'er up */
+	if (oc->trans_conn == NULL) {
+	    yield_control_death();
+	    return -1;
+	}
 	result = _FontTransRead(oc->trans_conn, oci->buffer + oci->bufcnt,
 		      oci->size - oci->bufcnt);
 	if (result <= 0) {
+#if !(defined(SVR4) && defined(i386) && !defined(sun))
 	    if ((result < 0) && ETEST(errno)) {
 		yield_control_no_input();
 		return 0;
-	    } else {
+	    } else
+#endif
+	    {
+
 		yield_control_death();
 		return -1;
 	    }
@@ -221,7 +242,7 @@ ReadRequest(client)
 		(oci->bufcnt < BUFSIZE) && (needed < BUFSIZE)) {
 	    char       *ibuf;
 
-	    ibuf = (char *) fsrealloc(oci, BUFSIZE);
+	    ibuf = (char *) fsrealloc(oci->buffer, BUFSIZE);
 	    if (ibuf) {
 		oci->size = BUFSIZE;
 		oci->buffer = ibuf;
@@ -264,10 +285,7 @@ ReadRequest(client)
 }
 
 Bool
-InsertFakeRequest(client, data, count)
-    ClientPtr   client;
-    char       *data;
-    int         count;
+InsertFakeRequest(ClientPtr client, char *data, int count)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
     ConnectionInputPtr oci = oc->input;
@@ -331,8 +349,8 @@ InsertFakeRequest(client, data, count)
     return TRUE;
 }
 
-ResetCurrentRequest(client)
-    ClientPtr   client;
+void
+ResetCurrentRequest(ClientPtr client)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
     ConnectionInputPtr oci = oc->input;
@@ -355,12 +373,12 @@ ResetCurrentRequest(client)
 }
 
 int
-FlushClient(client, oc, extraBuf, extraCount, padsize)
-    ClientPtr   client;
-    OsCommPtr   oc;
-    char       *extraBuf;
-    int         extraCount;
-    int         padsize;
+FlushClient(
+    ClientPtr   client,
+    OsCommPtr   oc,
+    char       *extraBuf,
+    int         extraCount,
+    int         padsize)
 {
     ConnectionOutputPtr oco = oc->output;
     int         fd = oc->fd;
@@ -450,7 +468,8 @@ FlushClient(client, oc, extraBuf, extraCount, padsize)
 		obuf = (unsigned char *) fsrealloc(oco->buf,
 					      notWritten + OutputBufferSize);
 		if (!obuf) {
-		    _FontTransClose(oc->trans_conn);
+		    if (oc->trans_conn)
+			_FontTransClose(oc->trans_conn);
 		    oc->trans_conn = NULL;
 		    MarkClientException(client);
 		    oco->count = 0;
@@ -505,7 +524,7 @@ FlushClient(client, oc, extraBuf, extraCount, padsize)
 }
 
 void
-FlushAllOutput()
+FlushAllOutput(void)
 {
     int         index, base;
     fd_mask	mask;
@@ -543,11 +562,7 @@ FlushAllOutput()
  * returns number of bytes written
  */
 static int
-write_to_client_internal(client, count, buf, padBytes)
-    ClientPtr   client;
-    int         count;
-    char       *buf;
-    int         padBytes;
+write_to_client_internal(ClientPtr client, int count, char *buf, int padBytes)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
     ConnectionOutputPtr oco = oc->output;
@@ -579,26 +594,29 @@ write_to_client_internal(client, count, buf, padBytes)
     return count;
 }
 
-WriteToClientUnpadded(client, count, buf)
-    ClientPtr   client;
-    int         count;
-    char       *buf;
+void
+WriteToClientUnpadded(ClientPtr client, int count, char *buf)
 {
     write_to_client_internal(client, count, buf, 0);
 }
 
 static int  padlength[4] = {0, 3, 2, 1};
 
-WriteToClient(client, count, buf)
-    ClientPtr   client;
-    int         count;
-    char       *buf;
+void
+WriteToClient(ClientPtr client, int count, char *buf)
 {
+    int flag = 0;
+    if (NULL == buf) {
+	flag = -1;
+	buf = (char *)fsalloc(count); memset(buf, 0, count);
+    }
      write_to_client_internal(client, count, buf, padlength[count & 3]);
+    if (flag)
+	fsfree(buf);
 }
 
-static      ConnectionInputPtr
-AllocateInputBuffer()
+static ConnectionInputPtr
+AllocateInputBuffer(void)
 {
     register ConnectionInputPtr oci;
 
@@ -617,8 +635,9 @@ AllocateInputBuffer()
     oci->lenLastReq = 0;
     return oci;
 }
-static      ConnectionOutputPtr
-AllocateOutputBuffer()
+
+static ConnectionOutputPtr
+AllocateOutputBuffer(void)
 {
     register ConnectionOutputPtr oco;
 
@@ -637,8 +656,7 @@ AllocateOutputBuffer()
 
 
 void
-FreeOsBuffers(oc)
-    OsCommPtr   oc;
+FreeOsBuffers(OsCommPtr oc)
 {
     register ConnectionInputPtr oci;
     register ConnectionOutputPtr oco;
@@ -670,7 +688,7 @@ FreeOsBuffers(oc)
 }
 
 void
-ResetOsBuffers()
+ResetOsBuffers(void)
 {
     register ConnectionInputPtr oci;
     register ConnectionOutputPtr oco;

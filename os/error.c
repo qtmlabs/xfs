@@ -44,9 +44,13 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/os/error.c,v 1.11 2002/10/15 01:45:03 dawes Exp $ */
 
 #include	<stdio.h>
+#include	<stdlib.h>
+#include	<stdarg.h>
 #include	<X11/Xos.h>
+
 #ifndef X_NOT_POSIX
 #ifdef _POSIX_SOURCE
 #include <limits.h>
@@ -71,15 +75,20 @@ in this Software without prior written authorization from The Open Group.
 #include	<syslog.h>
 #endif
 
+#include	<errno.h>
+
 #include	"misc.h"
 
 extern char *progname;
 
 Bool        UseSyslog;
+#ifdef USE_SYSLOG
+Bool        log_open = FALSE;
+#endif
 char        ErrorFile[PATH_MAX];
 
 static void
-abort_server()
+abort_server(void)
 {
     fflush(stderr);
 
@@ -91,13 +100,13 @@ abort_server()
 }
 
 void
-InitErrors()
+InitErrors(void)
 {
     int         i;
 
 #ifdef USE_SYSLOG
     if (UseSyslog && !log_open) {
-	openlog("Font Server", LOG_PID, LOG_LOCAL0);
+	openlog("xfs", LOG_PID, LOG_DAEMON);
 	log_open = TRUE;
 	return;
     }
@@ -109,13 +118,13 @@ InitErrors()
 	    dup2(i, 2);
 	    close(i);
 	} else {
-	    ErrorF("Can't open error file \"%s\"\n", ErrorFile);
+	    ErrorF("can't open error file \"%s\"\n", ErrorFile);
 	}
     }
 }
 
 void
-CloseErrors()
+CloseErrors(void)
 {
 #ifdef USE_SYSLOG
     if (UseSyslog) {
@@ -127,91 +136,73 @@ CloseErrors()
 }
 
 void
-Error(str)
-    char       *str;
+Error(char *str)
 {
-    /* XXX this should also go to syslog() */
+#ifdef USE_SYSLOG
+    if (UseSyslog) {
+	syslog(LOG_ERR, "%s: %s", str, strerror(errno));
+	return;
+    }
+#endif
     perror(str);
 }
 
 /*
  * used for informational messages
  */
-/* VARARGS1 */
 void
-NoticeF(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9)	/* limit of 10 args */
-    char       *f;
-    char       *s0,
-               *s1,
-               *s2,
-               *s3,
-               *s4,
-               *s5,
-               *s6,
-               *s7,
-               *s8,
-               *s9;
+NoticeF(char *f, ...)
 {
-
+    /* XXX should Notices just be ignored if not using syslog? */
+    va_list args;
+    va_start(args, f);
 #ifdef USE_SYSLOG
     if (UseSyslog) {
-	syslog(LOG_NOTICE, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+	vsyslog(LOG_NOTICE, f, args);
 	return;
     }
-#endif
-
-    /* XXX should Notices just be ignored if not using syslog? */
+#else
     fprintf(stderr, "%s notice: ", progname);
-    fprintf(stderr, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+    vfprintf(stderr, f, args);
+#endif /* USE_SYSLOG */
+    va_end(args);
 }
 
 /*
  * used for non-fatal error messages
  */
-/* VARARGS1 */
 void
-ErrorF(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9)	/* limit of 10 args */
-    char       *f;
-    char       *s0,
-               *s1,
-               *s2,
-               *s3,
-               *s4,
-               *s5,
-               *s6,
-               *s7,
-               *s8,
-               *s9;
+ErrorF(char * f, ...)
 {
-
+    va_list args;
+    va_start(args, f);
 #ifdef USE_SYSLOG
     if (UseSyslog) {
-	syslog(LOG_ERR, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+	vsyslog(LOG_WARNING, f, args);
 	return;
     }
-#endif
-
+#else
     fprintf(stderr, "%s error: ", progname);
-    fprintf(stderr, f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+    vfprintf(stderr, f, args);
+#endif
+    va_end(args);
 }
 
-/* VARARGS1 */
 void
-FatalError(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9)	/* limit of 10 args */
-    char       *f;
-    char       *s0,
-               *s1,
-               *s2,
-               *s3,
-               *s4,
-               *s5,
-               *s6,
-               *s7,
-               *s8,
-               *s9;
+FatalError(char * f, ...)
 {
-    ErrorF("Fatal font server error:\n");
-    ErrorF(f, s0, s1, s2, s3, s4, s5, s6, s7, s8, s9);
+    va_list args;
+    va_start(args, f);
+#ifdef USE_SYSLOG
+    if (UseSyslog) {
+	vsyslog(LOG_ERR, f, args);
+	return;
+    }
+#else
+    fprintf(stderr, "%s fatal error: ", progname);
+    vfprintf(stderr, f, args);
+#endif
+    va_end(args);
     abort_server();
     /* NOTREACHED */
 }

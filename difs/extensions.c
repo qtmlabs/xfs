@@ -46,11 +46,14 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/extensions.c,v 1.7 2001/12/14 20:01:34 dawes Exp $ */
 
 #include	"FSproto.h"
 #include	"misc.h"
 #include	"clientstr.h"
 #include	"extentst.h"
+#include	"difs.h"
+#include	"dispatch.h"
 
 #define	EXTENSION_BASE	128
 #define	EXTENSION_EVENT_BASE	64
@@ -58,9 +61,6 @@ in this Software without prior written authorization from The Open Group.
 #define	LAST_ERROR	255
 
 static ExtensionEntry **extensions = (ExtensionEntry **) NULL;
-extern int  (*ProcVector[]) ();
-extern int  (*SwappedProcVector[]) ();
-extern void (*ReplySwapVector[]) ();
 
 int         lastEvent = EXTENSION_EVENT_BASE;
 static int  lastError = FirstExtensionError;
@@ -68,15 +68,14 @@ static int  NumExtensions = 0;
 
 
 ExtensionEntry *
-AddExtension(name, num_events, num_errors, main_proc, smain_proc,
-	     closedown_proc, minorop_proc)
-    char       *name;
-    int         num_events;
-    int         num_errors;
-    int         (*main_proc) ();
-    int         (*smain_proc) ();
-    void        (*closedown_proc) ();
-    unsigned short (*minorop_proc) ();
+AddExtension(
+    char       *name,
+    int         num_events,
+    int         num_errors,
+    int         (*main_proc) (ClientPtr),
+    int         (*smain_proc) (ClientPtr),
+    void        (*closedown_proc) (struct _ExtensionEntry *),
+    unsigned short (*minorop_proc) (ClientPtr))
 {
     int         i;
     ExtensionEntry *ext,
@@ -135,9 +134,7 @@ AddExtension(name, num_events, num_errors, main_proc, smain_proc,
 }
 
 Bool
-AddExtensionAlias(alias, ext)
-    char       *alias;
-    ExtensionEntry *ext;
+AddExtensionAlias(char *alias, ExtensionEntry *ext)
 {
     char       *name;
     char      **aliases;
@@ -156,15 +153,13 @@ AddExtensionAlias(alias, ext)
 }
 
 unsigned short
-StandardMinorOpcode(client)
-    ClientPtr   client;
+StandardMinorOpcode(ClientPtr client)
 {
     return ((fsReq *) client->requestBuffer)->data;
 }
 
 unsigned short
-MinorOpcodeOfRequest(client)
-    ClientPtr   client;
+MinorOpcodeOfRequest(ClientPtr client)
 {
     unsigned char major;
 
@@ -177,7 +172,8 @@ MinorOpcodeOfRequest(client)
     return (*extensions[major]->MinorOpcode) (client);
 }
 
-CloseDownExtensions()
+void
+CloseDownExtensions(void)
 {
     int         i,
                 j;
@@ -198,13 +194,12 @@ CloseDownExtensions()
 }
 
 void
-InitExtensions()
+InitExtensions(void)
 {
 }
 
 int
-ProcQueryExtension(client)
-    ClientPtr   client;
+ProcQueryExtension(ClientPtr client)
 {
     fsQueryExtensionReply reply;
     int         i,
@@ -251,8 +246,7 @@ ProcQueryExtension(client)
 }
 
 int
-ProcListExtensions(client)
-    ClientPtr   client;
+ProcListExtensions(ClientPtr client)
 {
     fsListExtensionsReply reply;
     char       *bufptr,

@@ -67,14 +67,24 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/os/connection.c,v 3.25 2002/10/15 01:45:03 dawes Exp $ */
 
 #include	<X11/Xtrans.h>
+#include	<stdlib.h>
 #include	"misc.h"
 #include	<stdio.h>
 #include	<errno.h>
+#include	<X11/Xos.h>
+#ifndef Lynx
 #include	<sys/param.h>
 #include	<sys/socket.h>
+#ifndef __UNIXOS2__
 #include	<sys/uio.h>
+#endif
+#else
+#include	<socket.h>
+#include	<uio.h>
+#endif
 #include	<signal.h>
 
 #include	"FS.h"
@@ -85,9 +95,12 @@ in this Software without prior written authorization from The Open Group.
 #include	"globals.h"
 #include	"osstruct.h"
 #include	"servermd.h"
+#include	"dispatch.h"
+#include	"fsevents.h"
 
-#ifdef X_NOT_STDC_ENV
-extern int errno;
+#ifdef __UNIXOS2__
+#define _NFILE OPEN_MAX
+#define select(n,r,w,x,t) os2PseudoSelect(n,r,w,x,t)
 #endif
 
 
@@ -101,7 +114,6 @@ fd_set      LastSelectMask;
 fd_set      ClientsWithInput;
 fd_set      ClientsWriteBlocked;
 fd_set      OutputPending;
-extern long MaxClients;
 long        OutputBufferSize = BUFSIZE;
 
 Bool        NewOutputPending;
@@ -113,31 +125,13 @@ XtransConnInfo 	*ListenTransConns = NULL;
 int	       	*ListenTransFds = NULL;
 int		ListenTransCount;
 
-extern ClientPtr NextAvailableClient();
 
-#ifdef SIGNALRETURNSINT
-#define SIGVAL int
-#else
-#define SIGVAL void
-#endif
-
-extern SIGVAL AutoResetServer();
-extern SIGVAL GiveUp();
-extern SIGVAL ServerReconfig();
-extern SIGVAL ServerCacheFlush();
-extern SIGVAL CleanupChild();
-
-extern void FreeOsBuffers();
-
-static void error_conn_max();
-static void close_fd();
+static void error_conn_max(XtransConnInfo trans_conn);
+static void close_fd(OsCommPtr oc);
 
 
 static XtransConnInfo
-lookup_trans_conn (fd)
-
-int fd;
-
+lookup_trans_conn (int fd)
 {
     if (ListenTransFds)
     {
@@ -150,7 +144,8 @@ int fd;
     return (NULL);
 }
 
-StopListening()
+void
+StopListening(void)
 {
     int i;
 
@@ -173,14 +168,9 @@ StopListening()
  * only called when server first started
  */
 void
-CreateSockets(old_listen_count, old_listen)
-
-int 	     old_listen_count;
-OldListenRec *old_listen;
-
+CreateSockets(int old_listen_count, OldListenRec *old_listen)
 {
-    int         request,
-                i;
+    int	i;
 
     FD_ZERO(&AllSockets);
     FD_ZERO(&AllClients);
@@ -197,11 +187,11 @@ OldListenRec *old_listen;
 #ifdef _SC_OPEN_MAX
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
 #else
-#ifdef hpux
+#if defined(hpux) || defined(__UNIXOS2__)
     lastfdesc = _NFILE - 1;
 #else
     lastfdesc = getdtablesize() - 1;
-#endif
+#endif				/* hpux */
 #endif
 
     if (lastfdesc > MAXSOCKS) {
@@ -238,7 +228,7 @@ OldListenRec *old_listen;
 		ListenTransFds[ListenTransCount] = old_listen[i].fd;
 		FD_SET (old_listen[i].fd, &WellKnownConnections);
 
-		NoticeF("Reusing existing file descriptor %d\n",
+		NoticeF("reusing existing file descriptor %d\n",
 		    old_listen[i].fd);
 
 		ListenTransCount++;
@@ -267,8 +257,7 @@ OldListenRec *old_listen;
     }
 
     if (! XFD_ANYSET(&WellKnownConnections))
-	FatalError("Cannot establish any listening sockets\n");
-
+	FatalError("cannot establish any listening sockets\n");
 
     /* set up all the signal handlers */
     signal(SIGPIPE, SIG_IGN);
@@ -285,7 +274,8 @@ OldListenRec *old_listen;
 /*
  * called when server cycles
  */
-ResetSockets()
+void
+ResetSockets(void)
 {
 }
 
@@ -302,7 +292,7 @@ CloseSockets(void)
  * accepts new connections
  */
 void
-MakeNewConnections()
+MakeNewConnections(void)
 {
     fd_mask     readyconnections;
     int         curconn;
@@ -323,10 +313,10 @@ MakeNewConnections()
     for (i = MINCLIENT; i < currentMaxClients; i++) {
 	if ((client = clients[i]) != NullClient) {
 	    oc = (OsCommPtr) client->osPrivate;
-	    if (oc && (oc->conn_time != 0) &&
-		    (connect_time - oc->conn_time) >= TimeOutValue ||
-		    client->noClientException != FSSuccess &&
-		    client->clientGone != CLIENT_GONE)
+	    if ((oc && (oc->conn_time != 0) &&
+		    (connect_time - oc->conn_time) >= TimeOutValue) ||
+		     ((client->noClientException != FSSuccess) &&
+		      (client->clientGone != CLIENT_GONE)))
 		CloseDownClient(client);
 	}
     }
@@ -373,13 +363,10 @@ MakeNewConnections()
     }
 }
 
-#define	NOROOM	"Maximum number of clients reached"
+#define	NOROOM	"maximum number of clients reached"
 
 static void
-error_conn_max(trans_conn)
-
-XtransConnInfo trans_conn;
-
+error_conn_max(XtransConnInfo trans_conn)
 {
     int fd = _FontTransGetConnectionNumber (trans_conn);
     fsConnSetup conn;
@@ -443,8 +430,7 @@ XtransConnInfo trans_conn;
 }
 
 static void
-close_fd(oc)
-    OsCommPtr   oc;
+close_fd(OsCommPtr oc)
 {
     int         fd = oc->fd;
 
@@ -461,7 +447,8 @@ close_fd(oc)
     fsfree(oc);
 }
 
-CheckConnections()
+void
+CheckConnections(void)
 {
     fd_set      mask;
     fd_set      tmask;
@@ -487,8 +474,8 @@ CheckConnections()
     }
 }
 
-CloseDownConnection(client)
-    ClientPtr   client;
+void
+CloseDownConnection(ClientPtr client)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
 
@@ -508,8 +495,8 @@ CloseDownConnection(client)
 
 static fd_set IgnoredClientsWithInput;
 
-IgnoreClient(client)
-    ClientPtr   client;
+void
+IgnoreClient(ClientPtr client)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
     int         connection = oc->fd;
@@ -530,8 +517,8 @@ IgnoreClient(client)
  *    Adds one client back into the input masks.
  ****************/
 
-AttendClient(client)
-    ClientPtr   client;
+void
+AttendClient(ClientPtr client)
 {
     OsCommPtr   oc = (OsCommPtr) client->osPrivate;
     int         connection = oc->fd;
@@ -546,15 +533,15 @@ AttendClient(client)
 /*
  * figure out which clients need to be toasted
  */
-ReapAnyOldClients()
+void
+ReapAnyOldClients(void)
 {
     int         i;
     long        cur_time = GetTimeInMillis();
     ClientPtr   client;
-    extern void SendKeepAliveEvent();
 
 #ifdef DEBUG
-    fprintf(stderr, "Looking for clients to reap\n");
+    fprintf(stderr, "looking for clients to reap\n");
 #endif
 
     for (i = MINCLIENT; i < currentMaxClients; i++) {

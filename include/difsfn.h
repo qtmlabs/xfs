@@ -44,6 +44,7 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/include/difsfn.h,v 1.5 2001/12/14 20:01:37 dawes Exp $ */
 
 #ifndef _DIFSFONT_H_
 #define _DIFSFONT_H_
@@ -52,12 +53,5 @@ in this Software without prior written authorization from The Open Group.
 
 typedef struct _ClientFont *ClientFontPtr;
 typedef struct _FontIDList *FontIDListPtr;
-typedef struct _font_name_cache FontNameCachePtr;
-
-#define	NullClientFont		((ClientFontPtr)0)
-
-extern FontPtr FindCachedFontName();
-extern int  CacheFontName();
-extern void RemoveBlockAndWakeupHandlers();
 
 #endif				/* _DIFSFONT_H_ */

@@ -47,6 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)osdep.h	4.1	5/2/91
  *
  */
+/* $XFree86: xc/programs/xfs/os/osdep.h,v 3.12 2002/05/31 18:46:12 dawes Exp $ */
 
 #ifndef _OSDEP_H_
 #define	_OSDEP_H_
@@ -54,7 +55,7 @@ in this Software without prior written authorization from The Open Group.
 #define	BOTIMEOUT	200	/* in milliseconds */
 #define	BUFSIZE		4096
 #define	BUFWATERMARK	8192
-#define	MAXBUFSIZE	(1 << 18)
+#define	MAXBUFSIZE	(1 << 15)
 
 #ifndef sgi	    /* SGI defines OPEN_MAX in a useless way */
 #ifndef X_NOT_POSIX
@@ -69,10 +70,20 @@ in this Software without prior written authorization from The Open Group.
 #endif
 
 #ifndef OPEN_MAX
+#if defined(__UNIXOS2__) || defined(__QNX__)
+#define OPEN_MAX 256
+#else
 #ifdef SVR4
+#ifdef SCO324
+#define OPEN_MAX sysconf(_SC_OPEN_MAX)
+#else
 #define OPEN_MAX 128
+#endif
 #else
 #include <sys/param.h>
+#ifdef __GNU__
+#define OPEN_MAX (sysconf(_SC_OPEN_MAX))
+#endif /*__GNU__*/
 #ifndef OPEN_MAX
 #if defined(NOFILE) && !defined(NOFILES_MAX)
 #define OPEN_MAX NOFILE
@@ -82,16 +93,19 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #endif
 #endif
+#endif
 
+#ifdef __GNU__
+#define MAXSOCKS 128
+#else /*__GNU__*/
 #if OPEN_MAX <= 128		/* 128 is value of MAXCLIENTS */
 #define MAXSOCKS (OPEN_MAX - 1)
 #else
 #define MAXSOCKS 128
 #endif
+#endif /*__GNU__*/
 
-#ifndef NULL
-#define NULL 0
-#endif
+#include <stddef.h>
 
 typedef struct _connectionInput {
     struct _connectionInput *next;
@@ -116,8 +130,5 @@ typedef struct _osComm {
     long        conn_time;	/* timestamp if not established, else 0  */
     struct _XtransConnInfo *trans_conn; /* transport connection object */
 }           OsCommRec, *OsCommPtr;
-
-extern Bool CloneSelf;
-extern Bool UseSyslog;
 
 #endif				/* _OSDEP_H_ */

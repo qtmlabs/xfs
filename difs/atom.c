@@ -50,9 +50,11 @@ in this Software without prior written authorization from The Open Group.
  * @(#)atom.c	4.1	5/2/91
  *
  */
+/* $XFree86: xc/programs/xfs/difs/atom.c,v 3.4 2001/12/14 20:01:33 dawes Exp $ */
 
 #include "misc.h"
-#include "resource.h"
+#include "fsresource.h"
+#include "difs.h"
 
 #define InitialTableSize 100
 #define	FSA_LAST_PREDEFINED	0 /* only None is predefined */
@@ -71,10 +73,7 @@ static unsigned long tableLength;
 static NodePtr *nodeTable;
 
 Atom
-MakeAtom(string, len, makeit)
-    char       *string;
-    unsigned    len;
-    Bool        makeit;
+MakeAtom(char *string, unsigned int len, Bool makeit)
 {
     register NodePtr *np;
     unsigned    i;
@@ -142,15 +141,14 @@ MakeAtom(string, len, makeit)
 	return None;
 }
 
-ValidAtom(atom)
-    Atom        atom;
+int
+ValidAtom(Atom atom)
 {
     return (atom != None) && (atom <= lastAtom);
 }
 
 char       *
-NameForAtom(atom)
-    Atom        atom;
+NameForAtom(Atom atom)
 {
     NodePtr     node;
 
@@ -162,14 +160,13 @@ NameForAtom(atom)
 }
 
 static void
-atom_error()
+atom_error(void)
 {
     FatalError("initializing atoms\n");
 }
 
 static void
-free_atom(patom)
-    NodePtr     patom;
+free_atom(NodePtr patom)
 {
     if (patom->left)
 	free_atom(patom->left);
@@ -181,7 +178,7 @@ free_atom(patom)
 }
 
 static void
-free_all_atoms()
+free_all_atoms(void)
 {
     if (atomRoot == (NodePtr) NULL)
 	return;
@@ -193,7 +190,7 @@ free_all_atoms()
 }
 
 void
-InitAtoms()
+InitAtoms(void)
 {
     free_all_atoms();
     tableLength = InitialTableSize;

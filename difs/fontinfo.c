@@ -46,6 +46,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/fontinfo.c,v 1.11 2002/10/15 01:45:02 dawes Exp $ */
 
 #include        "FS.h"
 #include        "FSproto.h"
@@ -56,13 +57,15 @@ in this Software without prior written authorization from The Open Group.
 #include        "fontstruct.h"
 #include        "closestr.h"
 #include        "globals.h"
-
-extern void (*ReplySwapVector[NUM_PROC_VECTORS]) ();
+#include	"difs.h"
+#include	"dispatch.h"
+#include	<swapreq.h>
+#include	<swaprep.h>
 
 void
-CopyCharInfo(ci, dst)
-    CharInfoPtr ci;
-    fsXCharInfo *dst;
+CopyCharInfo(
+    CharInfoPtr ci,
+    fsXCharInfo *dst)
 {
     xCharInfo  *src = &ci->metrics;
 
@@ -76,9 +79,9 @@ CopyCharInfo(ci, dst)
 
 
 int
-convert_props(pinfo, props)
-    FontInfoPtr pinfo;
-    fsPropInfo **props;
+convert_props(
+    FontInfoPtr pinfo,
+    fsPropInfo **props)
 {
     int i;
     int data_len, cur_off;
@@ -93,7 +96,7 @@ convert_props(pinfo, props)
     for (i = 0; i < pinfo->nprops; i++)
     {
 	data_len += strlen(NameForAtom(pinfo->props[i].name));
-	if (pinfo->isStringProp[i])
+	if (NULL != pinfo->isStringProp && pinfo->isStringProp[i])
 	    data_len += strlen(NameForAtom(pinfo->props[i].value));
     }
 
@@ -105,7 +108,7 @@ convert_props(pinfo, props)
 			    + data_len);
     if (!ptr)
 	return AllocError;
-    string_base = ptr + SIZEOF(fsPropInfo) + SIZEOF(fsPropOffset) * pinfo->nprops;
+    string_base = (char *)ptr + SIZEOF(fsPropInfo) + SIZEOF(fsPropOffset) * pinfo->nprops;
   
     /*
      * copy in the header
@@ -116,21 +119,21 @@ convert_props(pinfo, props)
     /*
      * compute the offsets and copy the string data
      */
-    off_ptr = ptr + SIZEOF(fsPropInfo);
+    off_ptr = (char *)ptr + SIZEOF(fsPropInfo);
     cur_off = 0;
     for (i = 0; i < pinfo->nprops; i++)
     {
 	local_offset.name.position = cur_off;
 	str = NameForAtom(pinfo->props[i].name);
 	local_offset.name.length = strlen(str);
-	memmove( string_base+cur_off, str, local_offset.name.length);
+	memmove( (char *)string_base+cur_off, str, local_offset.name.length);
 	cur_off += local_offset.name.length;
-	if (pinfo->isStringProp[i])
+	if (NULL != pinfo->isStringProp && pinfo->isStringProp[i])
 	{
 	    local_offset.value.position = cur_off;
 	    str = NameForAtom(pinfo->props[i].value);
 	    local_offset.value.length = strlen(str);
-	    memmove( string_base+cur_off, str, local_offset.value.length);
+	    memmove( (char *)string_base+cur_off, str, local_offset.value.length);
 	    cur_off += local_offset.value.length;
 	    local_offset.type = PropTypeString;
 	} else {
@@ -139,7 +142,7 @@ convert_props(pinfo, props)
 	    local_offset.type = PropTypeSigned;
 	}
 	memmove( off_ptr, &local_offset, SIZEOF(fsPropOffset));
-	off_ptr += SIZEOF(fsPropOffset);
+	off_ptr = (char *)off_ptr + SIZEOF(fsPropOffset);
     }
 
     assert(off_ptr == string_base);
@@ -155,18 +158,18 @@ convert_props(pinfo, props)
  * a list of ranges
  */
 static fsRange *
-build_range(type, src, item_size, num, all, pfi)
-    Bool        type;
-    pointer     src;
-    int         item_size;
-    int        *num;
-    Bool       *all;
-    FontInfoPtr	pfi;
+build_range(
+    Bool        type,
+    pointer     src,
+    int         item_size,
+    int        *num,
+    Bool       *all,
+    FontInfoPtr	pfi)
 {
     fsRange    *new = (fsRange *) 0,
                *np;
     unsigned long src_num;
-    int         i;
+    unsigned long i;
 
     if (type) {			/* range flag is set, deal with data as a list
 				 * of char2bs */
@@ -204,7 +207,7 @@ build_range(type, src, item_size, num, all, pfi)
 	*num = np - new;
 	return new;
     } else {			/* deal with data as a list of characters */
-	pointer     pp = src;
+	unsigned char      *pp = src;
 
 	src_num = *num;
 	np = new = (fsRange *) fsalloc(SIZEOF(fsRange) * src_num);
@@ -242,9 +245,7 @@ build_range(type, src, item_size, num, all, pfi)
  * the bytes of char2b backwards
  */
 static void
-swap_char2b (values, number)
-    fsChar2b *values;
-    int number;
+swap_char2b (fsChar2b *values, int number)
 {
     fsChar2b temp;
     int i;
@@ -256,11 +257,10 @@ swap_char2b (values, number)
     }
 }
 
+#define pPtr ((QEclosurePtr) data)
 
 static Bool
-do_query_extents(client, c)
-    ClientPtr   client;
-    QEclosurePtr c;
+do_query_extents(ClientPtr client, pointer data)
 {
     int         err;
     unsigned long lendata,
@@ -268,55 +268,55 @@ do_query_extents(client, c)
     fsXCharInfo *extents;
     fsQueryXExtents8Reply reply;
 
-    err = GetExtents (c->client, c->pfont,
-		     c->flags, c->nranges, c->range, &num_extents, &extents);
+    err = GetExtents (pPtr->client, pPtr->pfont,
+		     pPtr->flags, pPtr->nranges, pPtr->range, &num_extents, &extents);
     if (err == Suspended) {
-	if (!c->slept) {
-	    c->pfont->unload_glyphs = 0;  /* Not a safe call for this font */
-	    c->slept = TRUE;
-	    ClientSleep(client, do_query_extents, (pointer) c);
+	if (!pPtr->slept) {
+	    pPtr->pfont->unload_glyphs = 0;  /* Not a safe call for this font */
+	    pPtr->slept = TRUE;
+	    ClientSleep(client, do_query_extents, (pointer) pPtr);
 	}
 	return TRUE;
     }
     if (err != Successful) {
-	SendErrToClient(c->client, FontToFSError(err), (pointer) 0);
+	SendErrToClient(pPtr->client, FontToFSError(err), (pointer) 0);
 	goto finish;
     }
     reply.type = FS_Reply;
-    reply.sequenceNumber = c->client->sequence;
+    reply.sequenceNumber = pPtr->client->sequence;
     reply.num_extents = num_extents;
     lendata = SIZEOF(fsXCharInfo) * num_extents;
     reply.length = (SIZEOF(fsQueryXExtents8Reply) + lendata) >> 2;
     if (client->swapped)
 	SwapExtents(extents, num_extents);
-    WriteReplyToClient(c->client, SIZEOF(fsQueryXExtents8Reply), &reply);
-    (void) WriteToClient(c->client, lendata, (char *) extents);
+    WriteReplyToClient(pPtr->client, SIZEOF(fsQueryXExtents8Reply), &reply);
+    (void) WriteToClient(pPtr->client, lendata, (char *) extents);
     fsfree((char *) extents);
 finish:
-    if (c->slept)
-	ClientWakeup(c->client);
-    if (c->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
-	(*c->pfont->unload_glyphs)(c->pfont);
-    fsfree(c->range);
-    fsfree(c);
+    if (pPtr->slept)
+	ClientWakeup(pPtr->client);
+    if (pPtr->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
+	(*pPtr->pfont->unload_glyphs)(pPtr->pfont);
+    fsfree(pPtr->range);
+    fsfree(pPtr);
     return TRUE;
 }
 
 int
-QueryExtents(client, cfp, item_size, nranges, range_flag, range_data)
-    ClientPtr   client;
-    ClientFontPtr cfp;
-    int         item_size;
-    int         nranges;
-    Bool        range_flag;
-    pointer     range_data;
+QueryExtents(
+    ClientPtr   client,
+    ClientFontPtr cfp,
+    int         item_size,
+    int         nranges,
+    Bool        range_flag,
+    pointer     range_data)
 {
     QEclosurePtr c;
     fsRange    *fixed_range;
     Bool        all_glyphs = FALSE;
 
     if (item_size == 2  &&  client->major_version == 1)
-	swap_char2b (range_data, nranges);
+	swap_char2b ((fsChar2b *)range_data, nranges);
 
     fixed_range = build_range(range_flag, range_data, item_size,
 			      &nranges, &all_glyphs, &cfp->font->info);
@@ -336,81 +336,83 @@ QueryExtents(client, cfp, item_size, nranges, range_flag, range_data)
     c->nranges = nranges;
     c->range = fixed_range;
 
-    (void) do_query_extents(client, c);
+    (void) do_query_extents(client, (pointer) c);
     return FSSuccess;
 }
 
+#undef pPtr
+#define pPtr ((QBclosurePtr) data)
+
 static Bool
-do_query_bitmaps(client, c)
-    ClientPtr   client;
-    QBclosurePtr c;
+do_query_bitmaps(ClientPtr client, pointer data)
 {
     int         err;
-    unsigned long num_glyphs, data_size;
+    unsigned long num_glyphs;
+    int data_size;
     fsOffset32   *offsets;
     pointer     glyph_data;
     fsQueryXBitmaps8Reply reply;
     int		freedata;
 
-    err = GetBitmaps (c->client, c->pfont, c->format,
-				    c->flags, c->nranges, c->range,
+    err = GetBitmaps (pPtr->client, pPtr->pfont, pPtr->format,
+				    pPtr->flags, pPtr->nranges, pPtr->range,
 			     &data_size, &num_glyphs, &offsets, &glyph_data, &freedata);
 
     if (err == Suspended) {
-	if (!c->slept) {
-	    c->pfont->unload_glyphs = 0;  /* Not a safe call for this font */
-	    c->slept = TRUE;
-	    ClientSleep(client, do_query_bitmaps, (pointer) c);
+	if (!pPtr->slept) {
+	    pPtr->pfont->unload_glyphs = 0;  /* Not a safe call for this font */
+	    pPtr->slept = TRUE;
+	    ClientSleep(client, do_query_bitmaps, (pointer) pPtr);
 	}
 	return TRUE;
     }
     if (err != Successful) {
-	SendErrToClient(c->client, FontToFSError(err), (pointer) 0);
+	SendErrToClient(pPtr->client, FontToFSError(err), (pointer) 0);
 	goto finish;
     }
     reply.type = FS_Reply;
-    reply.sequenceNumber = c->client->sequence;
+    reply.sequenceNumber = pPtr->client->sequence;
     reply.replies_hint = 0;
     reply.num_chars = num_glyphs;
     reply.nbytes = data_size;
     reply.length = (SIZEOF(fsQueryXBitmaps8Reply) + data_size +
 		    (SIZEOF(fsOffset32) * num_glyphs) + 3) >> 2;
 
-    WriteReplyToClient(c->client, SIZEOF(fsQueryXBitmaps8Reply), &reply);
+    WriteReplyToClient(pPtr->client, SIZEOF(fsQueryXBitmaps8Reply), &reply);
     if (client->swapped)
 	SwapLongs((long *)offsets, num_glyphs * 2);
-    (void) WriteToClient(c->client, (num_glyphs * SIZEOF(fsOffset32)),
+    (void) WriteToClient(pPtr->client, (num_glyphs * SIZEOF(fsOffset32)),
 			 (char *) offsets);
-    (void) WriteToClient(c->client, data_size, (char *) glyph_data);
+    (void) WriteToClient(pPtr->client, data_size, (char *) glyph_data);
     fsfree((char *) offsets);
     if (freedata)
 	fsfree((char *) glyph_data);
 finish:
-    if (c->slept)
-	ClientWakeup(c->client);
-    if (c->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
-	(*c->pfont->unload_glyphs)(c->pfont);
-    fsfree(c->range);
-    fsfree(c);
+    if (pPtr->slept)
+	ClientWakeup(pPtr->client);
+    if (pPtr->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
+	(*pPtr->pfont->unload_glyphs)(pPtr->pfont);
+    fsfree(pPtr->range);
+    fsfree(pPtr);
     return TRUE;
 }
 
 int
-QueryBitmaps(client, cfp, item_size, format, nranges, range_flag, range_data)
-    ClientPtr   client;
-    ClientFontPtr cfp;
-    int         item_size;
-    fsBitmapFormat format;
-    int         nranges;
-    Bool        range_flag;
-    pointer     range_data;
+QueryBitmaps(
+    ClientPtr   client,
+    ClientFontPtr cfp,
+    int         item_size,
+    fsBitmapFormat format,
+    int         nranges,
+    Bool        range_flag,
+    pointer     range_data)
 {
     QBclosurePtr c;
     fsRange    *fixed_range;
     Bool        all_glyphs = FALSE;
 
     if (item_size == 2  &&  client->major_version == 1)
-	swap_char2b (range_data, nranges);
+	swap_char2b ((fsChar2b *)range_data, nranges);
 
     fixed_range = build_range(range_flag, range_data, item_size,
 			      &nranges, &all_glyphs, &cfp->font->info);
@@ -430,6 +432,6 @@ QueryBitmaps(client, cfp, item_size, format, nranges, range_flag, range_data)
     c->range = fixed_range;
     c->format = format;
 
-    (void) do_query_bitmaps(client, c);
+    (void) do_query_bitmaps(client, (pointer) c);
     return FSSuccess;
 }

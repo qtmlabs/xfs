@@ -43,11 +43,17 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/include/client.h,v 1.7 2001/12/14 20:01:37 dawes Exp $ */
 
 #ifndef	_CLIENT_H_
 #define	_CLIENT_H_
 
+#ifndef _XTYPEDEF_CLIENTPTR
 typedef struct _Client *ClientPtr;
+#define _XTYPEDEF_CLIENTPTR
+#endif
+
+#include <misc.h>
 
 extern ClientPtr *clients;
 extern ClientPtr serverClient;
@@ -61,8 +67,6 @@ extern ClientPtr serverClient;
 #define	CLIENT_GONE		1
 #define	CLIENT_AGED		2
 #define	CLIENT_TIMED_OUT	4
-
-extern int  currentMaxClients;
 
 #define	REQUEST(type)	\
 	type *stuff = (type *)client->requestBuffer
@@ -101,17 +105,11 @@ extern int  currentMaxClients;
 	else (void) WriteToClient(client, (int)(size), (char *)(pbuf));
 
 
-extern void SendErrToClient();
-
-extern void	SwapFontHeader();
-extern void	SwapExtents();
-extern void	SwapPropInfo();
-extern void	SwapCharInfo();
-extern void	WriteSConnSetup();
-extern void	WriteSConnectionInfo();
-extern void	SErrorEvent();
-
 typedef struct _WorkQueue       *WorkQueuePtr;
-extern void	ProcessWorkQueue();
+
+#include <difsutils.h> /* for ProcessWorkQueue(void) */
+
+extern int  (*ProcVector[]) (ClientPtr);
+extern int  (*SwappedProcVector[]) (ClientPtr);
 
 #endif				/* _CLIENT_H_ */

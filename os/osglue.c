@@ -44,9 +44,10 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDId: @(#)osglue.c,v 4.6 1991/07/09 14:07:30 lemke Exp $
+ * $NCDXorg: @(#)osglue.c,v 4.6 1991/07/09 14:07:30 lemke Exp $
  *
  */
+/* $XFree86: xc/programs/xfs/os/osglue.c,v 3.19 2002/10/19 20:04:20 herrb Exp $ */
 
 /*
  * this is miscellaneous OS specific stuff.
@@ -57,11 +58,14 @@ in this Software without prior written authorization from The Open Group.
 #include <X11/Xtrans.h>
 #include "osstruct.h"
 #include <stdio.h>
+#include <stdlib.h>
 #define  XK_LATIN1
 #include <X11/keysymdef.h>
+#ifdef __UNIXOS2__
+#define _NFILE 256
+#endif
 
 Bool        drone_server = FALSE;
-extern Bool CloneSelf;
 extern char *progname;
 extern char *configfilename;
 
@@ -85,10 +89,7 @@ extern int		ListenTransCount;
 static char *catalogue_name = "all";
 
 static Bool			/* stolen from R4 Match() */
-pattern_match(pat, plen, string)
-    char       *pat;
-    int         plen;
-    char       *string;
+pattern_match(char *pat, int plen, char *string)
 {
     register int i,
                 l;
@@ -148,7 +149,7 @@ pattern_match(pat, plen, string)
     if (m < j)
 	return 0;
     l = (l + m) - j;
-    while (cp = pat[i]) {
+    while ((cp = pat[i])) {
 	if ((cp != string[l]) && (cp != XK_question))
 	    return 0;
 	l++;
@@ -158,12 +159,8 @@ pattern_match(pat, plen, string)
 }
 
 int
-ListCatalogues(pattern, patlen, maxnames, catalogues, len)
-    char       *pattern;
-    int         patlen;
-    int         maxnames;
-    char      **catalogues;
-    int        *len;
+ListCatalogues(char *pattern, int patlen, int maxnames, 
+	       char **catalogues, int *len)
 {
     int         count = 0;
     char       *catlist = NULL;
@@ -192,9 +189,7 @@ bail:
  */
 
 int
-ValidateCatalogues(num, cats)
-    int        *num;
-    char       *cats;
+ValidateCatalogues(int *num, char *cats)
 {
     char       *c = cats;
     int         i,
@@ -212,8 +207,7 @@ ValidateCatalogues(num, cats)
 }
 
 int
-SetAlternateServers(list)
-    char       *list;
+SetAlternateServers(char *list)
 {
     char       *t,
                *st;
@@ -272,8 +266,7 @@ SetAlternateServers(list)
 }
 
 int
-ListAlternateServers(svrs)
-    AlternateServerPtr *svrs;
+ListAlternateServers(AlternateServerPtr *svrs)
 {
     *svrs = alt_servers;
     return num_alts;
@@ -285,8 +278,9 @@ ListAlternateServers(svrs)
  * socket open, and sends it to itself.  the child stops listening,
  * and becomes a drone, hanging out till it loses all its clients.
  */
+
 int
-CloneMyself()
+CloneMyself(void)
 {
     int         child;
     char        old_listen_arg[256];
@@ -294,12 +288,16 @@ CloneMyself()
     int         i, j;
     int         lastfdesc;
     char	portnum[20];
-    extern int	ListenPort;
 
     assert(!drone_server);	/* a drone shouldn't hit this */
 
     if (!CloneSelf)
 	return -1;
+
+#ifdef __UNIXOS2__
+    NoticeF("cloning of font server not supported under OS/2!\n");
+    return(-1);
+#endif
 
     old_listen_arg[0] = '\0';
 
@@ -309,18 +307,19 @@ CloneMyself()
 #ifdef _SC_OPEN_MAX
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
 #else
-#ifdef hpux
+#if defined(hpux) || defined(__UNIXOS2__)
     lastfdesc = _NFILE - 1;
 #else
     lastfdesc = getdtablesize() - 1;
-#endif
+#endif				/* hpux */
 #endif
 
     NoticeF("attempting clone...\n");
+    chdir("/");
     child = fork();
     if (child == -1) {
 	/* failed to fork */
-	ErrorF("Clone failed to fork()\n");
+	ErrorF("clone failed to fork()\n");
 	return -1;
     }
     /*
@@ -330,11 +329,11 @@ CloneMyself()
      */
     if (child == 0) {
 	StopListening();
-	NoticeF("Clone: child becoming drone\n");
+	NoticeF("clone: child becoming drone\n");
 	drone_server = TRUE;
 	return 1;
     } else {			/* parent */
-	NoticeF("Clone: parent revitalizing as %s\n", progname);
+	NoticeF("clone: parent revitalizing as %s\n", progname);
 	CloseErrors();
 	/* XXX should we close stdio as well? */
 	for (i = 3; i < lastfdesc; i++)
@@ -373,12 +372,13 @@ CloneMyself()
 		   "-ls", old_listen_arg,
 		   "-cf", configfilename,
 		   "-port", portnum,
-		   NULL);
+		   (void *)NULL);
 
 	InitErrors();		/* reopen errors, since we don't want to lose
 				 * this */
-	Error("Clone failed");
-	FatalError("Failed to clone self\n");
+	Error("clone failed");
+	FatalError("failed to clone self\n");
     }
     /* NOTREACHED */
+    return 0;
 }

@@ -50,12 +50,14 @@ in this Software without prior written authorization from The Open Group.
  * @(#)osinit.c	4.3	5/7/91
  *
  */
+/* $XFree86: xc/programs/xfs/os/osinit.c,v 1.5 2001/12/14 20:01:41 dawes Exp $ */
 
 #include	"os.h"
 
 extern long LastReapTime;
 
-OsInit()
+void
+OsInit(void)
 {
     LastReapTime = GetTimeInMillis();
     OsInitAllocator ();

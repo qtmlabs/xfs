@@ -46,23 +46,30 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
+/* $XFree86: xc/programs/xfs/difs/dispatch.c,v 3.13 2002/10/15 01:45:02 dawes Exp $ */
+
+#include	<stdlib.h>
+#include	"dispatch.h"
+#include	"swapreq.h"
+#include	"swaprep.h"
 
 #include	"FS.h"
 #include	"FSproto.h"
 #include	"clientstr.h"
 #include	"authstr.h"
-#include	"misc.h"
 #include	"osstruct.h"
 #include	"extentst.h"
 #include	"globals.h"
-#include	"resource.h"
+#include	"fsresource.h"
 #include	"difsfnst.h"
 #include	"fontstruct.h"
 #include	"site.h"
-#include	"events.h"
+#include	"fsevents.h"
 #include	"cache.h"
+#include	"globals.h"
+#include	"difs.h"
 
-static void kill_all_clients();
+static void kill_all_clients(void);
 
 char        dispatchException = 0;
 char        isItTimeToYield;
@@ -79,16 +86,6 @@ extern char *configfilename;
 
 extern Bool drone_server;
 
-extern void NotImplemented();
-
-extern int  (*InitialVector[3]) ();
-extern int  (*ProcVector[NUM_PROC_VECTORS]) ();
-extern int  (*SwappedProcVector[NUM_PROC_VECTORS]) ();
-extern void (*EventSwapVector[NUM_EVENT_VECTORS]) ();
-extern void (*ReplySwapVector[NUM_PROC_VECTORS]) ();
-
-extern void Swap32Write(), Swap16Write(), CopySwap16Write();
-
 #define	MAJOROP	((fsReq *)client->requestBuffer)->reqType
 
 #define	ALL_FORMAT_BITS	(BitmapFormatByteOrderMask | \
@@ -103,7 +100,8 @@ extern void Swap32Write(), Swap16Write(), CopySwap16Write();
 				 BitmapFormatMaskScanLinePad | \
 				 BitmapFormatMaskScanLineUnit)
 
-Dispatch()
+void
+Dispatch(void)
 {
     int         nready,
                 result;
@@ -147,8 +145,10 @@ Dispatch()
 		    op = MAJOROP;
 		    if (op >= NUM_PROC_VECTORS)
 			result = ProcBadRequest (client);
-		    else
+		    else if (*client->requestVector[op] != NULL)
 			result = (*client->requestVector[op]) (client);
+		    else
+			result = FSBadRequest;
 		}
 		if (result != FSSuccess) {
 		    if (client->noClientException != FSSuccess)
@@ -165,7 +165,7 @@ Dispatch()
 	if (dispatchException) {
 	    /* re-read the config file */
 	    if (dispatchException & DE_RECONFIG) {
-		NoticeF("Re-reading config file\n");
+		NoticeF("re-reading config file\n");
 		if (ReadConfigFile(configfilename) != FSSuccess)
 		    ErrorF("couldn't parse config file\n");
 		SetConfigValues();
@@ -186,6 +186,8 @@ Dispatch()
 	    if (dispatchException & DE_TERMINATE) {
 		NoticeF("terminating\n");
 		kill_all_clients();
+		CloseSockets();
+		CloseErrors();
 		exit(0);
 		break;
 	    }
@@ -196,8 +198,7 @@ Dispatch()
 }
 
 int
-ProcInitialConnection(client)
-    ClientPtr   client;
+ProcInitialConnection(ClientPtr client)
 {
     REQUEST(fsFakeReq);
     fsConnClientPrefix *prefix;
@@ -209,8 +210,12 @@ ProcInitialConnection(client)
 	return (client->noClientException = -2);
     if (((*(char *) &whichbyte) && (prefix->byteOrder == 'B')) ||
 	    (!(*(char *) &whichbyte) && (prefix->byteOrder == 'l'))) {
+	int status;
+
 	client->swapped = TRUE;
-	SwapConnClientPrefix(prefix);
+	status = SwapConnClientPrefix(client, prefix);
+	if (status != FSSuccess)
+	    return (status);
     }
     client->major_version = prefix->major_version;
     client->minor_version = prefix->minor_version;
@@ -224,14 +229,13 @@ ProcInitialConnection(client)
 }
 
 int
-ProcEstablishConnection(client)
-    ClientPtr   client;
+ProcEstablishConnection(ClientPtr client)
 {
     fsConnClientPrefix *prefix;
     fsConnSetup csp;
     int         ret;
-    pointer     auth_data,
-                ad;
+    pointer     auth_data;
+    char       *ad;
     char       *server_auth_data;
     AuthPtr     client_auth;
     int         i,
@@ -245,7 +249,7 @@ ProcEstablishConnection(client)
     REQUEST(fsFakeReq);
 
     prefix = (fsConnClientPrefix *) stuff+1;
-    auth_data = (pointer) prefix + sz_fsConnClientPrefix;
+    auth_data = prefix + sz_fsConnClientPrefix;
     client_auth = (AuthPtr) ALLOCATE_LOCAL(prefix->num_auths * sizeof(AuthRec));
     if (!client_auth) {
 	SendErrToClient(client, FSBadAlloc, (pointer) 0);
@@ -255,6 +259,12 @@ ProcEstablishConnection(client)
 
     /* build up a list of the stuff */
     for (i = 0, ad = auth_data; i < (int)prefix->num_auths; i++) {
+	if (ad - (char *)auth_data > (stuff->length << 2) - 4) {
+	    int lengthword = stuff->length;
+
+	    SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	    return (FSBadLength);
+	}
 	/* copy carefully in case wire data is not aligned */
 	client_auth[i].namelen = (((unsigned char *)ad)[0] << 8) +
 				 ((unsigned char *)ad)[1];
@@ -267,6 +277,15 @@ ProcEstablishConnection(client)
 	client_auth[i].data = (char *) ad;
 	ad += client_auth[i].datalen;
     }
+    if (!(int)prefix->num_auths)
+	ad += 4;
+    if (ad - (char *)auth_data > (stuff->length << 2)) {
+	int lengthword = stuff->length;
+
+	SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	return (FSBadLength);
+    }
+
     num_alts = ListAlternateServers(&altservers);
     for (i = 0, altlen = 0; i < num_alts; i++) {
 	/* subset + len + namelen + pad */
@@ -378,10 +397,10 @@ ProcEstablishConnection(client)
  */
 
 void
-SendErrToClient(client, error, data)
-    ClientPtr   client;
-    int         error;
-    pointer     data;		/* resource id, format, resolution, etc */
+DoSendErrToClient(
+    ClientPtr   client,
+    int         error,
+    pointer     data)		/* resource id, format, resolution, etc */
 {
     fsError     rep;
     int         extralen = 0;
@@ -409,7 +428,7 @@ SendErrToClient(client, error, data)
 	        SwapShorts((short *) data, 1);
 	    /* note sneaky hack */
 	    rep.pad = *(CARD16 *) data;
-	    data += 2;
+	    data = (char *)data + 2;
 	    extralen = 4;
 	}
 	break;
@@ -441,16 +460,14 @@ SendErrToClient(client, error, data)
 
 /* ARGSUSED */
 int
-ProcBadRequest(client)
-    ClientPtr   client;
+ProcBadRequest(ClientPtr client)
 {
     SendErrToClient(client, FSBadRequest, NULL);
     return FSBadRequest;
 }
 
 int
-ProcNoop(client)
-    ClientPtr   client;
+ProcNoop(ClientPtr client)
 {
     REQUEST(fsReq);
     REQUEST_AT_LEAST_SIZE(fsReq);
@@ -459,8 +476,7 @@ ProcNoop(client)
 }
 
 int
-ProcListCatalogues(client)
-    ClientPtr   client;
+ProcListCatalogues(ClientPtr client)
 {
     int         len,
                 num;
@@ -486,8 +502,7 @@ ProcListCatalogues(client)
 }
 
 int
-ProcSetCatalogues(client)
-    ClientPtr   client;
+ProcSetCatalogues(ClientPtr client)
 {
     char       *new_cat;
     int         err,
@@ -522,8 +537,7 @@ ProcSetCatalogues(client)
 }
 
 int
-ProcGetCatalogues(client)
-    ClientPtr   client;
+ProcGetCatalogues(ClientPtr client)
 {
     int         len,
                 i,
@@ -553,8 +567,7 @@ ProcGetCatalogues(client)
 }
 
 int
-ProcCreateAC(client)
-    ClientPtr   client;
+ProcCreateAC(ClientPtr client)
 {
     fsCreateACReply rep;
     AuthPtr     acp;
@@ -564,7 +577,7 @@ ProcCreateAC(client)
                 err,
                 index,
                 size;
-    pointer     ad;
+    char       *ad;
     char       *auth_data;
 
     REQUEST(fsCreateACReq);
@@ -587,7 +600,15 @@ ProcCreateAC(client)
     	}
     }
     /* build up a list of the stuff */
-    for (i = 0, ad = (pointer)stuff + SIZEOF(fsCreateACReq); i < (int)stuff->num_auths; i++) {
+    for (i = 0, ad = (char *)stuff + SIZEOF(fsCreateACReq);
+         i < (int)stuff->num_auths; i++) {
+	if (ad - (char *)stuff + SIZEOF(fsCreateACReq) >
+	    (stuff->length << 2) - 4) {
+	    int lengthword = stuff->length;
+
+	    SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	    return (FSBadLength);
+	}
 	/* copy carefully in case data is not aligned */
 	acp[i].namelen = (((unsigned char *)ad)[0] << 8) +
 			 ((unsigned char *)ad)[1];
@@ -599,6 +620,14 @@ ProcCreateAC(client)
 	ad += acp[i].namelen;
 	acp[i].data = (char *) ad;
 	ad += acp[i].datalen;
+    }
+    if (!(int)stuff->num_auths)
+	ad += 4;
+    if (ad - (char *)stuff > (stuff->length << 2)) {
+	int lengthword = stuff->length;
+
+	SendErrToClient(client, FSBadLength, (pointer)&lengthword);
+	return (FSBadLength);
     }
 
 /* XXX needs work for AuthContinue */
@@ -658,9 +687,7 @@ alloc_failure:
 
 /* ARGSUSED */
 int
-DeleteAuthCont (value, id)
-    pointer value;
-    FSID    id;
+DeleteAuthCont (pointer value, FSID id)
 {
     AuthContextPtr  authp = (AuthContextPtr) value;
 
@@ -673,8 +700,7 @@ DeleteAuthCont (value, id)
 }
 
 int
-ProcFreeAC(client)
-    ClientPtr   client;
+ProcFreeAC(ClientPtr client)
 {
     AuthContextPtr authp;
 
@@ -694,8 +720,7 @@ ProcFreeAC(client)
 }
 
 int
-ProcSetAuthorization(client)
-    ClientPtr   client;
+ProcSetAuthorization(ClientPtr client)
 {
     AuthContextPtr acp;
 
@@ -713,14 +738,20 @@ ProcSetAuthorization(client)
 }
 
 int
-ProcSetResolution(client)
-    ClientPtr   client;
+ProcSetResolution(ClientPtr client)
 {
     fsResolution *new_res;
 
     REQUEST(fsSetResolutionReq);
     REQUEST_AT_LEAST_SIZE(fsSetResolutionReq);
 
+    if ((stuff->length << 2) - SIZEOF(fsSetResolutionReq) <
+        stuff->num_resolutions * SIZEOF(fsResolution)) {
+	int lengthword = stuff->length;
+
+	SendErrToClient(client, FSBadLength, &lengthword);
+	return FSBadLength;
+    }
     new_res = (fsResolution *)
 	fsalloc(SIZEOF(fsResolution) * stuff->num_resolutions);
     if (!new_res) {
@@ -737,14 +768,20 @@ ProcSetResolution(client)
 }
 
 int
-ProcGetResolution(client)
-    ClientPtr   client;
+ProcGetResolution(ClientPtr client)
 {
     fsGetResolutionReply reply;
 
     REQUEST(fsReq);
     REQUEST_AT_LEAST_SIZE(fsReq);
 
+    if ((stuff->length << 2) - SIZEOF(fsResolution) < client->num_resolutions *
+	sizeof(fsResolution)) {
+	int lengthword = stuff->length;
+
+	SendErrToClient(client, FSBadLength, &lengthword);
+	return FSBadLength;
+    }
     reply.type = FS_Reply;
     reply.num_resolutions = client->num_resolutions;
     reply.sequenceNumber = client->sequence;
@@ -756,14 +793,13 @@ ProcGetResolution(client)
 	client->pSwapReplyFunc = CopySwap16Write;
 
     WriteSwappedDataToClient(client,
-       (client->num_resolutions * SIZEOF(fsResolution)), client->resolutions);
+       (client->num_resolutions * SIZEOF(fsResolution)), (short *)client->resolutions);
 
     return client->noClientException;
 }
 
 int
-ProcListFonts(client)
-    ClientPtr   client;
+ProcListFonts(ClientPtr client)
 {
     REQUEST(fsListFontsReq);
     REQUEST_FIXED_SIZE(fsListFontsReq, stuff->nbytes);
@@ -774,8 +810,7 @@ ProcListFonts(client)
 }
 
 int
-ProcListFontsWithXInfo(client)
-    ClientPtr   client;
+ProcListFontsWithXInfo(ClientPtr client)
 {
     REQUEST(fsListFontsWithXInfoReq);
     REQUEST_FIXED_SIZE(fsListFontsWithXInfoReq, stuff->nbytes);
@@ -785,8 +820,7 @@ ProcListFontsWithXInfo(client)
 }
 
 int
-ProcOpenBitmapFont(client)
-    ClientPtr   client;
+ProcOpenBitmapFont(ClientPtr client)
 {
     FontPtr     pfont;
     int         nbytes,
@@ -825,9 +859,9 @@ ProcOpenBitmapFont(client)
 	return err;
     }
 }
+
 int
-ProcQueryXInfo(client)
-    ClientPtr   client;
+ProcQueryXInfo(ClientPtr client)
 {
     ClientFontPtr cfp;
     int         err,
@@ -881,8 +915,7 @@ ProcQueryXInfo(client)
 }
 
 int
-ProcQueryXExtents(client)
-    ClientPtr   client;
+ProcQueryXExtents(ClientPtr client)
 {
     ClientFontPtr cfp;
     int         err;
@@ -903,7 +936,7 @@ ProcQueryXExtents(client)
     /* get the extents */
     err = QueryExtents(client, cfp, item_size,
 		       stuff->num_ranges, stuff->range,
-		       (pointer)stuff + SIZEOF(fsQueryXExtents8Req));
+		       (char *)stuff + SIZEOF(fsQueryXExtents8Req));
 
     if (err != FSSuccess) {
 	return err;
@@ -912,8 +945,7 @@ ProcQueryXExtents(client)
 }
 
 int
-ProcQueryXBitmaps(client)
-    ClientPtr   client;
+ProcQueryXBitmaps(ClientPtr client)
 {
     ClientFontPtr cfp;
     int         err;
@@ -940,7 +972,7 @@ ProcQueryXBitmaps(client)
     /* get the glyphs */
     err = QueryBitmaps(client, cfp, item_size, stuff->format,
 		       stuff->num_ranges, stuff->range,
-		       (pointer)stuff + SIZEOF(fsQueryXBitmaps8Req));
+		       (char *)stuff + SIZEOF(fsQueryXBitmaps8Req));
 
     if (err != FSSuccess) {
 	return err;
@@ -950,8 +982,7 @@ ProcQueryXBitmaps(client)
 }
 
 int
-ProcCloseFont(client)
-    ClientPtr   client;
+ProcCloseFont(ClientPtr client)
 {
     ClientFontPtr cfp;
 
@@ -970,8 +1001,7 @@ ProcCloseFont(client)
 }
 
 void
-CloseDownClient(client)
-    ClientPtr   client;
+DoCloseDownClient(ClientPtr client)
 {
     if (client->clientGone != CLIENT_GONE) {
 	DeleteClientFontStuff(client);
@@ -981,7 +1011,7 @@ CloseDownClient(client)
     }
 
     if (ClientIsAsleep(client))
-	ClientSignal(client);
+	ClientSignal((pointer)client);
     else
     {
 	FreeClientResources(client);
@@ -1012,7 +1042,7 @@ CloseDownClient(client)
 }
 
 static void
-kill_all_clients()
+kill_all_clients(void)
 {
     int         i;
 
@@ -1023,25 +1053,26 @@ kill_all_clients()
 }
 
 void
-InitProcVectors()
+InitProcVectors(void)
 {
     int         i;
 
     for (i = 0; i < NUM_PROC_VECTORS; i++) {
 	if (!ProcVector[i]) {
 	    ProcVector[i] = SwappedProcVector[i] = ProcBadRequest;
-	    ReplySwapVector[i] = NotImplemented;
+	    ReplySwapVector[i] = (ReplySwapFunc)NotImplemented;
 	}
     }
     for (i = FSLASTEvent; i < NUM_EVENT_VECTORS; i++) {
-	EventSwapVector[i] = NotImplemented;
+	EventSwapVector[i] = (EventSwapFunc)NotImplemented;
     }
 }
 
-InitClient(client, i, ospriv)
-    ClientPtr   client;
-    int         i;
-    pointer     ospriv;
+void
+InitClient(
+    ClientPtr   client,
+    int         i,
+    pointer     ospriv)
 {
     client->index = i;
     client->sequence = 0;
@@ -1061,13 +1092,11 @@ InitClient(client, i, ospriv)
 }
 
 ClientPtr
-NextAvailableClient(ospriv)
-    pointer     ospriv;
+NextAvailableClient(pointer ospriv)
 {
     int         i;
     ClientPtr   client;
     fsFakeReq   data;
-    extern long MaxClients;
 
     i = nextFreeClientID;
     if (i == MaxClients)
@@ -1102,8 +1131,8 @@ NextAvailableClient(ospriv)
     return client;
 }
 
-MarkClientException(client)
-    ClientPtr   client;
+void
+MarkClientException(ClientPtr client)
 {
     client->noClientException = -2;
 }

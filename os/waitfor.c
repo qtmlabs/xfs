@@ -47,30 +47,31 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDId: @(#)waitfor.c,v 4.5 1991/06/24 11:59:20 lemke Exp $
+ * $NCDXorg: @(#)waitfor.c,v 4.5 1991/06/24 11:59:20 lemke Exp $
  *
  */
+/* $XFree86: xc/programs/xfs/os/waitfor.c,v 3.16 2002/05/31 18:46:12 dawes Exp $ */
 
 #include	<X11/Xos.h>	/* strings, time, etc */
 
 #include	<stdio.h>
 #include	<errno.h>
+#if !defined(Lynx)
 #include	<sys/param.h>
+#endif
 
 #include	"clientstr.h"
 #include	"globals.h"
 #include	"X11/Xpoll.h"
 #include	"osdep.h"
+#include	"os.h"
+
+#ifdef __UNIXOS2__
+#define select(n,r,w,x,t) os2PseudoSelect(n,r,w,x,t)
+#endif
 
 extern WorkQueuePtr workQueue;
 
-#ifdef X_NOT_STDC_ENV
-extern int errno;
-#endif
-
-
-extern void MakeNewConnections();
-extern void FlushAllOutput();
 
 extern fd_set WellKnownConnections;
 extern fd_set LastSelectMask;
@@ -97,8 +98,8 @@ long        LastReapTime;
  * - room to write data to clients
  */
 
-WaitForSomething(pClientsReady)
-    int        *pClientsReady;
+int
+WaitForSomething(int *pClientsReady)
 {
     struct timeval *wt,
                 waittime;
@@ -140,7 +141,7 @@ WaitForSomething(pClientsReady)
 
 	XFD_COPYSET(&AllSockets, &LastSelectMask);
 
-	BlockHandler((pointer) &wt, (pointer) &LastSelectMask);
+	BlockHandler(&wt, (pointer) &LastSelectMask);
 	if (NewOutputPending)
 	    FlushAllOutput();
 
@@ -152,7 +153,7 @@ WaitForSomething(pClientsReady)
 	}
 	selecterr = errno;
 
-	WakeupHandler(i, (pointer) &LastSelectMask);
+	WakeupHandler(i, (unsigned long *) &LastSelectMask);
 	if (i <= 0) {		/* error or timeout */
 	    FD_ZERO(&clientsWriteable);
 	    if (i < 0) {
@@ -199,7 +200,7 @@ WaitForSomething(pClientsReady)
 	    while (clientsReadable.fds_bits[i]) {
 		curclient = ffs(clientsReadable.fds_bits[i]) - 1;
 		conn = ConnectionTranslation[curclient + (i << 5)];
-		FD_CLR (curclient, &clientsReadable);
+		clientsReadable.fds_bits[i] &= ~(((fd_mask)1L) << curclient);
 		client = clients[conn];
 		if (!client)
 		    continue;
@@ -216,8 +217,8 @@ WaitForSomething(pClientsReady)
 /*
  * This is not always a macro
   */
-ANYSET(src)
-    long       *src;
+int
+ANYSET(long *src)
 {
     int         i;
 

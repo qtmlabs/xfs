@@ -47,22 +47,23 @@ in this Software without prior written authorization from The Open Group.
  * @(#)osstruct.h	4.1	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/include/osstruct.h,v 1.4 2001/12/14 20:01:38 dawes Exp $ */
 
 #ifndef _OSSTRUCT_H_
 #define _OSSTRUCT_H_
 #include	"os.h"
 
 typedef struct _alt_server {
-    char        subset;
-    short       namelen;
-    char       *name;
+    char            subset;
+    unsigned short  namelen;
+    char           *name;
 }           AlternateServerRec;
 
 typedef struct _auth {
-    short       namelen;
-    short       datalen;
-    char       *name;
-    char       *data;
+    unsigned short  namelen;
+    unsigned short  datalen;
+    char           *name;
+    char           *data;
 }           AuthRec;
 
 #endif				/* _OSSTRUCT_H_ */

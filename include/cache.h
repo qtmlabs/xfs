@@ -47,8 +47,11 @@ in this Software without prior written authorization from The Open Group.
  * @(#)cache.h	4.1	91/05/02
  *
  */
+/* $XFree86: xc/programs/xfs/include/cache.h,v 1.5 2001/12/14 20:01:37 dawes Exp $ */
+
 #ifndef _CACHE_H_
 #define	_CACHE_H_
+
 #include	"misc.h"
 
 #define	CacheWasReset		1
@@ -57,17 +60,16 @@ in this Software without prior written authorization from The Open Group.
 
 typedef unsigned long CacheID;
 typedef unsigned long Cache;
-typedef void (*CacheFree) ();
+typedef void (*CacheFree) (CacheID cid, pointer, int flag);
 
 typedef struct _cache *CachePtr;
 
-extern CacheID CacheStoreMemory();
-extern int  CacheFreeMemory();
-extern void CacheSimpleFree();
-extern Cache CacheInit();
-extern void CacheReset();
-extern void CacheResize();
-extern pointer CacheFetchMemory();
-extern void CacheStats();
+extern Cache CacheInit(unsigned long maxsize);
+extern CacheID CacheStoreMemory(Cache cid, pointer data, unsigned long size, CacheFree free_func);
+extern void CacheFreeMemory(CacheID cid, Bool notify);
+extern pointer CacheFetchMemory(CacheID cid, Bool update);
+extern void CacheReset(void);
+extern void CacheResize(Cache cid, unsigned newsize);
+extern void CacheSimpleFree(CacheID cid, pointer data, int reason);
 
 #endif				/* _CACHE_H_ */
