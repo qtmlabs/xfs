@@ -44,7 +44,7 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/xfs/os/error.c,v 1.12 2004/01/28 22:12:49 herrb Exp $ */
 
 #include	<stdio.h>
 #include	<stdlib.h>

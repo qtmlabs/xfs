@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * @(#)cache.h	4.1	91/05/02
  *
  */
-/* $XFree86$ */
+/* $XFree86: xc/programs/xfs/include/cache.h,v 1.5 2001/12/14 20:01:37 dawes Exp $ */
 
 #ifndef _CACHE_H_
 #define	_CACHE_H_
