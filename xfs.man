@@ -1,4 +1,4 @@
-.\" $XFree86: xc/programs/xfs/xfs.man,v 3.16 2001/12/14 20:01:32 dawes Exp $
+.\" $XFree86$
 .\"
 .\" Copyright 1991, 1998  The Open Group
 .\" 

@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  * $NCDXorg: @(#)os.h,v 4.2 1991/05/10 07:59:16 lemke Exp $
  *
  */
-/* $XFree86: xc/programs/xfs/include/os.h,v 3.15 2004/01/07 03:47:35 dawes Exp $ */
+/* $XFree86$ */
 
 #ifndef	_OS_H_
 #define	_OS_H_
