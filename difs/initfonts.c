@@ -124,14 +124,6 @@ InitFonts(void)
 
 #ifdef FONT_PCF
     FontFileRegisterFpeFunctions();
-#ifdef LOWMEMFTPT
-
-#ifndef CRAY
-    SpeedoRegisterFontFileFunctions ();
-    Type1RegisterFontFileFunctions();
-#endif
-
-#endif /* ifdef LOWMEMFTPT */
 
 #endif
 
