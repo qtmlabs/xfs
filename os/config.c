@@ -52,7 +52,7 @@ in this Software without prior written authorization from The Open Group.
 #include	<stdio.h>
 #include	<stdlib.h>
 #include	<ctype.h>
-#include	<X11/Xtrans.h>
+#include	<X11/Xtrans/Xtrans.h>
 #include	<X11/Xos.h>
 #include	"misc.h"
 #include	"configstr.h"

@@ -70,7 +70,7 @@ in this Software without prior written authorization from The Open Group.
 /* $XFree86: xc/programs/xfs/os/connection.c,v 3.25tsi Exp $ */
 
 #include	<stdlib.h>
-#include	<X11/Xtrans.h>
+#include	<X11/Xtrans/Xtrans.h>
 #include	<stdlib.h>
 #include	"misc.h"
 #include	<stdio.h>
