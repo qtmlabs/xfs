@@ -88,8 +88,8 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #include	<signal.h>
 
-#include	"FS.h"
-#include	"FSproto.h"
+#include	<X11/fonts/FS.h>
+#include	<X11/fonts/FSproto.h>
 #include	"clientstr.h"
 #include	"X11/Xpoll.h"
 #include	"osdep.h"

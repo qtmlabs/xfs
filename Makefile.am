@@ -1,0 +1,61 @@
+# 
+#  Copyright 2005  Red Hat, Inc.
+# 
+#  Permission to use, copy, modify, distribute, and sell this software and its
+#  documentation for any purpose is hereby granted without fee, provided that
+#  the above copyright notice appear in all copies and that both that
+#  copyright notice and this permission notice appear in supporting
+#  documentation, and that the name of Red Hat not be used in
+#  advertising or publicity pertaining to distribution of the software without
+#  specific, written prior permission.  Red Hat makes no
+#  representations about the suitability of this software for any purpose.  It
+#  is provided "as is" without express or implied warranty.
+# 
+#  RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
+#  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
+#  EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
+#  CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
+#  DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+#  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+#  PERFORMANCE OF THIS SOFTWARE.
+
+bin_PROGRAMS = xfs
+
+xfs_CFLAGS = $(DEP_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\"
+xfs_LDADD = $(DEP_LIBS)
+
+xfs_SOURCES = \
+	difs/atom.c \
+	difs/cache.c \
+	difs/charinfo.c \
+	difs/difsutils.c \
+	difs/dispatch.c \
+	difs/events.c \
+	difs/extensions.c \
+	difs/fontinfo.c \
+	difs/fonts.c \
+	difs/globals.c \
+	difs/initfonts.c \
+	difs/main.c \
+	difs/resource.c \
+	difs/swaprep.c \
+	difs/swapreq.c \
+	difs/tables.c \
+	os/access.c \
+	os/config.c \
+	os/config.h \
+	os/configstr.h \
+	os/connection.c \
+	os/daemon.c \
+	os/error.c \
+	os/io.c \
+	os/osdep.h \
+	os/osglue.c \
+	os/osinit.c \
+	os/utils.c \
+	os/waitfor.c \
+	os/xfstrans.c
+
+dist_man_MANS = \
+        xfs.man
+

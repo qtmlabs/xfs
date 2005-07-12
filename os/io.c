@@ -61,7 +61,7 @@ in this Software without prior written authorization from The Open Group.
 #include	<uio.h>
 #endif
 
-#include	"FSproto.h"
+#include	<X11/fonts/FSproto.h>
 #include	"clientstr.h"
 #include	"X11/Xpoll.h"
 #include	"osdep.h"

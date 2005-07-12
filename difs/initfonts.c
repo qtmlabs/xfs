@@ -49,7 +49,7 @@ in this Software without prior written authorization from The Open Group.
  */
 /* $XFree86: xc/programs/xfs/difs/initfonts.c,v 1.6 2001/08/01 00:45:04 tsi Exp $ */
 
-#include        "font.h"
+#include        <X11/fonts/font.h>
 #include	"difs.h"
 #ifdef FONTCACHE
 #include        "misc.h"

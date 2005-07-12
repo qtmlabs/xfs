@@ -63,9 +63,8 @@ in this Software without prior written authorization from The Open Group.
 #ifdef FONTCACHE
 #include	<X11/extensions/fontcacheP.h>
 #endif
-#include	"fontutil.h"
+#include	<X11/fonts/fontutil.h>
 #include	"difs.h"
-#include	"snfstr.h"
 
 extern int portFromCmdline;
 
