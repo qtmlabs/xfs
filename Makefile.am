@@ -54,8 +54,36 @@ xfs_SOURCES = \
 	os/osinit.c \
 	os/utils.c \
 	os/waitfor.c \
-	os/xfstrans.c
+	os/xfstrans.c \
+	include/access.h \
+	include/accstr.h \
+	include/assert.h \
+	include/auth.h \
+	include/authstr.h \
+	include/cache.h \
+	include/cachestr.h \
+	include/client.h \
+	include/clientstr.h \
+	include/closestr.h \
+	include/closure.h \
+	include/difsfn.h \
+	include/difsfnst.h \
+	include/difs.h \
+	include/difsutils.h \
+	include/dispatch.h \
+	include/extentst.h \
+	include/fsevents.h \
+	include/fsresource.h \
+	include/globals.h \
+	include/misc.h \
+	include/os.h \
+	include/osstruct.h \
+	include/servermd.h \
+	include/site.h \
+	include/swaprep.h \
+	include/swapreq.h
 
 dist_man_MANS = \
         xfs.man
 
+EXTRA_DIST = xfs.def
