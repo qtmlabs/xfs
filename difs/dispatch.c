@@ -71,8 +71,8 @@ in this Software without prior written authorization from The Open Group.
 
 static void kill_all_clients(void);
 
-char        dispatchException = 0;
-char        isItTimeToYield;
+volatile char        dispatchException = 0;
+volatile char        isItTimeToYield;
 
 ClientPtr   currentClient;
 

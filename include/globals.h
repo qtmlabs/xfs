@@ -60,8 +60,8 @@ extern int  currentMaxClients;
 extern long MaxClients;
 extern int  serverGeneration;
 
-extern char isItTimeToYield;
-extern char dispatchException;
+extern volatile char isItTimeToYield;
+extern volatile char dispatchException;
 
 extern int  argcGlobal;
 extern char **argvGlobal;
