@@ -36,4 +36,7 @@ PKG_CHECK_MODULES(DEP, libfs fontsproto xfont)
 AC_SUBST(DEP_CFLAGS)
 AC_SUBST(DEP_LIBS)
 
+# Transport selection macro from xtrans.m4
+XTRANS_CONNECTION_FLAGS
+
 AC_OUTPUT([Makefile])
