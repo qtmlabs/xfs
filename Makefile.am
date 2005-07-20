@@ -21,8 +21,8 @@
 
 bin_PROGRAMS = xfs
 
-xfs_CFLAGS = $(DEP_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" -D_BSD_SOURCE
-xfs_LDADD = $(DEP_LIBS)
+xfs_CFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" -D_BSD_SOURCE
+xfs_LDADD = $(XFS_LIBS)
 
 xfs_SOURCES = \
 	difs/atom.c \
