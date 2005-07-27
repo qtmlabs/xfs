@@ -30,9 +30,20 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PROG_CC
 AC_PROG_INSTALL
+AC_CANONICAL_HOST
+
+case $host_os in
+    linux*)
+        OS_CFLAGS="-D_XOPEN_SOURCE"
+        ;;
+    *)
+        OS_CFLAGS=
+        ;;
+esac
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs fontsproto xfont)
+XFS_CFLAGS="$XFS_CFLAGS $OS_CFLAGS"
 AC_SUBST(XFS_CFLAGS)
 AC_SUBST(XFS_LIBS)
 
