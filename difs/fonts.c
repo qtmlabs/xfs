@@ -717,8 +717,9 @@ set_font_path_elements(
 	FontPathElementPtr *ftmp = (FontPathElementPtr *)
 	    fsrealloc(fplist, sizeof(FontPathElementPtr) * validpaths);
 
-	if (!ftmp)
+	if (!ftmp && validpaths)
 	    goto bail;
+
 	fplist = ftmp;
 	npaths = validpaths;
     }
