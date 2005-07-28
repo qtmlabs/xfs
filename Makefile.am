@@ -19,10 +19,13 @@
 #  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 #  PERFORMANCE OF THIS SOFTWARE.
 
+configdir = $(libdir)/X11/fs
+
 bin_PROGRAMS = xfs
 
-xfs_CFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" -D_BSD_SOURCE
-xfs_LDADD = $(XFS_LIBS)
+AM_CFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" -D_BSD_SOURCE \
+		-DDEFAULT_CONFIG_FILE=\"$(configdir)/config\"
+LDADD = $(XFS_LIBS)
 
 xfs_SOURCES = \
 	difs/atom.c \
@@ -86,4 +89,16 @@ xfs_SOURCES = \
 dist_man_MANS = \
         xfs.man
 
-EXTRA_DIST = xfs.def
+FSERRORS = /var/log/xfs.log
+
+FONTDIR = $(libdir)/X11/fonts
+
+FONTPATH = $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
+
+config: config.cpp
+	sed -e s/XCOMM/\#/ -e s@DEFAULTFONTPATH@$(FONTPATH)@ -e s@FSERRORS@$(FSERRORS)@ < $(top_srcdir)/config.cpp > config
+
+config_DATA = config
+
+EXTRA_DIST = xfs.def config.cpp
+CLEANFILES = config
