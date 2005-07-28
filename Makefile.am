@@ -23,8 +23,10 @@ configdir = $(libdir)/X11/fs
 
 bin_PROGRAMS = xfs
 
+FONT_FLAGS = -DFONT_PCF -DFONT_FS -DFONT_SPEEDO
+
 AM_CFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" -D_BSD_SOURCE \
-		-DDEFAULT_CONFIG_FILE=\"$(configdir)/config\"
+		-DDEFAULT_CONFIG_FILE=\"$(configdir)/config\" $(FONT_FLAGS)
 LDADD = $(XFS_LIBS)
 
 xfs_SOURCES = \
