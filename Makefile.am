@@ -90,7 +90,7 @@ xfs_SOURCES = \
 	include/swaprep.h \
 	include/swapreq.h
 
-dist_man_MANS = \
+dist_man1_MANS = \
         xfs.man
 
 FSERRORS = /var/log/xfs.log
