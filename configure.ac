@@ -50,6 +50,7 @@ AC_SUBST(XFS_LIBS)
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
 
+XORG_MANPAGE_SECTIONS
 XORG_RELEASE_VERSION
 
 AC_OUTPUT([Makefile])
