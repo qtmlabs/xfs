@@ -42,7 +42,7 @@ case $host_os in
 esac
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XFS, libfs fontsproto xfont xtrans)
+PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
 XFS_CFLAGS="$XFS_CFLAGS $OS_CFLAGS"
 AC_SUBST(XFS_CFLAGS)
 AC_SUBST(XFS_LIBS)
