@@ -41,6 +41,8 @@ case $host_os in
         ;;
 esac
 
+AC_CHECK_HEADERS([stdint.h])
+
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
 XFS_CFLAGS="$XFS_CFLAGS $OS_CFLAGS"
