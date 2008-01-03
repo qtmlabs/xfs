@@ -159,7 +159,7 @@ runs with the user and group IDs of the user who invoked it.
 reads and serves any font file format recognized by the X server itself.
 It locates font files through the specification of a
 .IR catalogue ,
-which is delcared in
+which is declared in
 .BR xfs 's
 configuration file.
 .SS "Configuration File Format"
@@ -242,7 +242,7 @@ tcp\(cq.
 indicates the TCP port on which the server will listen for connections.
 .\" .TP
 .\" .BR trusted-clients " (list of \fIstring\fPs)"
-.\" idefntifies the clients the font server will talk to.
+.\" identifies the clients the font server will talk to.
 .\" Others will be refused for the initial connection.
 .\" An empty list means the server will talk to any client.
 .TP
@@ -300,10 +300,10 @@ XCOMM Identify alternate font servers for clients to use.
 alternate\-servers = hansen:7101,hansen:7102
 
 XCOMM Look for fonts in the following directories.  The first is a set of
-XCOMM Speedo outlines, the second is a set of misc bitmaps (such as terminal
+XCOMM TrueType outlines, the second is a set of misc bitmaps (such as terminal
 XCOMM and cursor fonts), and the last is a set of 100dpi bitmaps.
 XCOMM
-catalogue = /usr/X11R6/lib/X11/fonts/speedo,
+catalogue = /usr/X11R6/lib/X11/fonts/TTF,
             /usr/X11R6/lib/X11/fonts/misc,
             /usr/X11R6/lib/X11/fonts/100dpi/
 
