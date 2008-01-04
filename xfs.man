@@ -64,7 +64,7 @@ xfs \- X font server
 .BI "\-user " username
 ]
 .SH DESCRIPTION
-+.B xfs
+.B xfs
 is the X Window System font server.
 It supplies fonts to X Window System display servers.
 The server is usually run by a system administrator, and started via
@@ -229,9 +229,6 @@ indicates the filename of the error file.
 All warnings and errors will be logged here, unless
 .B use\-syslog
 is set to a true value (see below).
-.IP "no-listen (trans-type)"
-Disable a transport  type. For example, TCP/IP connections can
-be disabled with no-listen tcp
 .TP
 .BR no\-listen " (\fItrans-type\fP)"
 disables the specified transport type.
