@@ -49,7 +49,7 @@ in this Software without prior written authorization from The Open Group.
  */
 /* $XFree86: xc/programs/xfs/os/config.c,v 3.15 2002/05/31 18:46:12 dawes Exp $ */
 
-#include	<config.h>
+#include	<xfs-config.h>
 
 #include	<stdio.h>
 #include	<stdlib.h>

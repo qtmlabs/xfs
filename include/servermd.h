@@ -49,7 +49,7 @@ in this Software without prior written authorization from The Open Group.
 #ifndef _SERVERMD_H_
 #define _SERVERMD_H_
 
-#include "config.h"
+#include <xfs-config.h>
 
 #ifndef VENDOR_RELEASE
 # if defined PACKAGE_VERSION_MAJOR
