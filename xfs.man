@@ -351,7 +351,7 @@ to reset, closing all active connections and re-reading the configuration
 file.
 .SH BUGS
 Multiple catalogues should be supported.
-+.SH "FUTURE DIRECTIONS"
+.SH "FUTURE DIRECTIONS"
 Significant further development of
 .B xfs
 is unlikely.
