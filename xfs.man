@@ -368,6 +368,8 @@ Dave Lemke, Network Computing Devices, Inc
 Keith Packard, Massachusetts Institute of Technology
 .SH "SEE ALSO"
 .BR X (__miscmansuffix__),
+.BR xfsinfo (__appmansuffix__),
+.BR fslsfonts (__appmansuffix__),
 .BR init (__adminmansuffix__),
 .BR syslog (__libmansuffix__),
 .IR "The X Font Service Protocol" ,
