@@ -82,9 +82,8 @@ section of
 specifies the configuration file
 .B xfs
 will use.
-If this parameter is not specified, the default file,
-.IR __configdir__/config ,
-will be used.
+If this parameter is not specified, xfs will read its configuration from
+__configfiledesc__ \fI__configfilepath__\fR.
 .TP
 .B \-daemon
 instructs
@@ -164,9 +163,7 @@ which is declared in
 configuration file.
 .SS "Configuration File Format"
 .B xfs
-reads its configuration from
-.I __configdir__/config
-by default (see the
+reads its configuration from a text file (see the
 .B \-config
 option in the \(lqOPTIONS\(rq section above).
 The configuration language is a list of keyword and value pairs.

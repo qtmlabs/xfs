@@ -52,9 +52,23 @@ AC_ARG_WITH(default-config-file,
    [comma-separated list of paths to look for config file when not specified (default: ${libdir}/X11/fs/config)]),
 	[CONFIG_FILE="$withval"], [CONFIG_FILE="${libdir}/X11/fs/config"])
 
-CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'`
-AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], CONFIG_FILE,
+DEFAULT_CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'`
+AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,
     [comma-separated list of strings for config file paths when not specified])
+
+# generate text for the man page
+case $CONFIG_FILE in
+    *,*)
+	CONFIG_FILE_DESC="the first file found from the list:" 
+	CONFIG_FILE_PATH=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\fR, \\\\\\\\fI/g'`
+	;;
+    *)
+	CONFIG_FILE_DESC="the default file,"
+	CONFIG_FILE_PATH="${CONFIG_FILE}"
+	;;
+esac
+AC_SUBST([CONFIG_FILE_DESC])
+AC_SUBST([CONFIG_FILE_PATH])
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)

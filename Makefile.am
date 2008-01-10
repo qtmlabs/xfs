@@ -132,6 +132,8 @@ MAN_SUBSTS = \
 	-e 's|__adminmansuffix__|$(ADMIN_MAN_SUFFIX)|g' \
 	-e 's|__miscmansuffix__|$(MISC_MAN_SUFFIX)|g' \
 	-e 's|__filemansuffix__|$(FILE_MAN_SUFFIX)|g' \
+	-e 's|__configfiledesc__|$(CONFIG_FILE_DESC)|g' \
+	-e 's|__configfilepath__|$(CONFIG_FILE_PATH)|g' \
 	-e 's|XCOMM|\#|g'
 
 SUFFIXES = .$(APP_MAN_SUFFIX) .man
