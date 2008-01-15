@@ -51,7 +51,7 @@ AC_ARG_WITH(default-config-file,
    [comma-separated list of paths to look for config file when not specified (default: ${sysconfdir}/X11/fs/config)]),
 	[CONFIG_FILE="$withval"], [CONFIG_FILE="${sysconfdir}/X11/fs/config"])
 
-DEFAULT_CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'`
+DEFAULT_CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'g`
 AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,
     [comma-separated list of strings for config file paths when not specified])
 
