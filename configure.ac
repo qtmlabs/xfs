@@ -49,8 +49,8 @@ AC_CHECK_HEADERS([stdint.h])
 
 AC_ARG_WITH(default-config-file,
 	AS_HELP_STRING([--with-default-config-file=PATH],
-   [comma-separated list of paths to look for config file when not specified (default: ${libdir}/X11/fs/config)]),
-	[CONFIG_FILE="$withval"], [CONFIG_FILE="${libdir}/X11/fs/config"])
+   [comma-separated list of paths to look for config file when not specified (default: ${sysconfdir}/X11/fs/config)]),
+	[CONFIG_FILE="$withval"], [CONFIG_FILE="${sysconfdir}/X11/fs/config"])
 
 DEFAULT_CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'`
 AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,

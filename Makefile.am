@@ -19,7 +19,7 @@
 #  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 #  PERFORMANCE OF THIS SOFTWARE.
 
-configdir = $(libdir)/X11/fs
+configdir = $(sysconfdir)/X11/fs
 
 bin_PROGRAMS = xfs
 
