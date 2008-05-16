@@ -296,6 +296,10 @@ SetConfigValues(void)
     int         err,
                 num;
 
+    if (font_catalogue = NULL) {
+	FatalError("font catalogue is missing/empty\n");
+    }
+
     err = SetFontCatalogue(font_catalogue, &num);
     if (err != FSSuccess) {
 	FatalError("element #%d (starting at 0) of font path is bad or has a bad font:\n\"%s\"\n",
