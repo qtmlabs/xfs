@@ -296,7 +296,7 @@ SetConfigValues(void)
     int         err,
                 num;
 
-    if (font_catalogue = NULL) {
+    if (font_catalogue == NULL) {
 	FatalError("font catalogue is missing/empty\n");
     }
 
