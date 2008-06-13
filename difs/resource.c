@@ -1,4 +1,3 @@
-/* $Xorg: resource.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -47,7 +46,6 @@ in this Software without prior written authorization from The Open Group.
  * %W%	%G%
  *
  */
-/* $XFree86: xc/programs/xfs/difs/resource.c,v 3.8tsi Exp $ */
 /*
  *      a resource is a 32 bit quantity.  the upper 12 bits are client id.
  *      client provides a 19 bit resource id. this is "hashed" by me by

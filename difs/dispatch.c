@@ -1,4 +1,3 @@
-/* $Xorg: dispatch.c,v 1.6 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * protocol dispatcher
  */
@@ -46,7 +45,6 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/dispatch.c,v 3.12 2001/12/14 20:01:33 dawes Exp $ */
 
 #include	<stdlib.h>
 #include	"dispatch.h"

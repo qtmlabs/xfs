@@ -1,4 +1,3 @@
-/* $Xorg: globals.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * various font server globals
  */

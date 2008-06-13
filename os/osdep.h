@@ -1,4 +1,3 @@
-/* $Xorg: osdep.h,v 1.4 2001/02/09 02:05:44 xorgcvs Exp $ */
 /*
 Copyright 1987, 1998  The Open Group
 
@@ -47,7 +46,6 @@ in this Software without prior written authorization from The Open Group.
  * @(#)osdep.h	4.1	5/2/91
  *
  */
-/* $XFree86: xc/programs/xfs/os/osdep.h,v 3.11 2001/12/14 20:01:41 dawes Exp $ */
 
 #ifndef _OSDEP_H_
 #define	_OSDEP_H_

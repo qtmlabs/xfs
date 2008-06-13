@@ -1,4 +1,3 @@
-/* $Xorg: fonts.c,v 1.5 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * font control
  */

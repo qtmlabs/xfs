@@ -1,4 +1,3 @@
-/* $Xorg: extensions.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * font server extensions
  */
@@ -46,7 +45,6 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/extensions.c,v 1.6 2001/08/01 00:45:04 tsi Exp $ */
 
 #include	<X11/fonts/FSproto.h>
 #include	"misc.h"

@@ -1,4 +1,3 @@
-/* $Xorg: swapreq.c,v 1.4 2001/02/09 02:05:43 xorgcvs Exp $ */
 /*
  * swapped requests
  */
@@ -46,7 +45,6 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/swapreq.c,v 1.6 2001/06/25 20:40:17 paulo Exp $ */
 
 #include	<swapreq.h>
 

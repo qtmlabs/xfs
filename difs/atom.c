@@ -1,4 +1,3 @@
-/* $Xorg: atom.c,v 1.4 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * font server atom manipulations
  */
@@ -50,7 +49,6 @@ in this Software without prior written authorization from The Open Group.
  * @(#)atom.c	4.1	5/2/91
  *
  */
-/* $XFree86: xc/programs/xfs/difs/atom.c,v 3.4tsi Exp $ */
 
 #include "misc.h"
 #include "fsresource.h"

@@ -1,4 +1,3 @@
-/* $Xorg: main.c,v 1.5 2001/02/09 02:05:42 xorgcvs Exp $ */
 /*
  * Font server main routine
  */
@@ -46,7 +45,6 @@ in this Software without prior written authorization from The Open Group.
  * ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF
  * THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/xfs/difs/main.c,v 3.11 2001/12/14 20:01:35 dawes Exp $ */
 
 #include	<stdlib.h>
 #include	<sys/types.h>

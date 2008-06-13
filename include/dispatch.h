@@ -1,7 +1,3 @@
-/*
- * $XFree86: xc/programs/xfs/include/dispatch.h,v 1.2 1999/03/07 11:41:00 dawes Exp $
- */
-
 /************************************************************
 
 Copyright 1998 by Thomas E. Dickey <dickey@clark.net>
