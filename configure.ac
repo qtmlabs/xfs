@@ -69,6 +69,24 @@ esac
 AC_SUBST([CONFIG_FILE_DESC])
 AC_SUBST([CONFIG_FILE_PATH])
 
+# Determine font path to put in config file
+# Uses --default-font-path if set, otherwise checks for /etc/X11/fontpath.d,
+# otherwise uses default path copied from xserver configure.ac
+AC_CHECK_FILE([${sysconfdir}/X11/fontpath.d],
+	[DEFAULT_FONT_PATH='catalogue:$(sysconfdir)/X11/fontpath.d'],
+	[
+	DEFAULT_FONT_PATH='$(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/OTF/,$(FONTDIR)/Type1/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/'
+	case $host_os in
+        	darwin*)    DEFAULT_FONT_PATH="${DEFAULT_FONT_PATH},/Library/Fonts,/System/Library/Fonts" ;;
+	esac
+])
+
+AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [Comma separated list of font path entries]),
+                                [ FONTPATH="$withval" ],
+                                [ FONTPATH="${DEFAULT_FONT_PATH}" ])
+AC_SUBST([FONTPATH])
+
+
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
 XFS_CFLAGS="$XFS_CFLAGS $OS_CFLAGS"

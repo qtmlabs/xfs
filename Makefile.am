@@ -96,8 +96,6 @@ FSERRORS = /var/log/xfs.log
 
 FONTDIR = $(libdir)/X11/fonts
 
-FONTPATH = $(FONTDIR)/misc/,$(FONTDIR)/TTF/,$(FONTDIR)/Type1/,$(FONTDIR)/CID/,$(FONTDIR)/100dpi/,$(FONTDIR)/75dpi/
-
 config: config.cpp
 	sed -e s/XCOMM/\#/ -e s@DEFAULTFONTPATH@$(FONTPATH)@ -e s@FSERRORS@$(FSERRORS)@ < $(top_srcdir)/config.cpp > config
 
