@@ -81,7 +81,8 @@ specifies the configuration file
 .B xfs
 will use.
 If this parameter is not specified, xfs will read its configuration from
-__configfiledesc__ \fI__configfilepath__\fR.
+__configfiledesc__
+.IR __configfilepath__ .
 .TP
 .B \-daemon
 instructs
