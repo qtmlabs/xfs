@@ -619,8 +619,6 @@ ProcCreateAC(ClientPtr client)
 	acp[i].data = (char *) ad;
 	ad += acp[i].datalen;
     }
-    if (!(int)stuff->num_auths)
-	ad += 4;
     if (ad - (char *)stuff > (stuff->length << 2)) {
 	int lengthword = stuff->length;
 
