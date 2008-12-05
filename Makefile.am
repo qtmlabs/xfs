@@ -28,6 +28,8 @@ FONT_FLAGS = -DFONT_PCF -DFONT_FS -DFONT_SPEEDO
 AM_CPPFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" \
 	$(FONT_FLAGS) -D_BSD_SOURCE -DFONT_t -DTRANS_SERVER -DTRANS_REOPEN
 
+AM_CFLAGS = $(CWARNFLAGS)
+
 LDADD = $(XFS_LIBS)
 
 xfs_SOURCES = \
@@ -157,7 +159,7 @@ MAINTAINERCLEANFILES = ChangeLog
 .PHONY: ChangeLog
 
 ChangeLog:
-	(GIT_DIR=$(top_srcdir)/.git git-log > .changelog.tmp && mv .changelog.tmp ChangeLog; rm -f .changelog.tmp) || (touch ChangeLog; echo 'git directory not found: installing possibly empty changelog.' >&2)
+	$(CHANGELOG_CMD)
 
 dist-hook: ChangeLog
 
