@@ -22,8 +22,8 @@
 
 #include <xfs-config.h>
 
-#define FONT_t
-#define TRANS_REOPEN
-#define TRANS_SERVER
+#define FONT_t 1
+#define TRANS_REOPEN 1
+#define TRANS_SERVER 1
 
 #include <X11/Xtrans/transport.c>
