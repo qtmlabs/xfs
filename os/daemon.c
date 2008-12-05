@@ -96,7 +96,7 @@ MySetsid(void)
 
 /* detach */
 void
-BecomeDaemon ()
+BecomeDaemon (void)
 {
     /* If our C library has the daemon() function, just use it. */
 #ifdef HAS_DAEMON
