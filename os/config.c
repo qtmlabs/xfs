@@ -332,7 +332,7 @@ char *__XFSRedirRoot(char *fname)
 int
 ReadConfigFile(const char *filename)
 {
-    FILE       *fp;
+    FILE       *fp = NULL;
     int         ret;
     int         len;
     int         i;
