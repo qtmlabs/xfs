@@ -112,7 +112,7 @@ static ConfigOptionRec config_options[] = {
     {"snf-format", config_set_snf_format},
     {"trusted-clients", config_set_list},
     {"use-syslog", config_set_bool},
-    {(char *) 0, 0},
+    {NULL, NULL},
 };
 
 char       *ConfigErrors[] = {
@@ -193,7 +193,7 @@ match_param_name(char *name)
 	}
 	pos = ((high + low) >> 1);
     }
-    return 0;
+    return NULL;
 }
 
 static int

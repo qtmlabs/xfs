@@ -155,7 +155,7 @@ getCharInfos (
     (*metrics_func) (pfont, 1, ch, encoding,
 			  &glyphCount, &defaultPtr);
     if (glyphCount != 1)
-	defaultPtr = 0;
+	defaultPtr = NULL;
     
     /* for each range, get each character individually, undoing the
      default character substitution so we get zero metrics for
@@ -285,7 +285,7 @@ packGlyphs (
     int		    dst_extra;
     int		    r, w;
     CharInfoPtr	*bitChars, *bitCharsFree, bitc;
-    CharInfoPtr	*inkChars, *inkCharsFree = 0, inkc;
+    CharInfoPtr	*inkChars, *inkCharsFree = NULL, inkc;
     FontInfoPtr	pinfo = &pfont->info;
     xCharInfo	*bitm, *inkm;
     
@@ -354,7 +354,7 @@ packGlyphs (
     if (mappad == BitmapFormatImageRectMax)
 	charsize = dstbpr * height;
     size = 0;
-    gdata = 0;
+    gdata = NULL;
     contiguous = TRUE;
     l = lengths;
     inkChars = inkCharsFree;

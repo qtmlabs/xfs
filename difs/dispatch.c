@@ -302,8 +302,6 @@ ProcEstablishConnection(ClientPtr client)
 	    SendErrToClient(client, FSBadAlloc, (pointer) 0);
 	    return FSBadAlloc;
 	}
-	authp->authname = 0;
-	authp->authdata = 0;
 	authp->authname =
 	    (char *) fsalloc(client_auth[auth_index - 1].namelen + 1);
 	authp->authdata =
@@ -588,12 +586,12 @@ ProcCreateAC(ClientPtr client)
 	SendErrToClient(client, FSBadIDChoice, (pointer) &aligned_acid);
 	return FSBadIDChoice;
     }
-    acp = 0;
+    acp = NULL;
     if (stuff->num_auths)
     {
     	acp = (AuthPtr) ALLOCATE_LOCAL(stuff->num_auths * sizeof(AuthRec));
     	if (!acp) {
-	    SendErrToClient(client, FSBadAlloc, (pointer) 0);
+	    SendErrToClient(client, FSBadAlloc, (pointer) NULL);
 	    return FSBadAlloc;
     	}
     }
@@ -641,8 +639,8 @@ ProcCreateAC(ClientPtr client)
     if (!authp) {
 	goto alloc_failure;
     }
-    authp->authname = 0;
-    authp->authdata = 0;
+    authp->authname = NULL;
+    authp->authdata = NULL;
     if (index > 0)
     {
 	authp->authname = (char *) fsalloc(acp[index - 1].namelen + 1);

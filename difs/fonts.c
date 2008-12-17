@@ -862,7 +862,7 @@ do_list_fonts_and_aliases(ClientPtr client, pointer data)
 		    cPtr->current.list_started = TRUE;
 	    }
 	    if (err == Successful) {
-		name = 0;
+		name = NULL;
 		err = (*fpe_functions[fpe->type].list_next_font_or_alias)
 		    ((pointer) cPtr->client, fpe, &name, &namelen, &resolved,
 		     &resolvedlen, cPtr->current.private);
@@ -909,7 +909,7 @@ do_list_fonts_and_aliases(ClientPtr client, pointer data)
 		    char    *tmpname;
 		    int     tmpnamelen;
 
-		    tmpname = 0;
+		    tmpname = NULL;
 		    (void) (*fpe_functions[fpe->type].list_next_font_or_alias)
 			((pointer) cPtr->client, fpe, &tmpname, &tmpnamelen,
 			 &tmpname, &tmpnamelen, cPtr->current.private);
@@ -935,7 +935,7 @@ do_list_fonts_and_aliases(ClientPtr client, pointer data)
 		cPtr->current.patlen = resolvedlen;
 		cPtr->current.max_names = cPtr->names->nnames + 1;
 		cPtr->current.current_fpe = -1;
-		cPtr->current.private = 0;
+		cPtr->current.private = NULL;
 		err = BadFontName;
 	    }
 	}
@@ -1086,10 +1086,10 @@ ListFonts(
     c->current.current_fpe = 0;
     c->current.max_names = maxNames;
     c->current.list_started = FALSE;
-    c->current.private = 0;
+    c->current.private = NULL;
     c->haveSaved = FALSE;
     c->slept = FALSE;
-    c->savedName = 0;
+    c->savedName = NULL;
     do_list_fonts_and_aliases(client, (pointer) c);
     return TRUE;
 badAlloc:
@@ -1148,7 +1148,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 		cPtr->current.list_started = TRUE;
 	}
 	if (err == Successful) {
-	    name = 0;
+	    name = NULL;
 	    pFontInfo = &fontInfo;
 	    err = (*fpe_functions[fpe->type].list_next_font_with_info)
 		((pointer) cPtr->client, fpe, &name, &namelen,
@@ -1181,7 +1181,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 		int	tmpnamelen;
 		FontInfoPtr tmpFontInfo;
 
-	    	tmpname = 0;
+		tmpname = NULL;
 	    	tmpFontInfo = &fontInfo;
 	    	(void) (*fpe_functions[fpe->type].list_next_font_with_info)
 		    ((pointer) client, fpe, &tmpname, &tmpnamelen,
@@ -1208,7 +1208,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 	    cPtr->current.patlen = namelen;
 	    cPtr->current.max_names = 1;
 	    cPtr->current.current_fpe = 0;
-	    cPtr->current.private = 0;
+	    cPtr->current.private = NULL;
 	    cPtr->current.list_started = FALSE;
 	}
 	/*
@@ -1367,17 +1367,17 @@ StartListFontsWithInfo(
     }
     c->client = client;
     c->num_fpes = num_fpes;
-    c->reply = 0;
+    c->reply = NULL;
     c->length = 0;
     c->current.patlen = length;
     c->current.current_fpe = 0;
     c->current.max_names = maxNames;
     c->current.list_started = FALSE;
-    c->current.private = 0;
+    c->current.private = NULL;
     c->savedNumFonts = 0;
     c->haveSaved = FALSE;
     c->slept = FALSE;
-    c->savedName = 0;
+    c->savedName = NULL;
     do_list_fonts_with_info(client, (pointer) c);
     return TRUE;
 badAlloc:

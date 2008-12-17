@@ -58,7 +58,7 @@ in this Software without prior written authorization from The Open Group.
 
 InitialFunc InitialVector[3] =
 {
-    0,
+    NULL,
     ProcInitialConnection,
     ProcEstablishConnection
 };
@@ -87,9 +87,9 @@ ProcFunc ProcVector[NUM_PROC_VECTORS] =
     ProcQueryXBitmaps,
     ProcQueryXBitmaps,		/* 20 */
     ProcCloseFont,
-    0,
-    0,
-    0
+    NULL,
+    NULL,
+    NULL
 };
 
 SwappedProcFunc SwappedProcVector[NUM_PROC_VECTORS] =
@@ -116,21 +116,21 @@ SwappedProcFunc SwappedProcVector[NUM_PROC_VECTORS] =
     SProcQueryXBitmaps,
     SProcQueryXBitmaps,		/* 20 */
     SProcResourceRequest,
-    0,
-    0,
-    0
+    NULL,
+    NULL,
+    NULL
 };
 
 EventSwapFunc EventSwapVector[NUM_EVENT_VECTORS] =
 {
     SErrorEvent,
     (EventSwapFunc)NotImplemented,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
 };
 
 ReplySwapFunc ReplySwapVector[NUM_PROC_VECTORS] =

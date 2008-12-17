@@ -154,9 +154,9 @@ NameForAtom(Atom atom)
     NodePtr     node;
 
     if (atom > lastAtom)
-	return 0;
+	return NULL;
     if ((node = nodeTable[atom]) == (NodePtr) NULL)
-	return 0;
+	return NULL;
     return node->string;
 }
 
