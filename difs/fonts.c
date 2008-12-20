@@ -687,6 +687,7 @@ set_font_path_elements(
 	    {
 		NoticeF("ignoring font path element %s (bad font path descriptor)\n", name);
 		fsfree(name);
+		cp += len;
 		continue;
 	    }
 	    /* must be new -- make it */
