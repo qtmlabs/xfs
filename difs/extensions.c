@@ -60,7 +60,7 @@ in this Software without prior written authorization from The Open Group.
 
 static ExtensionEntry **extensions = (ExtensionEntry **) NULL;
 
-int         lastEvent = EXTENSION_EVENT_BASE;
+static int  lastEvent = EXTENSION_EVENT_BASE;
 static int  lastError = FirstExtensionError;
 static int  NumExtensions = 0;
 

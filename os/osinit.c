@@ -51,8 +51,7 @@ in this Software without prior written authorization from The Open Group.
  */
 
 #include	"os.h"
-
-extern long LastReapTime;
+#include	"globals.h"
 
 void
 OsInit(void)

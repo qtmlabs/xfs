@@ -53,13 +53,15 @@ in this Software without prior written authorization from The Open Group.
 #include "misc.h"
 #include <X11/fonts/fontstruct.h>
 #include <X11/fonts/fontutil.h>
+
+/* Don't conflict with macros/prototypes in difsutils.h */
+#define _HAVE_XALLOC_DECLS
+#include <X11/fonts/fontmisc.h>
+
 #include "clientstr.h"
 #define FSMD_H
 #include <X11/fonts/FSproto.h>
 #include "difs.h"
-
-extern void TwoByteSwap(unsigned char *, int);
-extern void FourByteSwap(unsigned char *, int);
 
 #define GLWIDTHBYTESPADDED(bits,nbytes) \
 	((nbytes) == 1 ? (((bits)+7)>>3)        /* pad to 1 byte */ \

@@ -61,7 +61,7 @@ extern pointer Xalloc (unsigned long m);
 extern pointer Xrealloc (pointer n, unsigned long m);
 extern void BlockHandler (OSTimePtr pTimeout, pointer pReadmask);
 extern void ClientWakeup (ClientPtr client);
-extern void CopyISOLatin1Lowered (unsigned char *dest, unsigned char *source, int length);
+extern void CopyISOLatin1Lowered (char *d, char *s, int length);
 extern void InitBlockAndWakeupHandlers (void);
 extern void NoopDDA (void);
 extern void ProcessWorkQueue (void);

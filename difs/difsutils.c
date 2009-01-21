@@ -62,8 +62,8 @@ in this Software without prior written authorization from The Open Group.
 #include	"authstr.h"
 #include	"auth.h"
 #include	"client.h"
+#include	"dispatch.h"
 
-extern ClientPtr currentClient;
 static FontResolutionPtr default_resolutions;
 static int  num_resolutions;
 static int  default_point_size = 120;
@@ -189,9 +189,10 @@ XpClientIsPrintClient(ClientPtr client, FontPathElementPtr fpe)
 }
 
 void
-CopyISOLatin1Lowered(unsigned char *dest, unsigned char *source, int length)
+CopyISOLatin1Lowered(char *d, char *s, int length)
 {
     register int i;
+    unsigned char *dest = d, *source = s;
 
     for (i = 0; i < length; i++, source++, dest++) {
 	if ((*source >= XK_A) && (*source <= XK_Z))

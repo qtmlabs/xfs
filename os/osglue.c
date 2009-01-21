@@ -62,17 +62,12 @@ in this Software without prior written authorization from The Open Group.
 #ifdef __UNIXOS2__
 #define _NFILE 256
 #endif
+#include "globals.h"
 
 Bool        drone_server = FALSE;
-extern char *progname;
-extern char *configfilename;
 
 static int  num_alts;
 static AlternateServerPtr alt_servers = (AlternateServerPtr) 0;
-
-extern XtransConnInfo 	*ListenTransConns;
-extern int	       	*ListenTransFds;
-extern int		ListenTransCount;
 
 /*
  * XXX

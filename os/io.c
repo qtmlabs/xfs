@@ -83,18 +83,6 @@ in this Software without prior written authorization from The Open Group.
 
 #endif
 
-
-extern fd_set ClientsWithInput;
-extern fd_set ClientsWriteBlocked;
-extern fd_set OutputPending;
-
-extern long OutputBufferSize;
-
-extern int  ConnectionTranslation[];
-
-extern Bool AnyClientsWriteBlocked;
-extern Bool NewOutputPending;
-
 static int  timesThisConnection = 0;
 static ConnectionInputPtr FreeInputs = (ConnectionInputPtr) NULL;
 static ConnectionOutputPtr FreeOutputs = (ConnectionOutputPtr) NULL;
@@ -626,7 +614,7 @@ AllocateInputBuffer(void)
 	fsfree(oci);
 	return (ConnectionInputPtr) NULL;
     }
-    oci->next = 0;
+    oci->next = NULL;
     oci->size = BUFSIZE;
     oci->bufptr = oci->buffer;
     oci->bufcnt = 0;

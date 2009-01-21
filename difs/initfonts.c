@@ -49,6 +49,7 @@ in this Software without prior written authorization from The Open Group.
 
 #include        <X11/fonts/font.h>
 #include	"difs.h"
+#include	"globals.h"
 #ifdef FONTCACHE
 #include        "misc.h"
 #include        <X11/extensions/fontcacheP.h>

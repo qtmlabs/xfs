@@ -90,7 +90,6 @@ in this Software without prior written authorization from The Open Group.
 
 #include <stdlib.h>
 
-extern char *configfilename;
 static Bool dropPriv = FALSE; /* whether or not to drop root privileges */
 #ifdef DEFAULT_DAEMON
 static Bool becomeDaemon = TRUE; /* whether to become a daemon or not */
@@ -351,7 +350,6 @@ ProcessCmdLine(int argc, char **argv)
 #ifdef MEMBUG
 	else if ( strcmp( argv[i], "-alloc") == 0)
 	{
-	    extern unsigned long    MemoryFail;
 	    if(++i < argc)
 	        MemoryFail = atoi(argv[i]);
 	    else
@@ -370,7 +368,7 @@ unsigned long	Must_have_memory;
 
 #ifdef MEMBUG
 #define MEM_FAIL_SCALE	100000
-unsigned long	MemoryFail;
+static unsigned long	MemoryFail;
 
 #endif
 

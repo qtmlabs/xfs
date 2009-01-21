@@ -72,10 +72,6 @@ Cache       serverCache;
 static Bool create_connection_block(void);
 
 char       *configfilename;
-extern Bool drone_server;
-
-extern OldListenRec *OldListen;
-extern int 	     OldListenCount;
 
 int
 main(int argc, char *argv[])

@@ -76,8 +76,7 @@ in this Software without prior written authorization from The Open Group.
 #include	<errno.h>
 
 #include	"misc.h"
-
-extern char *progname;
+#include	"globals.h"
 
 Bool        UseSyslog;
 #ifdef USE_SYSLOG

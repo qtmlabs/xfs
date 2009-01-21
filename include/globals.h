@@ -51,6 +51,11 @@ in this Software without prior written authorization from The Open Group.
 #define _GLOBALS_H_
 
 #include	<X11/fonts/FSproto.h>	/* for fsResolution */
+#include	<X11/Xtrans/Xtrans.h>	/* XtransConnInfo */
+#include        <X11/fonts/font.h>	/* FontPatternCachePtr */
+#include	<X11/Xpoll.h>		/* select & fd_set */
+#include	"client.h"		/* WorkQueuePtr */
+#include	"misc.h"		/* OldListenRec */
 
 extern long TimeOutValue;
 extern long ReapClientTime;
@@ -64,6 +69,43 @@ extern volatile char dispatchException;
 
 extern int  argcGlobal;
 extern char **argvGlobal;
+
+extern WorkQueuePtr workQueue;
+
+extern fd_set WellKnownConnections;
+extern fd_set LastSelectMask;
+extern fd_set WriteMask;
+extern fd_set ClientsWithInput;
+extern fd_set ClientsWriteBlocked;
+extern fd_set AllSockets;
+extern fd_set AllClients;
+extern fd_set OutputPending;
+
+extern Bool AnyClientsWriteBlocked;
+extern Bool NewOutputPending;
+
+extern int ConnectionTranslation[];
+
+extern FontPatternCachePtr fontPatternCache;
+
+extern long LastReapTime;
+extern Bool drone_server;
+extern char *progname;
+extern char *configfilename;
+
+extern XtransConnInfo *ListenTransConns;
+extern int *ListenTransFds;
+extern int  ListenTransCount;
+
+extern OldListenRec *OldListen;
+extern int OldListenCount;
+
+extern Bool portFromCmdline;
+
+extern char *ConnectionInfo;
+extern int ConnInfoLen;
+
+extern long OutputBufferSize;
 
 /* bit values for dispatchException */
 #define	DE_RESET	0x1

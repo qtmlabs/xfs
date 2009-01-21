@@ -70,6 +70,7 @@ in this Software without prior written authorization from The Open Group.
 #include "clientstr.h"
 #include "dispatch.h"
 #include "globals.h"
+#include "difs.h"
 
 static void rebuild_table(int client);
 
@@ -103,8 +104,6 @@ static RESTYPE lastResourceClass;
 static RESTYPE TypeMask;
 
 typedef int (*DeleteType) (void *, FSID);
-
-extern int  CloseClientFont(ClientPtr, FSID);
 
 static DeleteType *DeleteFuncs = (DeleteType *) NULL;
 
@@ -141,7 +140,7 @@ CreateNewResourceClass(void)
 
 #endif				/* NOTYET */
 
-ClientResourceRec clientTable[MAXCLIENTS];
+static ClientResourceRec clientTable[MAXCLIENTS];
 
 /*****************
  * InitClientResources

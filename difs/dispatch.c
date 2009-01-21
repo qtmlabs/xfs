@@ -77,13 +77,6 @@ ClientPtr   currentClient;
 static int  nClients = 0;
 static int  nextFreeClientID;
 
-extern char *ConnectionInfo;
-extern int  ConnInfoLen;
-
-extern char *configfilename;
-
-extern Bool drone_server;
-
 #define	MAJOROP	((fsReq *)client->requestBuffer)->reqType
 
 #define	ALL_FORMAT_BITS	(BitmapFormatByteOrderMask | \

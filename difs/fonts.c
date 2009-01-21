@@ -70,8 +70,6 @@ static int  num_slept_fpes = 0;
 static int  size_slept_fpes = 0;
 static FontPathElementPtr *slept_fpes = (FontPathElementPtr *) 0;
 
-extern FontPatternCachePtr fontPatternCache;
-
 #define	NUM_IDS_PER_CLIENT	5
 
 int

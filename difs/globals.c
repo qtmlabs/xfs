@@ -53,11 +53,11 @@ in this Software without prior written authorization from The Open Group.
 #include	"clientstr.h"
 #include	"misc.h"
 #include	"site.h"
+#include	"globals.h"
 
 ClientPtr  *clients;
 ClientPtr   serverClient;
 int         currentMaxClients;
-char       *server;
 int         serverGeneration = 0;
 int         argcGlobal;
 char      **argvGlobal;

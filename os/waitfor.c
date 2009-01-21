@@ -68,23 +68,6 @@ in this Software without prior written authorization from The Open Group.
 #define select(n,r,w,x,t) os2PseudoSelect(n,r,w,x,t)
 #endif
 
-extern WorkQueuePtr workQueue;
-
-
-extern fd_set WellKnownConnections;
-extern fd_set LastSelectMask;
-extern fd_set WriteMask;
-extern fd_set ClientsWithInput;
-extern fd_set ClientsWriteBlocked;
-extern fd_set AllSockets;
-extern fd_set AllClients;
-extern fd_set OutputPending;
-
-extern Bool AnyClientsWriteBlocked;
-extern Bool NewOutputPending;
-
-extern int  ConnectionTranslation[];
-
 long        LastReapTime;
 
 /*

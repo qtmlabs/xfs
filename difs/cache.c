@@ -239,7 +239,7 @@ flush_cache(CachePtr cache, unsigned long needed)
 	/* fixup list */
 	oldprev = &cache->entries[oldbucket];
 	cp = *oldprev;
-	for (; (cp = *oldprev) != 0; oldprev = &cp->next) {
+	for (; (cp = *oldprev) != NULL; oldprev = &cp->next) {
 	    if (cp == oldest) {
 		*oldprev = oldest->next;
 		break;

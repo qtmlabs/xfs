@@ -66,6 +66,9 @@ in this Software without prior written authorization from The Open Group.
 #include	<X11/fonts/fontutil.h>
 #include	"difs.h"
 
+/* libXfont/src/bitmap/snfstr.h */
+extern void SnfSetFormat(int bit, int byte, int glyph, int scan);
+
 static const char * const default_config_files[] = {
 #ifdef DEFAULT_CONFIG_FILE
     DEFAULT_CONFIG_FILE,
@@ -74,8 +77,6 @@ static const char * const default_config_files[] = {
 #endif
     NULL
 };
-
-extern int portFromCmdline;
 
 static char *font_catalogue = NULL;
 
