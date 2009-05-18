@@ -44,12 +44,8 @@ in this Software without prior written authorization from The Open Group.
  */
 
 #include	<X11/Xos.h>
-#ifndef Lynx
 #include        <sys/param.h>
 #include	<sys/socket.h>
-#else
-#include	<socket.h>
-#endif
 #include	<netdb.h>
 #include	<netinet/in.h>
 #include	"clientstr.h"

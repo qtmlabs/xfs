@@ -50,13 +50,9 @@ in this Software without prior written authorization from The Open Group.
 #include	<stdio.h>
 #include	<errno.h>
 #include	<sys/types.h>
-#ifndef Lynx
 #include	<sys/param.h>
 #ifndef __UNIXOS2__
 #include	<sys/uio.h>
-#endif
-#else
-#include	<uio.h>
 #endif
 
 #include	<X11/fonts/FSproto.h>

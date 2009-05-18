@@ -74,15 +74,10 @@ in this Software without prior written authorization from The Open Group.
 #include	<stdio.h>
 #include	<errno.h>
 #include	<X11/Xos.h>
-#ifndef Lynx
 #include	<sys/param.h>
 #include	<sys/socket.h>
 #ifndef __UNIXOS2__
 #include	<sys/uio.h>
-#endif
-#else
-#include	<socket.h>
-#include	<uio.h>
 #endif
 #include	<signal.h>
 
