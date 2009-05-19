@@ -56,15 +56,13 @@ in this Software without prior written authorization from The Open Group.
 #define	MAXBUFSIZE	(1 << 15)
 
 #ifndef sgi	    /* SGI defines OPEN_MAX in a useless way */
-#ifndef X_NOT_POSIX
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
-#endif
-#endif
+# ifdef _POSIX_SOURCE
+#  include <limits.h>
+# else
+#  define _POSIX_SOURCE
+#  include <limits.h>
+#  undef _POSIX_SOURCE
+# endif
 #endif
 
 #ifndef OPEN_MAX

@@ -64,7 +64,6 @@ in this Software without prior written authorization from The Open Group.
 #include	<errno.h>
 #include	<string.h>
 
-#ifndef X_NOT_POSIX
 #ifdef _POSIX_SOURCE
 #include <limits.h>
 #else
@@ -72,7 +71,6 @@ in this Software without prior written authorization from The Open Group.
 #include <limits.h>
 #undef _POSIX_SOURCE
 #endif
-#endif /* X_NOT_POSIX */
 #ifndef PATH_MAX
 #include <sys/param.h>
 #ifndef PATH_MAX
@@ -84,7 +82,7 @@ in this Software without prior written authorization from The Open Group.
 #endif
 #endif /* PATH_MAX */
 
-#if defined(X_NOT_POSIX) && (defined(SYSV) || defined(SVR4))
+#if defined(SYSV) || defined(SVR4)
 #define SIGNALS_RESET_WHEN_CAUGHT
 #endif
 

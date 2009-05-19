@@ -42,57 +42,11 @@ from the X Consortium.
 # include <sys/ptyio.h>
 #endif
 
-#ifdef X_NOT_POSIX
-# define Pid_t int
-#else
-# define Pid_t pid_t
-#endif
-
 #include "os.h"
 
 #if defined(__GLIBC__) || defined(CSRG_BASED)
 #define HAS_DAEMON
 #endif
-
-#ifndef X_NOT_POSIX
-#define HAS_SETSID
-#endif
-
-#ifndef HAS_SETSID
-
-#define setsid() MySetsid()
-
-static Pid_t
-MySetsid(void)
-{
-#if defined(TIOCNOTTY) || defined(TCCLRCTTY) || defined(TIOCTTY)
-    int fd;
-#endif
-    int stat;
-
-    fd = open("/dev/tty", O_RDWR);
-    if (fd >= 0) {
-#if defined(USG) && defined(TCCLRCTTY)
-	int zero = 0;
-	(void) ioctl (fd, TCCLRCTTY, &zero);
-#elif (defined(SYSV) || defined(SVR4)) && defined(TIOCTTY)
-	int zero = 0;
-	(void) ioctl (i, TIOCTTY, &zero);
-#elif defined(TIOCNOTTY)
-	(void) ioctl (i, TIOCNOTTY, (char *) 0);    /* detach, BSD style */
-#endif
-        close(fd);
-    }
-
-#if defined(SYSV) || defined(__QNXNTO__)
-    return setpgrp();
-#else
-    return setpgid(0, getpid());
-#endif
-}
-
-#endif /* !HAS_SETSID */
-
 
 /* detach */
 void
