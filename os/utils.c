@@ -52,9 +52,6 @@ in this Software without prior written authorization from The Open Group.
 #include	"misc.h"
 #include	"globals.h"
 #include	<signal.h>
-#ifdef MEMBUG
-#include	<util/memleak/memleak.h>
-#endif
 #include	<sys/wait.h>
 #include	<unistd.h>
 #include	<pwd.h>
@@ -205,9 +202,7 @@ usage(void)
 void
 OsInitAllocator (void)
 {
-#ifdef MEMBUG
-    CheckMemory ();
-#endif
+    return;
 }
 
 
@@ -328,15 +323,6 @@ ProcessCmdLine(int argc, char **argv)
 	    else
 		usage();
 	}
-#ifdef MEMBUG
-	else if ( strcmp( argv[i], "-alloc") == 0)
-	{
-	    if(++i < argc)
-	        MemoryFail = atoi(argv[i]);
-	    else
-		usage ();
-	}
-#endif
 	else
 	    usage();
     }
@@ -347,11 +333,6 @@ ProcessCmdLine(int argc, char **argv)
 
 unsigned long	Must_have_memory;
 
-#ifdef MEMBUG
-#define MEM_FAIL_SCALE	100000
-static unsigned long	MemoryFail;
-
-#endif
 
 /* FSalloc -- FS's internal memory allocator.  Why does it return unsigned
  * int * instead of the more common char *?  Well, if you read K&R you'll
@@ -376,16 +357,8 @@ FSalloc (unsigned long amount)
 	amount++;
     /* aligned extra on long word boundary */
     amount = (amount + 3) & ~3;
-#ifdef MEMBUG
-    if (!Must_have_memory && MemoryFail &&
-	((random() % MEM_FAIL_SCALE) < MemoryFail))
-	return 0;
-    if (ptr = (pointer)fmalloc(amount))
-	return ptr;
-#else
     if ((ptr = (pointer)malloc(amount)) != 0)
 	return ptr;
-#endif
     if (Must_have_memory)
 	FatalError("out of memory\n");
     return 0;
@@ -413,14 +386,6 @@ FScalloc (unsigned long amount)
 pointer
 FSrealloc (pointer ptr, unsigned long amount)
 {
-#ifdef MEMBUG
-    if (!Must_have_memory && MemoryFail &&
-	((random() % MEM_FAIL_SCALE) < MemoryFail))
-	return 0;
-    ptr = (pointer)frealloc((char *) ptr, amount);
-    if (ptr)
-	return ptr;
-#else
     if ((long)amount <= 0)
     {
 	if (ptr && !amount)
@@ -434,7 +399,6 @@ FSrealloc (pointer ptr, unsigned long amount)
 	ptr = (pointer)malloc(amount);
     if (ptr)
         return ptr;
-#endif
     if (Must_have_memory)
 	FatalError("out of memory\n");
     return 0;
@@ -448,13 +412,8 @@ FSrealloc (pointer ptr, unsigned long amount)
 void
 FSfree(pointer ptr)
 {
-#ifdef MEMBUG
-    if (ptr)
-	ffree((char *)ptr); 
-#else
     if (ptr)
 	free((char *)ptr); 
-#endif
 }
 
 #endif /* SPECIAL_MALLOC */
