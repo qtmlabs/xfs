@@ -29,7 +29,6 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <misc.h>
 #include <auth.h>
 #include <X11/fonts/font.h>
-#include <accstr.h>
 #include <X11/fonts/fontstruct.h>
 
 typedef void (*DifsWakeupFunc)(pointer data, int result, unsigned long * pReadmask);
@@ -40,17 +39,14 @@ extern Bool ClientIsAsleep (ClientPtr client);
 extern Bool ClientSleep (ClientPtr client, Bool (*function) (ClientPtr, pointer), pointer data);
 extern Bool QueueWorkProc (DifsWorkFunc function, ClientPtr client, pointer data);
 extern Bool RegisterBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler, DifsWakeupFunc wakeupHandler, pointer blockData);
-extern Bool ValidHost (HostList list, HostAddress *addr);
 #if 0
 extern Bool XpClientIsBitmapClient (ClientPtr client);
 extern Bool XpClientIsPrintClient (ClientPtr client, FontPathElementPtr fpe);
 extern FontResolutionPtr GetClientResolutions (int *num);
 #endif
-extern int AddHost (HostList *list, HostAddress *addr);
 #if 0
 extern int GetDefaultPointSize (void);
 #endif
-extern int RemoveHost (HostList *list, HostAddress *addr);
 extern int SetDefaultResolutions (char *str);
 #if 0
 extern int client_auth_generation (ClientPtr client);

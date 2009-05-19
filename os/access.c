@@ -51,10 +51,8 @@ in this Software without prior written authorization from The Open Group.
 #include	"clientstr.h"
 #include	"misc.h"
 #include	"site.h"
-#include	"accstr.h"
 #include	"osdep.h"
 #include	"osstruct.h"
-#include	"accstr.h"
 #include	"globals.h"
 
 long        MaxClients = DEFAULT_CLIENT_LIMIT;
@@ -70,36 +68,6 @@ AccessSetConnectionLimit(int num)
     }
     MaxClients = num;
 }
-
-#ifdef NOTDEF
-/*
- * XXX
- *
- * needs massive amounts of OS-dependent work (big surprise)
- * needs IPv6 support as well
- */
-int
-GetHostAddress(HostAddress *addr)
-{
-    char        hname[64];
-    struct hostent *hp;
-
-    addr->addr_len = sizeof(struct in_addr);
-    addr->address = (pointer) fsalloc(addr->addr_len);
-    if (!addr->address)
-	return FSBadAlloc;
-    addr->type = HOST_AF_INET;
-    gethostname(hname, sizeof(hname));
-    hp = gethostbyname(hname);
-    if (hp) {
-	memmove( (char *) addr->address, (char *) hp->h_addr, addr->addr_len);
-    } else {
-	fsfree((char *) addr->address);
-	return FSBadName;
-    }
-    return FSSuccess;
-}
-#endif
 
 /* ARGSUSED */
 int

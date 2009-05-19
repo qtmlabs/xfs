@@ -55,7 +55,6 @@ in this Software without prior written authorization from The Open Group.
 #include	"misc.h"
 #include	"globals.h"
 #include	"clientstr.h"
-#include	"accstr.h"
 #include	<X11/fonts/fontstruct.h>
 #include	<X11/keysymdef.h>
 
@@ -252,80 +251,6 @@ strncmpnocase(
 void
 NoopDDA(void)
 {
-}
-
-/* host list manipulation */
-int
-AddHost(
-    HostList   *list,
-    HostAddress *addr)
-{
-    HostAddress *new;
-
-    new = (HostAddress *) fsalloc(sizeof(HostAddress));
-    if (!new)
-	return FSBadAlloc;
-    new->address = (pointer) fsalloc(addr->addr_len);
-    if (!new->address) {
-	fsfree((char *) addr);
-	return FSBadAlloc;
-    }
-    new->type = addr->type;
-    new->addr_len = addr->addr_len;
-    memmove( (char *) new->address, (char *) addr->address, new->addr_len);
-
-    new->next = *list;
-    *list = new;
-    return FSSuccess;
-}
-
-int
-RemoveHost(
-    HostList   *list,
-    HostAddress *addr)
-{
-    HostAddress *t,
-               *last;
-
-    last = (HostAddress *) 0;
-    t = *list;
-    while (t) {
-	if (t->type == addr->type &&
-		t->addr_len == addr->addr_len &&
-		memcmp((char *) t->address, (char *) addr->address,
-		     min(t->addr_len, addr->addr_len)) == 0) {
-	    if (last) {
-		last->next = t->next;
-	    } else {
-		*list = t->next;
-	    }
-	    fsfree((char *) t->address);
-	    fsfree((char *) t);
-	    return FSSuccess;
-	}
-	last = t;
-	t = t->next;
-    }
-    return FSBadName;		/* bad host name */
-}
-
-Bool
-ValidHost(
-    HostList    list,
-    HostAddress *addr)
-{
-    HostAddress *t;
-
-    t = list;
-    while (t) {
-	if (t->type == addr->type &&
-		t->addr_len == addr->addr_len &&
-		memcmp((char *) t->address, (char *) addr->address,
-		     min(t->addr_len, addr->addr_len)) == 0) {
-	    return TRUE;
-	}
-    }
-    return FALSE;
 }
 
 /* block & wakeup handlers */

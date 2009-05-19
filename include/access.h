@@ -50,13 +50,8 @@ in this Software without prior written authorization from The Open Group.
 #ifndef _ACCESS_H_
 #define _ACCESS_H_
 
-typedef struct _hostaddress *HostList;
-
 #include <os.h>
 #include <client.h>
-
-#define	HOST_AF_INET	1
-#define	HOST_AF_DECnet	2
 
 extern int  CheckClientAuthorization(
 		ClientPtr   client,
