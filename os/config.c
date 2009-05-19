@@ -358,8 +358,12 @@ ReadConfigFile(const char *filename)
 #ifdef __UNIXOS2__
 	    filename = __XFSRedirRoot(filename);
 #endif	    
-	    if ((fp = fopen(filename, "r")) != NULL)
+	    if ((fp = fopen(filename, "r")) != NULL) {
+		if (configfilename == NULL) {
+		    configfilename = strdup(filename); /* save for clones */
+		}
 		break;
+	    }
 	}
 	if (fp == NULL) {
 	    for (i = 0; default_config_files[i] != NULL; i++) {

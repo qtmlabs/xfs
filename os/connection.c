@@ -165,6 +165,7 @@ void
 CreateSockets(int old_listen_count, OldListenRec *old_listen)
 {
     int	i;
+    struct sigaction act;
 
     FD_ZERO(&AllSockets);
     FD_ZERO(&AllClients);
@@ -254,13 +255,17 @@ CreateSockets(int old_listen_count, OldListenRec *old_listen)
 	FatalError("cannot establish any listening sockets\n");
 
     /* set up all the signal handlers */
-    signal(SIGPIPE, SIG_IGN);
-    signal(SIGHUP, AutoResetServer);
-    signal(SIGINT, GiveUp);
-    signal(SIGTERM, GiveUp);
-    signal(SIGUSR1, ServerReconfig);
-    signal(SIGUSR2, ServerCacheFlush);
-    signal(SIGCHLD, CleanupChild);
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = SA_RESTART;
+#define HANDLE_SIGNAL(s, h)	act.sa_handler = h; sigaction(s, &act, NULL)
+
+    HANDLE_SIGNAL(SIGPIPE, SIG_IGN);
+    HANDLE_SIGNAL(SIGHUP, AutoResetServer);
+    HANDLE_SIGNAL(SIGINT, GiveUp);
+    HANDLE_SIGNAL(SIGTERM, GiveUp);
+    HANDLE_SIGNAL(SIGUSR1, ServerReconfig);
+    HANDLE_SIGNAL(SIGUSR2, ServerCacheFlush);
+    HANDLE_SIGNAL(SIGCHLD, CleanupChild);
 
     XFD_COPYSET (&WellKnownConnections, &AllSockets);
 }

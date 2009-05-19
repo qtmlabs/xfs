@@ -67,12 +67,6 @@ typedef pointer FID;
 
 #define	MAX_REQUEST_SIZE	8192
 
-#ifdef SIGNALRETURNSINT
-#define SIGVAL int
-#else
-#define SIGVAL void
-#endif
-
 #define	fsalloc(size)		FSalloc((unsigned long)size)
 #define	fsrealloc(ptr, size)	FSrealloc((pointer)ptr, (unsigned long)size)
 #define	fsfree(ptr)		FSfree((pointer)ptr)
@@ -135,11 +129,11 @@ extern int 	CloneMyself(void);
 extern	void	OsInit(void);
 
 /* os/utils.c */
-extern	SIGVAL	AutoResetServer (int n);
-extern	SIGVAL	CleanupChild (int n);
-extern	SIGVAL	GiveUp (int n);
-extern	SIGVAL	ServerCacheFlush (int n);
-extern	SIGVAL	ServerReconfig (int n);
+extern	void	AutoResetServer (int n);
+extern	void	CleanupChild (int n);
+extern	void	GiveUp (int n);
+extern	void	ServerCacheFlush (int n);
+extern	void	ServerReconfig (int n);
 extern	long	GetTimeInMillis (void);
 extern	pointer	FSalloc(unsigned long);
 extern	pointer	FScalloc (unsigned long amount);

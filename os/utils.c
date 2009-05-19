@@ -62,10 +62,6 @@ in this Software without prior written authorization from The Open Group.
 #include	<string.h>
 #include	"osdep.h"
 
-#if defined(SYSV) || defined(SVR4)
-#define SIGNALS_RESET_WHEN_CAUGHT
-#endif
-
 #include <stdlib.h>
 
 static Bool dropPriv = FALSE; /* whether or not to drop root privileges */
@@ -93,7 +89,7 @@ static FILE *pidFilePtr;
 static int  StorePid (void);
 
 /* ARGSUSED */
-SIGVAL
+void
 AutoResetServer(int n)
 {
     int olderrno = errno;
@@ -105,14 +101,11 @@ AutoResetServer(int n)
     dispatchException |= DE_RESET;
     isItTimeToYield = TRUE;
 
-#ifdef SIGNALS_RESET_WHEN_CAUGHT
-    signal(SIGHUP, AutoResetServer);
-#endif
     errno = olderrno;
 }
 
 /* ARGSUSED */
-SIGVAL
+void
 GiveUp(int n)
 {
     int olderrno = errno;
@@ -126,7 +119,7 @@ GiveUp(int n)
 }
 
 /* ARGSUSED */
-SIGVAL
+void
 ServerReconfig(int n)
 {
     int olderrno = errno;
@@ -138,14 +131,11 @@ ServerReconfig(int n)
     dispatchException |= DE_RECONFIG;
     isItTimeToYield = TRUE;
 
-#ifdef SIGNALS_RESET_WHEN_CAUGHT
-    signal(SIGUSR1, ServerReconfig);
-#endif
     errno = olderrno;
 }
 
 /* ARGSUSED */
-SIGVAL
+void
 ServerCacheFlush(int n)
 {
     int olderrno = errno;
@@ -157,27 +147,29 @@ ServerCacheFlush(int n)
     dispatchException |= DE_FLUSH;
     isItTimeToYield = TRUE;
 
-#ifdef SIGNALS_RESET_WHEN_CAUGHT
-    signal(SIGUSR2, ServerCacheFlush);
-#endif
     errno = olderrno;
 }
 
 /* ARGSUSED */
-SIGVAL
+void
 CleanupChild(int n)
 {
     int olderrno = errno;
+    pid_t child;
 
 #ifdef DEBUG
     WRITES("got a child signal\n");
 #endif
 
-    wait(NULL);
+    while ( (child = waitpid((pid_t)-1, NULL, WNOHANG)) > 0 ) {
+#ifdef DEBUG
+	char msgbuf[64];
 
-#ifdef SIGNALS_RESET_WHEN_CAUGHT
-    signal(SIGCHLD, CleanupChild);
+	snprintf(msgbuf, sizeof(msgbuf), " child %d exited\n", child);
+	WRITES(msgbuf);
 #endif
+    }
+
     errno = olderrno;
 }
 
