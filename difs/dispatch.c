@@ -195,7 +195,6 @@ ProcInitialConnection(ClientPtr client)
     fsConnClientPrefix *prefix;
     int         whichbyte = 1;
 
-    nClients++;
     prefix = (fsConnClientPrefix *) stuff+1;
     if ((prefix->byteOrder != 'l') && (prefix->byteOrder != 'B'))
 	return (client->noClientException = -2);
@@ -1074,6 +1073,9 @@ InitClient(
     int         i,
     pointer     ospriv)
 {
+    if (i != SERVER_CLIENT) {
+	nClients++;
+    }
     client->index = i;
     client->sequence = 0;
     client->last_request_time = GetTimeInMillis();
