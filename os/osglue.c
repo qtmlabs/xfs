@@ -63,6 +63,7 @@ in this Software without prior written authorization from The Open Group.
 #define _NFILE 256
 #endif
 #include "globals.h"
+#include "osdep.h"
 
 Bool        drone_server = FALSE;
 
@@ -294,18 +295,10 @@ CloneMyself(void)
 
     old_listen_arg[0] = '\0';
 
-#ifdef XNO_SYSCONF	/* should only be on FreeBSD 1.x and NetBSD 0.x */
-#undef _SC_OPEN_MAX
-#endif
-#ifdef _SC_OPEN_MAX
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
-#else
-#if defined(hpux) || defined(__UNIXOS2__)
-    lastfdesc = _NFILE - 1;
-#else
-    lastfdesc = getdtablesize() - 1;
-#endif				/* hpux */
-#endif
+    if ( (lastfdesc < 0) || (lastfdesc > MAXSOCKS)) {
+	lastfdesc = MAXSOCKS;
+    }
 
     NoticeF("attempting clone...\n");
     chdir("/");

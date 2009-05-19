@@ -177,20 +177,9 @@ CreateSockets(int old_listen_count, OldListenRec *old_listen)
     for (i = 0; i < MAXSOCKS; i++)
 	ConnectionTranslation[i] = 0;
 
-#ifdef XNO_SYSCONF	/* should only be on FreeBSD 1.x and NetBSD 0.x */
-#undef _SC_OPEN_MAX
-#endif
-#ifdef _SC_OPEN_MAX
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
-#else
-#if defined(hpux) || defined(__UNIXOS2__)
-    lastfdesc = _NFILE - 1;
-#else
-    lastfdesc = getdtablesize() - 1;
-#endif				/* hpux */
-#endif
 
-    if (lastfdesc > MAXSOCKS) {
+    if ((lastfdesc < 0) || (lastfdesc > MAXSOCKS)) {
 	lastfdesc = MAXSOCKS;
     }
 

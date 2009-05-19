@@ -60,13 +60,18 @@ long        MaxClients = DEFAULT_CLIENT_LIMIT;
 void
 AccessSetConnectionLimit(int num)
 {
-    num++;	/* take serverClient into account */
-    if (num > MAXSOCKS) {
+    int newlim = num + 8; /* allow room for serverClient, logs, etc. */
+    int maxfd = sysconf(_SC_OPEN_MAX) - 1;
+
+    if ((maxfd < 0) || (maxfd > MAXSOCKS)) {
+	maxfd = MAXSOCKS;
+    }
+    if (newlim > maxfd) {
 	ErrorF("Client limit of %d too high; using default of %d\n",
 	       num, DEFAULT_CLIENT_LIMIT);
 	return;
     }
-    MaxClients = num;
+    MaxClients = newlim;
 }
 
 /* ARGSUSED */

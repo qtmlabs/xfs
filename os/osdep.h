@@ -55,18 +55,16 @@ in this Software without prior written authorization from The Open Group.
 #define	BUFWATERMARK	8192
 #define	MAXBUFSIZE	(1 << 15)
 
-#ifndef sgi	    /* SGI defines OPEN_MAX in a useless way */
-# ifdef _POSIX_SOURCE
-#  include <limits.h>
-# else
-#  define _POSIX_SOURCE
-#  include <limits.h>
-#  undef _POSIX_SOURCE
-# endif
+#ifdef _POSIX_SOURCE
+# include <limits.h>
+#else
+# define _POSIX_SOURCE
+# include <limits.h>
+# undef _POSIX_SOURCE
 #endif
+#include <sys/param.h>
 
 #ifndef PATH_MAX
-# include <sys/param.h>
 # ifndef PATH_MAX
 #  ifdef MAXPATHLEN
 #   define PATH_MAX MAXPATHLEN
@@ -76,41 +74,7 @@ in this Software without prior written authorization from The Open Group.
 # endif
 #endif /* PATH_MAX */
 
-#ifndef OPEN_MAX
-#if defined(__UNIXOS2__) || defined(__QNX__)
-#define OPEN_MAX 256
-#else
-#ifdef SVR4
-#define OPEN_MAX 128
-#else
-#include <sys/param.h>
-#ifdef __GNU__
-#define OPEN_MAX (sysconf(_SC_OPEN_MAX))
-#endif /*__GNU__*/
-#ifndef OPEN_MAX
-#ifdef SCO325
-#define OPEN_MAX (sysconf(_SC_OPEN_MAX))
-#else
-#if defined(NOFILE) && !defined(NOFILES_MAX)
-#define OPEN_MAX NOFILE
-#else
-#define OPEN_MAX NOFILES_MAX
-#endif
-#endif
-#endif
-#endif
-#endif
-#endif
-
-#if defined(__GNU__) || defined(SCO325)
-#define MAXSOCKS 128
-#else /*__GNU__*/
-#if OPEN_MAX <= 128		/* 128 is value of MAXCLIENTS */
-#define MAXSOCKS (OPEN_MAX - 1)
-#else
-#define MAXSOCKS 128
-#endif
-#endif /*__GNU__*/
+#define MAXSOCKS	MAXCLIENTS
 
 #include <stddef.h>
 
