@@ -206,9 +206,6 @@ swap_auth(ClientPtr client, pointer data, int num, int length)
     if ((i == num) && ((p - (unsigned char *)data) == length))
 	return (FSSuccess);
 
-#if 0
-  fail:
-#endif
     /* If length didn't match either way, we give up. */
     SendErrToClient(client, FSBadLength, (pointer)&length);
     return (FSBadLength);

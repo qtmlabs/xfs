@@ -58,9 +58,6 @@ extern int ProcQueryXInfo (ClientPtr client);
 extern int ProcQueryXExtents (ClientPtr client);
 extern int ProcQueryXBitmaps (ClientPtr client);
 extern int ProcCloseFont (ClientPtr client);
-#if 0
-extern void CloseDownClient (ClientPtr client);
-#endif
 extern void InitProcVectors (void);
 extern void InitClient (ClientPtr client, int i, pointer ospriv);
 extern ClientPtr NextAvailableClient (pointer ospriv);

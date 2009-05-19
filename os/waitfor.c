@@ -191,20 +191,3 @@ WaitForSomething(int *pClientsReady)
     }
     return nready;
 }
-
-#if 0
-/*
- * This is not always a macro
-  */
-int
-ANYSET(long *src)
-{
-    int         i;
-
-    for (i = 0; i < howmany(XFD_SETSIZE, NFDBITS); i++)
-	if (src[i])
-	    return (1);
-    return (0);
-}
-
-#endif
