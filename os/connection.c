@@ -154,6 +154,7 @@ StopListening(void)
 
     ListenTransFds = NULL;
     ListenTransConns = NULL;
+    ListenTransCount = 0;
 }
 
 /*
