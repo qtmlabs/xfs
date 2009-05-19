@@ -63,24 +63,7 @@ in this Software without prior written authorization from The Open Group.
 #include	<sys/types.h>
 #include	<errno.h>
 #include	<string.h>
-
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
-#endif
-#ifndef PATH_MAX
-#include <sys/param.h>
-#ifndef PATH_MAX
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#else
-#define PATH_MAX 1024
-#endif
-#endif
-#endif /* PATH_MAX */
+#include	"osdep.h"
 
 #if defined(SYSV) || defined(SVR4)
 #define SIGNALS_RESET_WHEN_CAUGHT

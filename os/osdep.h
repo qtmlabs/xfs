@@ -65,6 +65,17 @@ in this Software without prior written authorization from The Open Group.
 # endif
 #endif
 
+#ifndef PATH_MAX
+# include <sys/param.h>
+# ifndef PATH_MAX
+#  ifdef MAXPATHLEN
+#   define PATH_MAX MAXPATHLEN
+#  else
+#   define PATH_MAX 1024
+#  endif
+# endif
+#endif /* PATH_MAX */
+
 #ifndef OPEN_MAX
 #if defined(__UNIXOS2__) || defined(__QNX__)
 #define OPEN_MAX 256

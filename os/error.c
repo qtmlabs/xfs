@@ -49,24 +49,6 @@ in this Software without prior written authorization from The Open Group.
 #include	<stdarg.h>
 #include	<X11/Xos.h>
 
-#ifdef _POSIX_SOURCE
-#include <limits.h>
-#else
-#define _POSIX_SOURCE
-#include <limits.h>
-#undef _POSIX_SOURCE
-#endif
-#ifndef PATH_MAX
-#include <sys/param.h>
-#ifndef PATH_MAX
-#ifdef MAXPATHLEN
-#define PATH_MAX MAXPATHLEN
-#else
-#define PATH_MAX 1024
-#endif
-#endif
-#endif
-
 #ifdef USE_SYSLOG
 #include	<syslog.h>
 #endif
@@ -75,6 +57,7 @@ in this Software without prior written authorization from The Open Group.
 
 #include	"misc.h"
 #include	"globals.h"
+#include	"osdep.h"
 
 Bool        UseSyslog;
 #ifdef USE_SYSLOG
