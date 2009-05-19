@@ -82,11 +82,10 @@ Bool        portFromCmdline = FALSE;
 OldListenRec *OldListen = NULL;
 int 	     OldListenCount = 0;
 
-#ifdef STDERR_FILENO
-# define WRITES write(STDERR_FILENO, s, strlen(s))
-#else
-# define WRITES write(fileno(stderr), s, strlen(s))
+#ifndef STDERR_FILENO
+# define STDERR_FILENO fileno(stderr)
 #endif
+#define WRITES(s) write(STDERR_FILENO, s, strlen(s))
 
 static char *pidFile = XFSPIDDIR "/xfs.pid";
 static int  pidFd;
