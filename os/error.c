@@ -92,7 +92,7 @@ InitErrors(void)
 #endif
 
     if (ErrorFile[0] && strcmp(CurrentErrorFile, ErrorFile) != 0) {
-	i = creat(ErrorFile, 0666);
+	i = open(ErrorFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
 	if (i != -1) {
 	    dup2(i, 2);
 	    close(i);
