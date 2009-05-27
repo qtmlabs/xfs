@@ -170,3 +170,6 @@ ALL_LINT_FLAGS=$(LINT_FLAGS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 lint:
 	$(LINT) $(ALL_LINT_FLAGS) $(xfs_SOURCES)
 endif LINT
+
+# Developer documentation - not installed on system
+EXTRA_DIST += doc/design.ms
