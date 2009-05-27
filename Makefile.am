@@ -64,7 +64,6 @@ xfs_SOURCES = \
 	os/waitfor.c \
 	os/xfstrans.c \
 	include/access.h \
-	include/accstr.h \
 	include/assert.h \
 	include/auth.h \
 	include/authstr.h \
