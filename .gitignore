@@ -25,3 +25,6 @@ xfs.1
 xfs-*.tar.*
 ChangeLog
 tags
+doc/xfs-design/
+doc/xfs-design.pdf
+doc/xfs-design.txt

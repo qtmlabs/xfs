@@ -47,6 +47,11 @@ case $host_os in
         ;;
 esac
 
+# xmlto is used to convert doc/design.xml from DocBook to PDF/HTML
+AC_ARG_VAR([XMLTO], [Path to xmlto command])
+AC_PATH_PROG([XMLTO], [xmlto])
+AM_CONDITIONAL([HAVE_XMLTO], [test "x$XMLTO" != "x"])
+
 AC_CHECK_HEADERS([stdint.h])
 
 AC_ARG_WITH(default-config-file,
@@ -61,7 +66,7 @@ AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,
 # generate text for the man page
 case $CONFIG_FILE in
     *,*)
-	CONFIG_FILE_DESC="the first file found from the list:" 
+	CONFIG_FILE_DESC="the first file found from the list:"
 	CONFIG_FILE_PATH=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\fR, \\\\\\\\fI/g'`
 	;;
     *)
