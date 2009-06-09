@@ -66,6 +66,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"cache.h"
 #include	"globals.h"
 #include	"difs.h"
+#include	"access.h"
 
 static void kill_all_clients(void);
 

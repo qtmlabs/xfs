@@ -54,6 +54,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"osdep.h"
 #include	"osstruct.h"
 #include	"globals.h"
+#include	"access.h"
 
 long        MaxClients = DEFAULT_CLIENT_LIMIT;
 
