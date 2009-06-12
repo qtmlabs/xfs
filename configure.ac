@@ -20,7 +20,7 @@ dnl  PERFORMANCE OF THIS SOFTWARE.
 dnl
 dnl Process this file with autoconf to create configure.
 
-AC_PREREQ([2.57])
+AC_PREREQ([2.60])
 AC_INIT(xfs,[1.0.8], [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],xfs)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
@@ -32,20 +32,16 @@ AM_CONFIG_HEADER(xfs-config.h)
 m4_ifndef([XORG_MACROS_VERSION], [AC_FATAL([must install xorg-macros 1.2 or later before running autoconf/autogen])])
 XORG_MACROS_VERSION(1.2)
 
+# Set common system defines for POSIX extensions, such as _GNU_SOURCE
+# Must be called before any macros that run the compiler (like AC_PROG_LIBTOOL)
+# to avoid autoconf errors.
+AC_USE_SYSTEM_EXTENSIONS
+
 AC_PROG_CC
 XORG_PROG_RAWCPP
 XORG_CWARNFLAGS
 AC_PROG_INSTALL
 AC_CANONICAL_HOST
-
-case $host_os in
-    linux*|gnu*|*-gnu)
-        OS_CFLAGS="-D_XOPEN_SOURCE"
-        ;;
-    *)
-        OS_CFLAGS=
-        ;;
-esac
 
 # xmlto is used to convert doc/design.xml from DocBook to PDF/HTML
 AC_ARG_VAR([XMLTO], [Path to xmlto command])
@@ -97,7 +93,6 @@ AC_SUBST([FONTPATH])
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
-XFS_CFLAGS="$XFS_CFLAGS $OS_CFLAGS"
 AC_SUBST(XFS_CFLAGS)
 AC_SUBST(XFS_LIBS)
 
