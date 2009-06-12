@@ -46,6 +46,8 @@ in this Software without prior written authorization from The Open Group.
  * THIS SOFTWARE.
  */
 
+#include	"xfs-config.h"
+
 #define	XK_LATIN1
 
 #include	<difsutils.h>

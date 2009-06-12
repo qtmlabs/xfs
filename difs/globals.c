@@ -49,6 +49,9 @@ in this Software without prior written authorization from The Open Group.
  * @(#)globals.c	4.3	5/3/91
  *
  */
+
+#include	"xfs-config.h"
+
 #include	<X11/fonts/FSproto.h>
 #include	"clientstr.h"
 #include	"misc.h"

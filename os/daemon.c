@@ -28,6 +28,8 @@ from the X Consortium.
 
 */
 
+#include "xfs-config.h"
+
 #include <X11/Xos.h>
 #include <sys/types.h>
 #include <errno.h>

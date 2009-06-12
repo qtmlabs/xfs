@@ -47,7 +47,7 @@ in this Software without prior written authorization from The Open Group.
  *
  */
 
-#include	<xfs-config.h>
+#include	"xfs-config.h"
 
 #include	<stdio.h>
 #include	<stdlib.h>

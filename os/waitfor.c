@@ -50,6 +50,8 @@ in this Software without prior written authorization from The Open Group.
  *
  */
 
+#include	"xfs-config.h"
+
 #include	<X11/Xos.h>	/* strings, time, etc */
 
 #include	<stdio.h>

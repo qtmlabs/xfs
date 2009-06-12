@@ -49,6 +49,8 @@ in this Software without prior written authorization from The Open Group.
  * the font library interface as util/fsfuncs.c.
  */
 
+#include "xfs-config.h"
+
 #include <X11/Xos.h>
 #include "misc.h"
 #include <X11/fonts/fontstruct.h>
