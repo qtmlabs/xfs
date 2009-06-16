@@ -91,6 +91,9 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
 AC_SUBST([FONTPATH])
 
 
+# Checks for system functions / libraries
+AC_CHECK_FUNCS([daemon])
+
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
 AC_SUBST(XFS_CFLAGS)

@@ -37,17 +37,16 @@ from the X Consortium.
 
 #include "os.h"
 
-#if defined(__GLIBC__) || defined(CSRG_BASED)
-#define HAS_DAEMON
-#endif
-
 /* detach */
 void
 BecomeDaemon (void)
 {
     /* If our C library has the daemon() function, just use it. */
-#ifdef HAS_DAEMON
-    daemon (0, 0);
+#ifdef HAVE_DAEMON
+    if (daemon (0, 0) < 0) {
+	/* error */
+	FatalError("daemon() failed, %s\n", strerror(errno));
+    }
 #else
 
     switch (fork()) {
@@ -80,5 +79,5 @@ BecomeDaemon (void)
     (void) dup2 (0, 1);
     (void) dup2 (0, 2);
 
-#endif /* HAS_DAEMON */
+#endif /* HAVE_DAEMON */
 }
