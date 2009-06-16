@@ -35,15 +35,6 @@ from the X Consortium.
 #include <errno.h>
 #include <stdlib.h>
 
-#if defined(USG)
-# include <termios.h>
-#else
-# include <sys/ioctl.h>
-#endif
-#ifdef hpux
-# include <sys/ptyio.h>
-#endif
-
 #include "os.h"
 
 #if defined(__GLIBC__) || defined(CSRG_BASED)
