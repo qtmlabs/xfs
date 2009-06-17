@@ -47,6 +47,13 @@ BecomeDaemon (void)
 	/* error */
 	FatalError("daemon() failed, %s\n", strerror(errno));
     }
+
+    /* Open/reopen log file on stderr */
+#ifdef USE_SYSLOG
+    if (!UseSyslog)
+#endif
+	CloseErrors();
+    InitErrors();
 #else
 
     switch (fork()) {
@@ -68,6 +75,14 @@ BecomeDaemon (void)
 
     chdir("/");
 
+    DetachStdio();
+#endif /* HAVE_DAEMON */
+}
+
+void
+DetachStdio (void)
+{
+    int nullfd;
     close (0);
     close (1);
     close (2);
@@ -75,9 +90,21 @@ BecomeDaemon (void)
     /*
      * Set up the standard file descriptors.
      */
-    (void) open ("/dev/null", O_RDWR);
-    (void) dup2 (0, 1);
-    (void) dup2 (0, 2);
+    nullfd = open ("/dev/null", O_RDWR);
+    if (nullfd != 0) {
+	dup2(nullfd, 0);
+	close(nullfd);
+    }
+    dup2 (0, 1);
 
-#endif /* HAVE_DAEMON */
+#ifdef USE_SYSLOG
+    if (UseSyslog) {
+	dup2 (0, 2);
+	return;
+    }
+#endif
+
+    /* open/reopen log file on stderr */
+    CloseErrors();
+    InitErrors();
 }

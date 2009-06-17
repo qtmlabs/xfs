@@ -90,6 +90,15 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
                                 [ FONTPATH="${DEFAULT_FONT_PATH}" ])
 AC_SUBST([FONTPATH])
 
+# Option to enable support for starting from inetd
+AC_ARG_ENABLE(inetd,
+	AS_HELP_STRING([--enable-inetd],
+	    [Support -inetd flag for starting from inetd (default: enabled)]),
+	    [INETD=$enableval], [INETD=yes])
+if test "x$INETD" = xyes; then
+        AC_DEFINE(XFS_INETD, 1, [Build support for starting from inetd])
+fi
+
 # Option to enable support for logging to syslog
 AC_ARG_ENABLE(syslog,
 	AS_HELP_STRING([--enable-syslog],

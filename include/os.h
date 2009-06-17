@@ -98,6 +98,7 @@ extern	void	StopListening(void);
 
 /* os/daemon.c */
 extern	void	BecomeDaemon(void);
+extern	void	DetachStdio(void);
 
 /* os/error.c */
 extern void	Error(char *str);

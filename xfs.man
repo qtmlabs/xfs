@@ -50,6 +50,9 @@ xfs \- X font server
 .B \-droppriv
 ]
 [
+.B \-inetd
+]
+[
 .BI "\-ls " listen_socket
 ]
 [
@@ -66,7 +69,9 @@ xfs \- X font server
 is the X Window System font server.
 It supplies fonts to X Window System display servers.
 The server is usually run by a system administrator, and started via
-.BR init (__adminmansuffix__).
+.BR init (__adminmansuffix__)
+or
+.BR inetd (__adminmansuffix__).
 Users may also wish to start private font servers for specific sets of
 fonts.
 .PP
@@ -116,6 +121,16 @@ will not to use a TCP port at all.
 By default,
 .B xfs
 runs with the user and group IDs of the user who invoked it.
+.TP
+.B \-inetd
+informs
+.B xfs
+that it is being started by inetd, and that a listening socket on the
+appropriate port is being passed as standard input.   Assumes that inetd
+is configured to "wait" mode, and will thus allow xfs to handle
+listening for and accepting further connections on this port.   This allows
+xfs to be started on demand when the first font client connects.
+When using this option, the -daemon and -port flags are ignored.
 .TP
 .BI "\-ls " listen_socket
 specifies a file descriptor which is already set up to be used as the
@@ -367,6 +382,7 @@ Keith Packard, Massachusetts Institute of Technology
 .BR xfsinfo (__appmansuffix__),
 .BR fslsfonts (__appmansuffix__),
 .BR init (__adminmansuffix__),
+.BR inetd (__adminmansuffix__),
 .BR syslog (__libmansuffix__),
 .IR "The X Font Service Protocol" ,
 .I Font Server Implementation Overview

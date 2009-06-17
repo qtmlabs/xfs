@@ -62,9 +62,7 @@ in this Software without prior written authorization from The Open Group.
 #include	"osdep.h"
 
 Bool        UseSyslog;
-#ifdef USE_SYSLOG
 Bool        log_open = FALSE;
-#endif
 char        ErrorFile[PATH_MAX];
 static char	CurrentErrorFile[PATH_MAX];
 
@@ -93,11 +91,13 @@ InitErrors(void)
     }
 #endif
 
-    if (ErrorFile[0] && strcmp(CurrentErrorFile, ErrorFile) != 0) {
+    if (ErrorFile[0] &&
+	(!log_open || (strcmp(CurrentErrorFile, ErrorFile) != 0)) ) {
 	i = open(ErrorFile, O_WRONLY | O_APPEND | O_CREAT, 0666);
 	if (i != -1) {
 	    dup2(i, 2);
 	    close(i);
+	    log_open = TRUE;
 	} else {
 	    ErrorF("can't open error file \"%s\"\n", ErrorFile);
 	}
@@ -108,13 +108,26 @@ InitErrors(void)
 void
 CloseErrors(void)
 {
+    int nullfd;
+
+    if (!log_open)
+	return;
+
+    log_open = FALSE;
+
 #ifdef USE_SYSLOG
     if (UseSyslog) {
 	closelog();
-	log_open = FALSE;
 	return;
     }
 #endif
+
+    close (2);
+    nullfd = open ("/dev/null", O_RDWR);
+    if (nullfd != 2) {
+	dup2 (nullfd, 2);
+	close(nullfd);
+    }
 }
 
 void

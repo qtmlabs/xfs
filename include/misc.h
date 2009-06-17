@@ -177,4 +177,7 @@ typedef struct {		/* when cloning, need old transport info */
 /* os/connection.c */
 extern	void	CreateSockets(int old_listen_count, OldListenRec *old_listen);
 
+/* os/xfstrans.c */
+extern OldListenRec *_FontTransGetInetdListenInfo (int fd);
+
 #endif				/* _MISC_H_ */

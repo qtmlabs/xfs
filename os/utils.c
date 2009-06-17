@@ -72,6 +72,9 @@ static Bool becomeDaemon = TRUE; /* whether to become a daemon or not */
 #else
 static Bool becomeDaemon = FALSE; /* whether to become a daemon or not */
 #endif
+#ifdef XFS_INETD
+static Bool runFromInetd = FALSE; /* whether we were run from inetd or not */
+#endif
 static const char *userId = NULL;
 char       *progname;
 Bool        CloneSelf;
@@ -305,6 +308,13 @@ ProcessCmdLine(int argc, char **argv)
 	        becomeDaemon = TRUE;
 	} else if (!strcmp(argv[i], "-nodaemon")) {
 	        becomeDaemon = FALSE;
+	} else if (!strcmp(argv[i], "-inetd")) {
+#ifdef XFS_INETD
+		runFromInetd = TRUE;
+#else
+		FatalError("-inetd specified, but xfs was not built"
+			   " with inetd support\n");
+#endif
 	} else if (!strcmp(argv[i], "-user")) {
 	    if (argv[i + 1])
 		userId = argv[++i];
@@ -453,6 +463,36 @@ void
 SetDaemonState(void)
 {
     int	    oldpid;
+
+#ifdef XFS_INETD
+    if (runFromInetd) {
+	int inetdListener;
+
+	/* fd's 0, 1, & 2 are the initial listen socket provided by inetd,
+	 * so dup it and then clear them so stdin/out/err aren't in use.
+	 */
+	inetdListener = dup(0);
+	if (inetdListener == -1) {
+	    FatalError("failed to dup inetd socket: %s\n",
+		       strerror(errno));
+	}
+	DetachStdio();
+
+	/* Setup & pass the inetd socket back through the connection setup
+	 * code the same way as a cloned listening port
+	 */
+	OldListenCount = 1;
+	OldListen = _FontTransGetInetdListenInfo (inetdListener);
+	if (OldListen == NULL) {
+	    FatalError("failed to initialize OldListen to inetd socket: %s\n",
+		       strerror(errno));
+	}
+	ListenPort = OldListen[0].portnum;
+	NoticeF("accepting listener from inetd on fd %d, port %d\n",
+		inetdListener, ListenPort);
+	return;
+    }
+#endif /* XFS_INETD */
 
     if (becomeDaemon) {
 	BecomeDaemon();
