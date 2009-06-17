@@ -70,6 +70,23 @@ in this Software without prior written authorization from The Open Group.
 
 long        LastReapTime;
 
+/* like ffs, but uses fd_mask instead of int as argument, so it works
+   when fd_mask is longer than an int, such as common 64-bit platforms */
+static inline int
+xfd_ffs(fd_mask mask)
+{
+    int i;
+
+    if (!mask) return 0;
+
+    for (i = 1; !(mask & 1); i++)
+    {
+        mask >>= 1;
+    }
+    return i;
+}
+
+
 /*
  * wait_for_something
  *
@@ -179,7 +196,7 @@ WaitForSomething(int *pClientsReady)
 	    current_time = GetTimeInMillis();
 	for (i = 0; i < howmany(XFD_SETSIZE, NFDBITS); i++) {
 	    while (clientsReadable.fds_bits[i]) {
-		curclient = ffs(clientsReadable.fds_bits[i]) - 1;
+		curclient = xfd_ffs(clientsReadable.fds_bits[i]) - 1;
 		conn = ConnectionTranslation[curclient + (i << 5)];
 		clientsReadable.fds_bits[i] &= ~(((fd_mask)1L) << curclient);
 		client = clients[conn];
@@ -188,6 +205,12 @@ WaitForSomething(int *pClientsReady)
 		pClientsReady[nready++] = conn;
 		client->last_request_time = current_time;
 		client->clientGone = CLIENT_ALIVE;
+
+		if (nready >= MaxClients) {
+		    /* pClientsReady buffer has no more room, get the
+		       rest on the next time through select() loop */
+		    return nready;
+		}
 	    }
 	}
     }
