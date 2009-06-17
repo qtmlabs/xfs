@@ -90,6 +90,15 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
                                 [ FONTPATH="${DEFAULT_FONT_PATH}" ])
 AC_SUBST([FONTPATH])
 
+# Option to enable support for logging to syslog
+AC_ARG_ENABLE(syslog,
+	AS_HELP_STRING([--enable-syslog],
+	    [Support option for logging via syslog (default: enabled)]),
+	    [SYSLOG=$enableval], [SYSLOG=yes])
+if test "x$SYSLOG" = xyes; then
+        AC_DEFINE(USE_SYSLOG, 1, [Build support for logging via syslog])
+fi
+
 
 # Checks for system functions / libraries
 AC_CHECK_FUNCS([daemon])
