@@ -43,8 +43,6 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDXorg: @(#)config.c,v 4.6 1991/07/09 14:08:09 lemke Exp $
- *
  */
 
 #include	"xfs-config.h"

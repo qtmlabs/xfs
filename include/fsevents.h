@@ -44,8 +44,6 @@ in this Software without prior written authorization from the X Consortium.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * @(#)events.h	4.2	91/05/03
- *
  */
 
 #ifndef _EVENTS_H_

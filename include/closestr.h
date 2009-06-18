@@ -43,8 +43,6 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * $NCDXorg: @(#)closestr.h,v 4.1 1991/05/02 04:15:46 lemke Exp $
- *
  */
 
 #ifndef CLOSESTR_H

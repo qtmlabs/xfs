@@ -43,8 +43,6 @@ in this Software without prior written authorization from The Open Group.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * @(#)configstr.h	4.1	91/05/02
- *
  */
 #ifndef _CONFIGSTR_H_
 #define _CONFIGSTR_H_

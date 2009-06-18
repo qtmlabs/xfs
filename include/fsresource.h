@@ -44,8 +44,6 @@ in this Software without prior written authorization from the X Consortium.
  * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
- * @(#)resource.h	4.1	91/05/02
- *
  */
 
 #ifndef _RESOURCE_H_
