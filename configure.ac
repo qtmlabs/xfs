@@ -90,6 +90,13 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
                                 [ FONTPATH="${DEFAULT_FONT_PATH}" ])
 AC_SUBST([FONTPATH])
 
+# Option to enable support for building developer internals docs
+AC_ARG_ENABLE(devel-docs,
+	AS_HELP_STRING([--enable-devel-docs],
+	    [Build internals documentation for developers (default: enabled)]),
+	    [DEVEL_DOCS=$enableval], [DEVEL_DOCS=yes])
+AM_CONDITIONAL([MAKE_DEVEL_DOCS], [test "x$DEVEL_DOCS" = "xyes"])
+
 # Option to enable support for starting from inetd
 AC_ARG_ENABLE(inetd,
 	AS_HELP_STRING([--enable-inetd],
