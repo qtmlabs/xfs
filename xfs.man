@@ -311,9 +311,9 @@ XCOMM Look for fonts in the following directories.  The first is a set of
 XCOMM TrueType outlines, the second is a set of misc bitmaps (such as terminal
 XCOMM and cursor fonts), and the last is a set of 100dpi bitmaps.
 XCOMM
-catalogue = /usr/X11R6/lib/X11/fonts/TTF,
-            /usr/X11R6/lib/X11/fonts/misc,
-            /usr/X11R6/lib/X11/fonts/100dpi/
+catalogue = /usr/share/X11/fonts/TTF,
+            /usr/share/X11/fonts/misc,
+            /usr/share/X11/fonts/100dpi/
 
 XCOMM in 12 points, decipoints
 default\-point\-size = 120
@@ -330,9 +330,10 @@ use\-syslog = off
 .SH "OUTPUT FILES"
 When operating in daemon mode,
 .B xfs
-sends diagnostic messages (errors and warnings) to the system log via the
-.B syslog
-C library function by default.
+sends diagnostic messages (errors and warnings) to the log file
+specified by the
+.B error-file
+configuration variable by default.
 However, these messages can be sent to an alternate location via the
 .B error\-file
 and
