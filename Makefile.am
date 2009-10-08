@@ -95,8 +95,6 @@ appman_PRE = \
 
 FSERRORS = /var/log/xfs.log
 
-FONTDIR = $(libdir)/X11/fonts
-
 # Strings to replace in config.cpp
 CPP_FILES_FLAGS = $(MANDEFS) \
 	-DDEFAULTFONTPATH="$(FONTPATH)" -DFSERRORS="$(FSERRORS)"
