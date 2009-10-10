@@ -145,10 +145,10 @@ MANDEFS =  \
 SUFFIXES = .$(APP_MAN_SUFFIX) .man .cpp
 
 .cpp:
-	$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
+	$(AM_V_GEN)$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
 
 .man.$(APP_MAN_SUFFIX):
-	$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
+	$(AM_V_GEN)$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
 
 EXTRA_DIST += ChangeLog
 MAINTAINERCLEANFILES = ChangeLog
@@ -177,7 +177,7 @@ noinst_DATA = doc/xfs-design/index.html doc/xfs-design.pdf doc/xfs-design.txt
 CLEANFILES += $(noinst_DATA)
 
 doc/xfs-design/index.html: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl doc/xfs-design/xfs-design.css
-	$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc/xfs-design xhtml $(srcdir)/doc/xfs-design.xml
+	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc/xfs-design xhtml $(srcdir)/doc/xfs-design.xml
 
 doc/xfs-design/xfs-design.css: $(srcdir)/doc/xfs-design.css
 	-rm -f doc/xfs-design/xfs-design.css
@@ -188,10 +188,10 @@ clean-local:
 	-rm -rf doc/xfs-design
 
 doc/xfs-design.pdf: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl
-	$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc pdf $(srcdir)/doc/xfs-design.xml
+	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc pdf $(srcdir)/doc/xfs-design.xml
 
 doc/xfs-design.txt: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl
-	$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc txt $(srcdir)/doc/xfs-design.xml
+	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc txt $(srcdir)/doc/xfs-design.xml
 
 endif HAVE_XMLTO
 endif MAKE_DEVEL_DOCS

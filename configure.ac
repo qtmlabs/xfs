@@ -28,9 +28,10 @@ AM_MAINTAINER_MODE
 # xfs already have a header called config.h
 AM_CONFIG_HEADER(xfs-config.h)
 
-# Require xorg-macros version >= 1.2.0 for XORG_CWARNFLAGS & XORG_CHANGELOG
-m4_ifndef([XORG_MACROS_VERSION], [AC_FATAL([must install xorg-macros 1.2 or later before running autoconf/autogen])])
-XORG_MACROS_VERSION(1.2)
+# Require xorg-macros 1.3 or later: XORG_DEFAULT_OPTIONS
+m4_ifndef([XORG_MACROS_VERSION],
+	  [m4_fatal([must install xorg-macros 1.3 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.3)
 
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
 # Must be called before any macros that run the compiler (like AC_PROG_LIBTOOL)
@@ -39,9 +40,10 @@ AC_USE_SYSTEM_EXTENSIONS
 
 AC_PROG_CC
 XORG_PROG_RAWCPP
-XORG_CWARNFLAGS
 AC_PROG_INSTALL
 AC_CANONICAL_HOST
+
+XORG_DEFAULT_OPTIONS
 
 # xmlto is used to convert doc/design.xml from DocBook to PDF/HTML
 AC_ARG_VAR([XMLTO], [Path to xmlto command])
@@ -136,9 +138,5 @@ XTRANS_CONNECTION_FLAGS
 
 dnl Allow checking code with lint, sparse, etc.
 XORG_WITH_LINT
-
-XORG_MANPAGE_SECTIONS
-XORG_RELEASE_VERSION
-XORG_CHANGELOG
 
 AC_OUTPUT([Makefile])
