@@ -102,6 +102,7 @@ CPP_FILES_FLAGS = $(MANDEFS) \
 config_DATA = config
 
 EXTRA_DIST = xfs.def config.cpp
+MAINTAINERCLEANFILES = ChangeLog INSTALL
 CLEANFILES = config
 
 appmandir = $(APP_MAN_DIR)
