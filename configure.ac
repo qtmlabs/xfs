@@ -95,6 +95,15 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
                                 [ FONTPATH="${DEFAULT_FONT_PATH}" ])
 AC_SUBST([FONTPATH])
 
+AC_PATH_PROG([XMLFOP], [fop])
+if test "x$XMLFOP" = "x"; then
+   AC_MSG_WARN([fop not found - pdf documentation targets will be skipped])
+   have_xmlfop=no
+else
+   have_xmlfop=yes
+fi
+AM_CONDITIONAL([HAVE_XMLFOP], [test "$have_xmlfop" = yes])
+
 # Option to enable support for building developer internals docs
 AC_ARG_ENABLE(devel-docs,
 	AS_HELP_STRING([--enable-devel-docs],
