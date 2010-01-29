@@ -30,9 +30,11 @@ AM_CONFIG_HEADER(xfs-config.h)
 
 # Require xorg-macros: XORG_DEFAULT_OPTIONS
 m4_ifndef([XORG_MACROS_VERSION],
-	  [m4_fatal([must install xorg-macros 1.5 or later before running autoconf/autogen])])
-XORG_MACROS_VERSION(1.5)
+	  [m4_fatal([must install xorg-macros 1.6 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.6)
+XORG_ENABLE_DEVEL_DOCS
 XORG_WITH_XMLTO
+XORG_WITH_FOP
 
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
 # Must be called before any macros that run the compiler (like AC_PROG_LIBTOOL)
@@ -94,22 +96,6 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
                                 [ FONTPATH="$withval" ],
                                 [ FONTPATH="${DEFAULT_FONT_PATH}" ])
 AC_SUBST([FONTPATH])
-
-AC_PATH_PROG([XMLFOP], [fop])
-if test "x$XMLFOP" = "x"; then
-   AC_MSG_WARN([fop not found - pdf documentation targets will be skipped])
-   have_xmlfop=no
-else
-   have_xmlfop=yes
-fi
-AM_CONDITIONAL([HAVE_XMLFOP], [test "$have_xmlfop" = yes])
-
-# Option to enable support for building developer internals docs
-AC_ARG_ENABLE(devel-docs,
-	AS_HELP_STRING([--enable-devel-docs],
-	    [Build internals documentation for developers (default: enabled)]),
-	    [DEVEL_DOCS=$enableval], [DEVEL_DOCS=yes])
-AM_CONDITIONAL([MAKE_DEVEL_DOCS], [test "x$DEVEL_DOCS" = "xyes"])
 
 # Option to enable support for starting from inetd
 AC_ARG_ENABLE(inetd,

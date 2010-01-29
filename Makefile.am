@@ -173,12 +173,12 @@ endif LINT
 # Developer documentation - not installed on system
 EXTRA_DIST += doc/xfs-design.xml doc/xfs-design.css doc/xfs-design.xsl
 
-if MAKE_DEVEL_DOCS
+if ENABLE_DEVEL_DOCS
 if HAVE_XMLTO
 noinst_DATA = doc/xfs-design/index.html doc/xfs-design.txt
-if HAVE_XMLFOP
+if HAVE_FOP
 noinst_DATA += doc/xfs-design.pdf
-endif HAVE_XMLFOP
+endif HAVE_FOP
 CLEANFILES += $(noinst_DATA)
 
 doc/xfs-design/index.html: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl doc/xfs-design/xfs-design.css
@@ -199,4 +199,4 @@ doc/xfs-design.txt: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl
 	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc txt $(srcdir)/doc/xfs-design.xml
 
 endif HAVE_XMLTO
-endif MAKE_DEVEL_DOCS
+endif ENABLE_DEVEL_DOCS
