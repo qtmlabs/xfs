@@ -186,7 +186,7 @@ doc/xfs-design/index.html: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design
 
 doc/xfs-design/xfs-design.css: $(srcdir)/doc/xfs-design.css
 	-rm -f doc/xfs-design/xfs-design.css
-	$(MKDIR_P) doc/xfs-design
+	$(mkdir_p) doc/xfs-design
 	cp -pf $(srcdir)/doc/xfs-design.css doc/xfs-design/xfs-design.css
 
 clean-local:
