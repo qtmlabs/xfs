@@ -33,7 +33,7 @@ m4_ifndef([XORG_MACROS_VERSION],
 	  [m4_fatal([must install xorg-macros 1.6 or later before running autoconf/autogen])])
 XORG_MACROS_VERSION(1.6)
 XORG_ENABLE_DEVEL_DOCS
-XORG_WITH_XMLTO
+XORG_WITH_XMLTO(0.0.20)
 XORG_WITH_FOP
 
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
