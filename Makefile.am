@@ -30,6 +30,8 @@ AM_CPPFLAGS = $(XFS_CFLAGS) -I$(top_srcdir)/include -DXFSPIDDIR=\"/var/run\" \
 
 AM_CFLAGS = $(CWARNFLAGS)
 
+ACLOCAL_AMFLAGS = -I m4
+
 LDADD = $(XFS_LIBS)
 
 xfs_SOURCES = \

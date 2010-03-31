@@ -31,6 +31,7 @@ AC_INIT([xfs],
 AC_USE_SYSTEM_EXTENSIONS
 # xfs already have a header called config.h
 AC_CONFIG_HEADERS([xfs-config.h])
+AC_CONFIG_MACRO_DIR([m4])
 
 # Initialize Automake
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -59,7 +60,7 @@ AC_ARG_WITH(default-config-file,
 	[CONFIG_FILE="$withval"], [CONFIG_FILE="${sysconfdir}/X11/fs/config"])
 
 DEFAULT_CONFIG_FILE=`echo ${CONFIG_FILE} | sed 's/,/\\\\\\\\\\\",\\\\\\\\\\\"/'g`
-AC_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,
+AX_DEFINE_DIR([DEFAULT_CONFIG_FILE], DEFAULT_CONFIG_FILE,
     [comma-separated list of strings for config file paths when not specified])
 
 # generate text for the man page
