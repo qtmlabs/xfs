@@ -177,10 +177,16 @@ EXTRA_DIST += doc/xfs-design.xml doc/xfs-design.css doc/xfs-design.xsl
 
 if ENABLE_DEVEL_DOCS
 if HAVE_XMLTO
-noinst_DATA = doc/xfs-design/index.html doc/xfs-design.txt
+noinst_DATA = doc/xfs-design/index.html
+
 if HAVE_FOP
 noinst_DATA += doc/xfs-design.pdf
 endif HAVE_FOP
+
+if HAVE_XMLTO_TEXT
+noinst_DATA += doc/xfs-design.txt
+endif HAVE_XMLTO_TEXT
+
 CLEANFILES += $(noinst_DATA)
 
 doc/xfs-design/index.html: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl doc/xfs-design/xfs-design.css
