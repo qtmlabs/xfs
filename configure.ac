@@ -41,14 +41,15 @@ AM_MAINTAINER_MODE
 AC_PROG_CC
 AC_PROG_INSTALL
 
-# Initialize X.Org macros
+# Require xorg-macros minimum of 1.10 for HAVE_STYLESHEETS in XORG_CHECK_SGML_DOCTOOLS
 m4_ifndef([XORG_MACROS_VERSION],
-	  [m4_fatal([must install xorg-macros 1.6 or later before running autoconf/autogen])])
-XORG_MACROS_VERSION(1.6)
+	  [m4_fatal([must install xorg-macros 1.10 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.10)
 XORG_DEFAULT_OPTIONS
 XORG_ENABLE_DEVEL_DOCS
 XORG_WITH_XMLTO(0.0.20)
 XORG_WITH_FOP
+XORG_CHECK_SGML_DOCTOOLS(1.5)
 XORG_PROG_RAWCPP
 XORG_WITH_LINT
 
@@ -131,4 +132,6 @@ AC_SUBST(XFS_LIBS)
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
 
-AC_OUTPUT([Makefile])
+AC_CONFIG_FILES([Makefile
+                 doc/Makefile])
+AC_OUTPUT

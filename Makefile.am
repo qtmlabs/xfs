@@ -19,6 +19,8 @@
 #  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 #  PERFORMANCE OF THIS SOFTWARE.
 
+SUBDIRS=doc
+
 configdir = $(sysconfdir)/X11/fs
 
 bin_PROGRAMS = xfs
@@ -171,40 +173,3 @@ ALL_LINT_FLAGS=$(LINT_FLAGS) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 lint:
 	$(LINT) $(ALL_LINT_FLAGS) $(xfs_SOURCES)
 endif LINT
-
-# Developer documentation - not installed on system
-EXTRA_DIST += doc/xfs-design.xml doc/xfs-design.css doc/xfs-design.xsl
-
-if ENABLE_DEVEL_DOCS
-if HAVE_XMLTO
-noinst_DATA = doc/xfs-design/index.html
-
-if HAVE_FOP
-noinst_DATA += doc/xfs-design.pdf
-endif HAVE_FOP
-
-if HAVE_XMLTO_TEXT
-noinst_DATA += doc/xfs-design.txt
-endif HAVE_XMLTO_TEXT
-
-CLEANFILES += $(noinst_DATA)
-
-doc/xfs-design/index.html: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl doc/xfs-design/xfs-design.css
-	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc/xfs-design xhtml $(srcdir)/doc/xfs-design.xml
-
-doc/xfs-design/xfs-design.css: $(srcdir)/doc/xfs-design.css
-	-rm -f doc/xfs-design/xfs-design.css
-	$(mkdir_p) doc/xfs-design
-	cp -pf $(srcdir)/doc/xfs-design.css doc/xfs-design/xfs-design.css
-
-clean-local:
-	-rm -rf doc/xfs-design
-
-doc/xfs-design.pdf: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl
-	$(AM_V_GEN)$(XMLTO) --with-fop -m $(srcdir)/doc/xfs-design.xsl -o doc pdf $(srcdir)/doc/xfs-design.xml
-
-doc/xfs-design.txt: $(srcdir)/doc/xfs-design.xml $(srcdir)/doc/xfs-design.xsl
-	$(AM_V_GEN)$(XMLTO) -m $(srcdir)/doc/xfs-design.xsl -o doc txt $(srcdir)/doc/xfs-design.xml
-
-endif HAVE_XMLTO
-endif ENABLE_DEVEL_DOCS

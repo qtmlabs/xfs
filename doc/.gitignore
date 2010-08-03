@@ -1,5 +1,5 @@
-#		Add & Override for this directory and it's subdirectories
-xfs-design/
-xfs-design.pdf
-xfs-design.txt
-
+*.html
+*.ps
+*.pdf
+*.txt
+*.css
