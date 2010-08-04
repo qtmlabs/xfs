@@ -133,5 +133,6 @@ AC_SUBST(XFS_LIBS)
 XTRANS_CONNECTION_FLAGS
 
 AC_CONFIG_FILES([Makefile
-                 doc/Makefile])
+                 doc/Makefile
+                 man/Makefile])
 AC_OUTPUT

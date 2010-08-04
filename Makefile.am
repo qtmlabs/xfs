@@ -19,7 +19,7 @@
 #  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 #  PERFORMANCE OF THIS SOFTWARE.
 
-SUBDIRS=doc
+SUBDIRS=doc man
 
 configdir = $(sysconfdir)/X11/fs
 
@@ -94,9 +94,6 @@ xfs_SOURCES = \
 	include/swaprep.h \
 	include/swapreq.h
 
-appman_PRE = \
-        xfs.man
-
 FSERRORS = /var/log/xfs.log
 
 # Strings to replace in config.cpp
@@ -108,15 +105,6 @@ config_DATA = config
 EXTRA_DIST = xfs.def config.cpp
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 CLEANFILES = config
-
-appmandir = $(APP_MAN_DIR)
-
-appman_DATA = $(appman_PRE:man=@APP_MAN_SUFFIX@)
-
-EXTRA_DIST += $(appman_PRE)
-CLEANFILES += $(appman_DATA)
-
-SED = sed
 
 # Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
 # to cpp, because that trick does not work on all ANSI C preprocessors.
@@ -147,14 +135,10 @@ MANDEFS =  \
 	-D__configfiledesc__="$(CONFIG_FILE_DESC)" \
 	-D__configfilepath__="$(CONFIG_FILE_PATH)"
 
-SUFFIXES = .$(APP_MAN_SUFFIX) .man .cpp
+SUFFIXES = .cpp
 
 .cpp:
 	$(AM_V_GEN)$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
-
-.man.$(APP_MAN_SUFFIX):
-	$(AM_V_GEN)$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
-
 
 .PHONY: ChangeLog INSTALL
 
