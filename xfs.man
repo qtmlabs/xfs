@@ -294,38 +294,38 @@ the following font path:
 .fi
 .SS "Example Configuration File"
 .nf
-XCOMM
-XCOMM sample font server configuration file
-XCOMM
+ #
+ # sample font server configuration file
+ #
 
-XCOMM allow a max of 10 clients to connect to this font server.
-client\-limit = 10
+ # allow a max of 10 clients to connect to this font server.
+ client\-limit = 10
 
-XCOMM When a font server reaches the above limit, start up a new one.
-clone\-self = on
+ # When a font server reaches the above limit, start up a new one.
+ clone\-self = on
 
-XCOMM Identify alternate font servers for clients to use.
-alternate\-servers = hansen:7101,hansen:7102
+ # Identify alternate font servers for clients to use.
+ alternate\-servers = hansen:7101,hansen:7102
 
-XCOMM Look for fonts in the following directories.  The first is a set of
-XCOMM TrueType outlines, the second is a set of misc bitmaps (such as terminal
-XCOMM and cursor fonts), and the last is a set of 100dpi bitmaps.
-XCOMM
-catalogue = /usr/share/X11/fonts/TTF,
-            /usr/share/X11/fonts/misc,
-            /usr/share/X11/fonts/100dpi/
+ # Look for fonts in the following directories.  The first is a set of
+ # TrueType outlines, the second is a set of misc bitmaps (such as terminal
+ # and cursor fonts), and the last is a set of 100dpi bitmaps.
+ #
+ catalogue = /usr/share/X11/fonts/TTF,
+             /usr/share/X11/fonts/misc,
+             /usr/share/X11/fonts/100dpi/
 
-XCOMM in 12 points, decipoints
-default\-point\-size = 120
+ # in 12 points, decipoints
+ default\-point\-size = 120
 
-XCOMM 100 x 100 and 75 x 75
-default\-resolutions = 100,100,75,75
+ # 100 x 100 and 75 x 75
+ default\-resolutions = 100,100,75,75
 
-XCOMM Specify our log filename.
-error\-file = /var/log/xfs.log
+ # Specify our log filename.
+ error\-file = /var/log/xfs.log
 
-XCOMM Direct diagnostics to our own log file instead of using syslog.
-use\-syslog = off
+ # Direct diagnostics to our own log file instead of using syslog.
+ use\-syslog = off
 .fi
 .SH "OUTPUT FILES"
 When operating in daemon mode,
