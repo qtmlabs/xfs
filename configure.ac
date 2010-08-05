@@ -50,7 +50,6 @@ XORG_ENABLE_DEVEL_DOCS
 XORG_WITH_XMLTO(0.0.20)
 XORG_WITH_FOP
 XORG_CHECK_SGML_DOCTOOLS(1.5)
-XORG_PROG_RAWCPP
 XORG_WITH_LINT
 
 AC_CHECK_HEADERS([stdint.h])
@@ -133,6 +132,7 @@ AC_SUBST(XFS_LIBS)
 XTRANS_CONNECTION_FLAGS
 
 AC_CONFIG_FILES([Makefile
+                 config/Makefile
                  doc/Makefile
                  man/Makefile])
 AC_OUTPUT

@@ -19,9 +19,7 @@
 #  TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 #  PERFORMANCE OF THIS SOFTWARE.
 
-SUBDIRS=doc man
-
-configdir = $(sysconfdir)/X11/fs
+SUBDIRS=config doc man
 
 bin_PROGRAMS = xfs
 
@@ -94,51 +92,8 @@ xfs_SOURCES = \
 	include/swaprep.h \
 	include/swapreq.h
 
-FSERRORS = /var/log/xfs.log
-
-# Strings to replace in config.cpp
-CPP_FILES_FLAGS = $(MANDEFS) \
-	-DDEFAULTFONTPATH="$(FONTPATH)" -DFSERRORS="$(FSERRORS)"
-
-config_DATA = config
-
-EXTRA_DIST = xfs.def config.cpp
+EXTRA_DIST = xfs.def
 MAINTAINERCLEANFILES = ChangeLog INSTALL
-CLEANFILES = config
-
-# Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
-# to cpp, because that trick does not work on all ANSI C preprocessors.
-# Delete line numbers from the cpp output (-P is not portable, I guess).
-# Allow XCOMM to be preceded by whitespace and provide a means of generating
-# output lines with trailing backslashes.
-# Allow XHASH to always be substituted, even in cases where XCOMM isn't.
-
-CPP_SED_MAGIC = $(SED) -e '/^\#  *[0-9][0-9]*  *.*$$/d' \
-                       -e '/^\#line  *[0-9][0-9]*  *.*$$/d' \
-                       -e '/^[ 	]*XCOMM$$/s/XCOMM/\#/' \
-                       -e '/^[ 	]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/\#/' \
-                       -e '/^[ 	]*XHASH/s/XHASH/\#/' \
-                       -e '/XSLASHGLOB/s/XSLASHGLOB/\/\*/' \
-                       -e '/\@\@$$/s/\@\@$$/\\/'
-
-# Strings to replace in man pages
-XORGRELSTRING = @PACKAGE_STRING@
-  XORGMANNAME = X Version 11
-
-MANDEFS =  \
-	-D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
-	-D__appmansuffix__=$(APP_MAN_SUFFIX) \
-	-D__libmansuffix__=$(LIB_MAN_SUFFIX) \
-	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
-	-D__miscmansuffix__=$(MISC_MAN_SUFFIX) \
-	-D__filemansuffix__=$(FILE_MAN_SUFFIX) \
-	-D__configfiledesc__="$(CONFIG_FILE_DESC)" \
-	-D__configfilepath__="$(CONFIG_FILE_PATH)"
-
-SUFFIXES = .cpp
-
-.cpp:
-	$(AM_V_GEN)$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
 
 .PHONY: ChangeLog INSTALL
 
