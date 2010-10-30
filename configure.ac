@@ -37,10 +37,6 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
 
-# Checks for programs.
-AC_PROG_CC
-AC_PROG_INSTALL
-
 # Require xorg-macros minimum of 1.10 for HAVE_STYLESHEETS in XORG_CHECK_SGML_DOCTOOLS
 m4_ifndef([XORG_MACROS_VERSION],
 	  [m4_fatal([must install xorg-macros 1.10 or later before running autoconf/autogen])])
@@ -125,8 +121,6 @@ AC_CHECK_FUNCS([daemon])
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
-AC_SUBST(XFS_CFLAGS)
-AC_SUBST(XFS_LIBS)
 
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
