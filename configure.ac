@@ -83,18 +83,20 @@ XORG_FONTROOTDIR
 # Determine font path to put in config file
 # Uses --default-font-path if set, otherwise checks for /etc/X11/fontpath.d,
 # otherwise uses default path copied from xserver configure.ac
-AC_CHECK_FILE([${sysconfdir}/X11/fontpath.d],
-	[DEFAULT_FONT_PATH='catalogue:$(sysconfdir)/X11/fontpath.d'],
-	[
-	DEFAULT_FONT_PATH='$(FONTROOTDIR)/misc/,$(FONTROOTDIR)/TTF/,$(FONTROOTDIR)/OTF/,$(FONTROOTDIR)/Type1/,$(FONTROOTDIR)/100dpi/,$(FONTROOTDIR)/75dpi/'
-	case $host_os in
-        	darwin*)    DEFAULT_FONT_PATH="${DEFAULT_FONT_PATH},/Library/Fonts,/System/Library/Fonts" ;;
-	esac
-])
-
 AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [Comma separated list of font path entries]),
-                                [ FONTPATH="$withval" ],
-                                [ FONTPATH="${DEFAULT_FONT_PATH}" ])
+                                [ FONTPATH="$withval" ], [])
+
+if test "x$FONTPATH" = "x"; then
+	AC_CHECK_FILE([${sysconfdir}/X11/fontpath.d],
+		[FONT_PATH='catalogue:$(sysconfdir)/X11/fontpath.d'],
+		[
+		FONT_PATH='$(FONTROOTDIR)/misc/,$(FONTROOTDIR)/TTF/,$(FONTROOTDIR)/OTF/,$(FONTROOTDIR)/Type1/,$(FONTROOTDIR)/100dpi/,$(FONTROOTDIR)/75dpi/'
+		case $host_os in
+			darwin*)    FONT_PATH="${DEFAULT_FONT_PATH},/Library/Fonts,/System/Library/Fonts" ;;
+		esac
+	])
+fi
+
 AC_SUBST([FONTPATH])
 
 # Option to enable support for starting from inetd
