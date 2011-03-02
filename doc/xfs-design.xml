@@ -7,7 +7,7 @@
 	- for lack of a better match, the systemitem tag is used for
 	  protocol request names
   -->
-<article id='designms'>
+<article id='xfs-design'>
   <articleinfo>
     <title>Font server implementation overview</title>
     <author>
