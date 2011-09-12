@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
-    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+    "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd"
+[
+<!ENTITY % defs SYSTEM "defs.ent"> %defs;
+]>
 <!-- lifted from troff+ms by doclifter -->
 <!-- previous version was in xorg-docs/specs/xfs/design.ms -->
 <!-- encoding notes:
@@ -10,6 +13,7 @@
 <article id='xfs-design'>
   <articleinfo>
     <title>Font server implementation overview</title>
+    <releaseinfo>X Version 11, Release &fullrelvers;</releaseinfo>
     <author>
       <firstname>Dave</firstname>
       <surname>Lemke</surname>
