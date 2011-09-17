@@ -53,6 +53,7 @@ typedef struct _alt_server *AlternateServerPtr;
 typedef struct _auth *AuthPtr;
 
 #include <X11/fonts/FSproto.h>
+#include <X11/Xfuncproto.h>
 #include "client.h"
 #include "misc.h"
 
@@ -98,9 +99,9 @@ extern	void	DetachStdio(void);
 extern void	Error(const char *str);
 extern void	InitErrors(void);
 extern void	CloseErrors(void);
-extern void	NoticeF(const char *f, ...);
-extern void	ErrorF(const char * f, ...);
-extern void	FatalError(const char* f, ...);
+extern void	NoticeF(const char *f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
+extern void	ErrorF(const char * f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
+extern void	FatalError(const char* f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
 
 /* os/io.c */
 extern	Bool	InsertFakeRequest(ClientPtr client, char *data, int count);
