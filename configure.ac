@@ -130,7 +130,7 @@ fi
 AC_CHECK_FUNCS([daemon])
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XFS, libfs xfont xtrans)
+PKG_CHECK_MODULES(XFS, xfont xtrans)
 
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
