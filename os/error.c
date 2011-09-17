@@ -131,7 +131,7 @@ CloseErrors(void)
 }
 
 void
-Error(char *str)
+Error(const char *str)
 {
 #ifdef USE_SYSLOG
     if (UseSyslog) {
@@ -146,7 +146,7 @@ Error(char *str)
  * used for informational messages
  */
 void
-NoticeF(char *f, ...)
+NoticeF(const char *f, ...)
 {
     /* XXX should Notices just be ignored if not using syslog? */
     va_list args;
@@ -167,7 +167,7 @@ NoticeF(char *f, ...)
  * used for non-fatal error messages
  */
 void
-ErrorF(char * f, ...)
+ErrorF(const char * f, ...)
 {
     va_list args;
     va_start(args, f);
@@ -184,7 +184,7 @@ ErrorF(char * f, ...)
 }
 
 void
-FatalError(char * f, ...)
+FatalError(const char * f, ...)
 {
     va_list args;
     va_start(args, f);

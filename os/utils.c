@@ -88,7 +88,7 @@ int 	     OldListenCount = 0;
 #endif
 #define WRITES(s) write(STDERR_FILENO, s, strlen(s))
 
-static char *pidFile = XFSPIDDIR "/xfs.pid";
+static const char *pidFile = XFSPIDDIR "/xfs.pid";
 static int  pidFd;
 static FILE *pidFilePtr;
 static int  StorePid (void);

@@ -106,7 +106,7 @@ static ConfigOptionRec config_options[] = {
     {NULL, NULL},
 };
 
-char       *ConfigErrors[] = {
+static const char * const ConfigErrors[] = {
     "",
     "CONFIG: insufficient memory to load configuration file \"%s\"\n",
     "CONFIG: can't open configuration file \"%s\"\n",
@@ -387,7 +387,7 @@ ReadConfigFile(const char *filename)
 }
 
 struct nameVal {
-    char       *name;
+    const char *name;
     int         val;
 };
 
