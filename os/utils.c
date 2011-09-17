@@ -187,7 +187,7 @@ GetTimeInMillis(void)
     return ((tp.tv_sec * 1000) + (tp.tv_usec / 1000));
 }
 
-static void
+static void _X_NORETURN
 usage(void)
 {
     fprintf(stderr, "usage: %s [-config config_file] [-port tcp_port] [-droppriv] [-daemon] [-nodaemon] [-user user_name] [-ls listen_socket]\n",

@@ -66,7 +66,7 @@ Bool        log_open = FALSE;
 char        ErrorFile[PATH_MAX];
 static char	CurrentErrorFile[PATH_MAX];
 
-static void
+static void _X_NORETURN
 abort_server(void)
 {
     fflush(stderr);

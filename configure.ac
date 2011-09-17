@@ -130,7 +130,8 @@ fi
 AC_CHECK_FUNCS([daemon])
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XFS, xfont xtrans)
+#  - xproto >= 7.0.17 required for _X_NORETURN in <X11/Xfuncproto.h>
+PKG_CHECK_MODULES(XFS, xproto >= 7.0.17 xfont xtrans)
 
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
