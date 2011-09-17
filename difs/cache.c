@@ -368,7 +368,7 @@ CacheFreeMemory(
 	}
     }
     if (!found)
-	FatalError("freeing cache entry %d which isn't there\n", cid);
+	FatalError("freeing cache entry %ld which isn't there\n", cid);
 }
 
 /* ARGSUSED */
