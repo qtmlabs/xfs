@@ -35,7 +35,7 @@
 OldListenRec *
 TRANS(GetInetdListenInfo) (int fd)
 {
-    char *port = "0";
+    char *port = NULL;
     XtransConnInfo inetdCI;
     OldListenRec *old_listen;
     int portnum;
