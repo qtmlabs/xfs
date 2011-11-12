@@ -51,16 +51,4 @@ in this Software without prior written authorization from The Open Group.
 /* max size in bytes of config file */
 #define	CONFIG_MAX_FILESIZE	32767
 
-/* error codes */
-/* these should be in the same order as the error strings in config.c */
-#define	CONFIG_ERR_MEMORY	1
-#define	CONFIG_ERR_OPEN		2
-#define	CONFIG_ERR_READ		3
-#define	CONFIG_ERR_VALUE	4
-#define	CONFIG_ERR_UNKNOWN	5
-#define	CONFIG_ERR_NOEQUALS	6
-#define	CONFIG_ERR_RANGE	7
-#define	CONFIG_ERR_SYNTAX	8
-#define	CONFIG_ERR_NOVALUE	9
-#define	CONFIG_ERR_EXTRAVALUE	10
 #endif				/* _CONFIG_H_ */

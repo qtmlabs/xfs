@@ -106,19 +106,17 @@ static ConfigOptionRec config_options[] = {
     {NULL, NULL},
 };
 
-static const char * const ConfigErrors[] = {
-    "",
-    "CONFIG: insufficient memory to load configuration file \"%s\"\n",
-    "CONFIG: can't open configuration file \"%s\"\n",
-    "CONFIG: error reading configuration file \"%s\"\n",
-    "CONFIG: bad value \"%s\" for parameter \"%s\"\n",
-    "CONFIG: unknown parameter \"%s\"\n",
-    "CONFIG: missing '=' after parameter \"%s\"\n",
-    "CONFIG: value out of range for parameter \"%s\"\n",
-    "CONFIG: syntax error near parameter \"%s\"\n",
-    "CONFIG: missing value for parameter \"%s\"\n",
-    "CONFIG: extra value for parameter \"%s\"\n",
-};
+#define	CONFIG_ERR_MEMORY \
+    "CONFIG: insufficient memory to load configuration file \"%s\"\n"
+#define	CONFIG_ERR_OPEN "CONFIG: can't open configuration file \"%s\"\n"
+#define	CONFIG_ERR_READ "CONFIG: error reading configuration file \"%s\"\n"
+#define	CONFIG_ERR_VALUE "CONFIG: bad value \"%s\" for parameter \"%s\"\n"
+#define	CONFIG_ERR_UNKNOWN "CONFIG: unknown parameter \"%s\"\n"
+#define	CONFIG_ERR_NOEQUALS "CONFIG: missing '=' after parameter \"%s\"\n"
+#define	CONFIG_ERR_RANGE "CONFIG: value out of range for parameter \"%s\"\n"
+#define	CONFIG_ERR_SYNTAX "CONFIG: syntax error near parameter \"%s\"\n"
+#define	CONFIG_ERR_NOVALUE "CONFIG: missing value for parameter \"%s\"\n"
+#define	CONFIG_ERR_EXTRAVALUE "CONFIG: extra value for parameter \"%s\"\n"
 
 #define	iseol(c)	((c) == '\n' || (c) == '\r' || (c) == '\f')
 #define	skip_whitespace(c)	while(isspace(*(c)) || *(c) == ',') (c)++;
@@ -217,14 +215,14 @@ parse_config(char *data)
 
 	/* check for junk */
 	if (!isspace(*c) && *c != '=') {
-	    ErrorF(ConfigErrors[CONFIG_ERR_SYNTAX], param_name);
+	    ErrorF(CONFIG_ERR_SYNTAX, param_name);
 	    /* eat garbage */
 	    while (!isspace(*c) && *c != '=' && *c != '\0')
 		c++;
 	}
 	skip_whitespace(c);
 	if (*c != '=') {
-	    ErrorF(ConfigErrors[CONFIG_ERR_NOEQUALS], param_name);
+	    ErrorF(CONFIG_ERR_NOEQUALS, param_name);
 	    equals_missing = TRUE;
 	} else {
 	    c++;
@@ -244,26 +242,26 @@ parse_config(char *data)
 
 	    if (val <= c) {
 		/* no value, ignore */
-		ErrorF(ConfigErrors[CONFIG_ERR_NOVALUE], param_name);
+		ErrorF(CONFIG_ERR_NOVALUE, param_name);
 		continue;
 	    }
 	    *val = '\0';
 	} else if (*c == '\0') {
 	    /* no value, ignore */
-	    ErrorF(ConfigErrors[CONFIG_ERR_NOVALUE], param_name);
+	    ErrorF(CONFIG_ERR_NOVALUE, param_name);
 	    continue;
 	}
 	/* match parm name */
 	if (equals_missing) {
 	    equals_missing = FALSE;
 	} else if ((param = match_param_name(param_name)) == NULL) {
-	    ErrorF(ConfigErrors[CONFIG_ERR_UNKNOWN], param_name);
+	    ErrorF(CONFIG_ERR_UNKNOWN, param_name);
 	} else {
 	    consumed = (param->set_func) (param, c);
 
 	    skip_whitespace(consumed);
 	    if (*consumed != '\0') {
-		ErrorF(ConfigErrors[CONFIG_ERR_EXTRAVALUE],
+		ErrorF(CONFIG_ERR_EXTRAVALUE,
 		       param_name);
 	    }
 	}
@@ -331,7 +329,7 @@ ReadConfigFile(const char *filename)
 
     data = (char *) fsalloc(CONFIG_MAX_FILESIZE);
     if (!data) {
-	ErrorF(ConfigErrors[CONFIG_ERR_MEMORY], filename);
+	ErrorF(CONFIG_ERR_MEMORY, filename);
 	return FSBadAlloc;
     }
     if (filename != NULL) {
@@ -340,7 +338,7 @@ ReadConfigFile(const char *filename)
 #endif
 	fp = fopen(filename, "r");
 	if (fp == NULL) {
-	    ErrorF(ConfigErrors[CONFIG_ERR_OPEN], filename);
+	    ErrorF(CONFIG_ERR_OPEN, filename);
 	}
     } else {
 	for (i = 0; default_config_files[i] != NULL; i++) {
@@ -357,7 +355,7 @@ ReadConfigFile(const char *filename)
 	}
 	if (fp == NULL) {
 	    for (i = 0; default_config_files[i] != NULL; i++) {
-		ErrorF(ConfigErrors[CONFIG_ERR_OPEN], default_config_files[i]);
+		ErrorF(CONFIG_ERR_OPEN, default_config_files[i]);
 	    }
 	}
     }
@@ -369,7 +367,7 @@ ReadConfigFile(const char *filename)
     if (ret <= 0) {
 	fsfree(data);
 	(void) fclose(fp);
-	ErrorF(ConfigErrors[CONFIG_ERR_READ], filename);
+	ErrorF(CONFIG_ERR_READ, filename);
 	return FSBadName;
     }
     len = ftell(fp);
@@ -417,7 +415,7 @@ config_parse_nameVal (
 	    return c;
 	}
     }
-    ErrorF(ConfigErrors[CONFIG_ERR_VALUE], start);
+    ErrorF(CONFIG_ERR_VALUE, start);
     *c = t;
     *ret = -1;
     return c;
@@ -458,7 +456,7 @@ config_parse_int(
 	    skip_val(c);
 	    t = *c;
 	    *c = '\0';
-	    ErrorF(ConfigErrors[CONFIG_ERR_VALUE], start);
+	    ErrorF(CONFIG_ERR_VALUE, start);
 	    *ret = -1;
 	    *c = t;
 	    return c;
