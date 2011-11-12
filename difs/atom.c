@@ -71,7 +71,7 @@ static unsigned long tableLength;
 static NodePtr *nodeTable;
 
 Atom
-MakeAtom(char *string, unsigned int len, Bool makeit)
+MakeAtom(const char *string, unsigned int len, Bool makeit)
 {
     register NodePtr *np;
     unsigned    i;
