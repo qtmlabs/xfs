@@ -391,6 +391,7 @@ struct nameVal {
 
 static char *
 config_parse_nameVal (
+    ConfigOptionPtr parm,
     char       *c,
     int        *ret,
     int		*pval,
@@ -415,7 +416,7 @@ config_parse_nameVal (
 	    return c;
 	}
     }
-    ErrorF(CONFIG_ERR_VALUE, start);
+    ErrorF(CONFIG_ERR_VALUE, start, parm->parm_name);
     *c = t;
     *ret = -1;
     return c;
@@ -423,6 +424,7 @@ config_parse_nameVal (
 
 static char *
 config_parse_bool (
+    ConfigOptionPtr parm,
     char	*c,
     int		*ret,
     Bool	*pval)
@@ -438,11 +440,12 @@ config_parse_bool (
     	    { "false", FALSE },
     	    { (char *) 0, 0 },
     };
-    return config_parse_nameVal (c, ret, pval, bool_val);
+    return config_parse_nameVal (parm, c, ret, pval, bool_val);
 }
 
 static char *
 config_parse_int(
+    ConfigOptionPtr parm,
     char       *c,
     int        *ret,
     int        *pval)
@@ -456,7 +459,7 @@ config_parse_int(
 	    skip_val(c);
 	    t = *c;
 	    *c = '\0';
-	    ErrorF(CONFIG_ERR_VALUE, start);
+	    ErrorF(CONFIG_ERR_VALUE, start, parm->parm_name);
 	    *ret = -1;
 	    *c = t;
 	    return c;
@@ -482,7 +485,7 @@ config_set_int(
     int         ival,
                 ret;
 
-    val = config_parse_int(val, &ret, &ival);
+    val = config_parse_int(parm, val, &ret, &ival);
     if (ret == -1)
 	return val;
 
@@ -506,7 +509,7 @@ config_set_bool(
                 ret;
     Bool        bval;
 
-    val = config_parse_bool(val, &ret, &bval);
+    val = config_parse_bool(parm, val, &ret, &bval);
     if (ret == -1)
 	return val;
 
@@ -642,6 +645,7 @@ config_set_resolutions(
 
 static char *
 config_parse_endian(
+    ConfigOptionPtr parm,
     char       *c,
     int        *ret,
     int		*pval)
@@ -655,7 +659,7 @@ config_parse_endian(
 	{ "msbfirst", MSBFirst },
 	{ (char *) 0, 0 },
     };
-    return config_parse_nameVal (c, ret, pval, endian_val);
+    return config_parse_nameVal (parm, c, ret, pval, endian_val);
 }
 
 /* ARGSUSED */
@@ -667,19 +671,19 @@ config_set_snf_format (
     int	    bit, byte, glyph, scan;
     int	    ret;
     
-    val = config_parse_endian (val, &ret, &bit);
+    val = config_parse_endian (parm, val, &ret, &bit);
     if (ret == -1)
 	return val;
     skip_whitespace (val);
-    val = config_parse_endian (val, &ret, &byte);
+    val = config_parse_endian (parm, val, &ret, &byte);
     if (ret == -1)
 	return val;
     skip_whitespace (val);
-    val = config_parse_int (val, &ret, &glyph);
+    val = config_parse_int (parm, val, &ret, &glyph);
     if (ret == -1)
 	return val;
     skip_whitespace (val);
-    val = config_parse_int (val, &ret, &scan);
+    val = config_parse_int (parm, val, &ret, &scan);
     if (ret == -1)
 	return val;
     SnfSetFormat (bit, byte, glyph, scan);
