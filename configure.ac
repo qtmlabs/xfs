@@ -29,8 +29,7 @@ AC_INIT([xfs],
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
 # Must be called before any macros that run the compiler (like AC_PROG_LIBTOOL)
 AC_USE_SYSTEM_EXTENSIONS
-# xfs already have a header called config.h
-AC_CONFIG_HEADERS([xfs-config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
 # Initialize Automake

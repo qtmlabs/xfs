@@ -51,7 +51,7 @@ in this Software without prior written authorization from The Open Group.
  * Catalogue support, alternate servers, and cloneing
  */
 
-#include "xfs-config.h"
+#include "config.h"
 
 #include <X11/Xtrans/Xtrans.h>
 #include "osstruct.h"

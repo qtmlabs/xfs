@@ -77,6 +77,3 @@ core
 # For example, !report.pc overrides *.pc. See 'man gitignore'
 # 
 xfs
-xfs-config.h
-xfs-config.h.in
-

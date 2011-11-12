@@ -63,7 +63,7 @@ in this Software without prior written authorization from The Open Group.
  *      1 - allocated color to be freed when the client dies
  */
 
-#include "xfs-config.h"
+#include "config.h"
 
 #include <X11/fonts/FS.h>
 #include "misc.h"

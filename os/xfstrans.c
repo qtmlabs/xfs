@@ -20,7 +20,7 @@
  * PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <xfs-config.h>
+#include <config.h>
 
 #define FONT_t 1
 #define TRANS_REOPEN 1

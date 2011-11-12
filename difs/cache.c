@@ -45,7 +45,7 @@ in this Software without prior written authorization from The Open Group.
  *
  */
 
-#include	"xfs-config.h"
+#include	"config.h"
 
 #include	"cachestr.h"
 #include	"misc.h"
