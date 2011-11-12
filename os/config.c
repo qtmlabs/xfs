@@ -106,6 +106,9 @@ static ConfigOptionRec config_options[] = {
     {NULL, NULL},
 };
 
+/* max size in bytes of config file */
+#define	CONFIG_MAX_FILESIZE	32767
+
 #define	CONFIG_ERR_MEMORY \
     "CONFIG: insufficient memory to load configuration file \"%s\"\n"
 #define	CONFIG_ERR_OPEN "CONFIG: can't open configuration file \"%s\"\n"
