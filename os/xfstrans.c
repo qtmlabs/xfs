@@ -51,7 +51,7 @@ TRANS(GetInetdListenInfo) (int fd)
     else
 #endif
 	portnum = ntohs(((struct sockaddr_in *)(inetdCI->addr))->sin_port);
-    inetdCI->port = xalloc(6); /* Base 10 integer <= 65535 + trailing NUL */
+    inetdCI->port = malloc(6); /* Base 10 integer <= 65535 + trailing NUL */
     snprintf(inetdCI->port, 6, "%d", portnum);
 
     /* Do the socket setup that xtrans normally takes care of in
