@@ -91,7 +91,6 @@ xfs_SOURCES = \
 	include/swaprep.h \
 	include/swapreq.h
 
-EXTRA_DIST = xfs.def
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 
 .PHONY: ChangeLog INSTALL
