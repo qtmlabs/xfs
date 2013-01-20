@@ -56,9 +56,6 @@ extern void InitFonts ( void );
 
 /* difs/fonts.c */
 extern int FontToFSError ( int err );
-extern void QueueFontWakeup ( FontPathElementPtr fpe );
-extern void RemoveFontWakeup ( FontPathElementPtr fpe );
-extern void FontWakeup ( pointer data, int count, unsigned long *LastSelectMask );
 extern int OpenFont ( ClientPtr client, Font fid, fsBitmapFormat format, fsBitmapFormatMask format_mask, int namelen, char *name );
 extern int CloseClientFont ( ClientFontPtr cfp, FSID fid );
 extern int SetFontCatalogue ( char *str, int *badpath );

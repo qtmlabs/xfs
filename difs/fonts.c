@@ -121,7 +121,7 @@ FreeFPE(FontPathElementPtr fpe)
  * init_fpe() and free_fpe(), there shouldn't be any problem in using
  * freed data.
  */
-void
+static void
 QueueFontWakeup(FontPathElementPtr fpe)
 {
     int         i;
@@ -150,7 +150,7 @@ QueueFontWakeup(FontPathElementPtr fpe)
     num_slept_fpes++;
 }
 
-void
+static void
 RemoveFontWakeup(FontPathElementPtr fpe)
 {
     int         i,
@@ -168,7 +168,7 @@ RemoveFontWakeup(FontPathElementPtr fpe)
 }
 
 /* ARGSUSED */
-void
+static void
 FontWakeup(pointer data, int count, unsigned long *LastSelectMask)
 {
     int         i;
