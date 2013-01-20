@@ -56,8 +56,6 @@ extern void InitFonts ( void );
 
 /* difs/fonts.c */
 extern int FontToFSError ( int err );
-extern void UseFPE ( FontPathElementPtr fpe );
-extern void FreeFPE ( FontPathElementPtr fpe );
 extern void QueueFontWakeup ( FontPathElementPtr fpe );
 extern void RemoveFontWakeup ( FontPathElementPtr fpe );
 extern void FontWakeup ( pointer data, int count, unsigned long *LastSelectMask );

@@ -95,14 +95,13 @@ FontToFSError(int err)
     }
 }
 
-/* XXX -- these two funcs may want to be broken into macros */
-void
+static inline void
 UseFPE(FontPathElementPtr fpe)
 {
     fpe->refcount++;
 }
 
-void
+static inline void
 FreeFPE(FontPathElementPtr fpe)
 {
     fpe->refcount--;
