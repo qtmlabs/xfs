@@ -74,7 +74,6 @@ extern FontPtr find_old_font ( FSID id );
 extern void DeleteClientFontStuff ( ClientPtr client );
 
 /* difs/fontinfo.c */
-extern void CopyCharInfo ( CharInfoPtr ci, fsXCharInfo *dst );
 extern int convert_props ( FontInfoPtr pinfo, fsPropInfo **props );
 extern int QueryExtents ( ClientPtr client, ClientFontPtr cfp, int item_size, int nranges, Bool range_flag, pointer range_data );
 extern int QueryBitmaps ( ClientPtr client, ClientFontPtr cfp, int item_size, fsBitmapFormat format, int nranges, Bool range_flag, pointer range_data );

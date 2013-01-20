@@ -74,21 +74,6 @@ in this Software without prior written authorization from The Open Group.
 # endif
 #endif
 
-void
-CopyCharInfo(
-    CharInfoPtr ci,
-    fsXCharInfo *dst)
-{
-    xCharInfo  *src = &ci->metrics;
-
-    dst->ascent = src->ascent;
-    dst->descent = src->descent;
-    dst->left = src->leftSideBearing;
-    dst->right = src->rightSideBearing;
-    dst->width = src->characterWidth;
-    dst->attributes = src->attributes;
-}
-
 
 int
 convert_props(
