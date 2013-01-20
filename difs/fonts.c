@@ -1456,10 +1456,6 @@ RegisterFPEFunctions(
     return num_fpe_types++;
 }
 
-void
-FreeFonts(void)
-{
-}
 
 /* convenience functions for FS interface */
 

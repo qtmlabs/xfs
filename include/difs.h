@@ -64,7 +64,6 @@ extern int ListFonts ( ClientPtr client, int length, unsigned char *pattern, int
 extern int StartListFontsWithInfo ( ClientPtr client, int length, unsigned char *pattern, int maxNames );
 #endif
 extern int LoadGlyphRanges ( ClientPtr client, FontPtr pfont, Bool range_flag, int num_ranges, int item_size, fsChar2b *data );
-extern void FreeFonts ( void );
 extern FontPtr find_old_font ( FSID id );
 extern void DeleteClientFontStuff ( ClientPtr client );
 
