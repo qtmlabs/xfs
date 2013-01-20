@@ -65,7 +65,6 @@ in this Software without prior written authorization from The Open Group.
 #include	<X11/fonts/fontstruct.h>
 #include	"site.h"
 #include	"fsevents.h"
-#include	"cache.h"
 #include	"globals.h"
 #include	"difs.h"
 #include	"access.h"
@@ -168,7 +167,6 @@ Dispatch(void)
 	    /* flush all the caches */
 	    if (dispatchException & DE_FLUSH) {
 		NoticeF("flushing all caches\n");
-		CacheReset();
 		dispatchException &= ~DE_FLUSH;
 	    }
 	    /* reset */
