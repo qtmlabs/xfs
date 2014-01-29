@@ -115,7 +115,6 @@ in this Software without prior written authorization from The Open Group.
 extern void NoopDDA(void);
 extern char *NameForAtom(Atom atom);
 #endif
-extern void BitOrderInvert(unsigned char *buf, int nbytes);
 
 
 #define fsCat(x,y) x##_##y
