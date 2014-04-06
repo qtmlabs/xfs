@@ -132,6 +132,12 @@ AC_CHECK_FUNCS([daemon])
 #  - xfont >= 1.4.5 required for matching MakeAtom prototypes in fontmisc.h
 PKG_CHECK_MODULES(XFS, xproto >= 7.0.17 xfont >= 1.4.5 xtrans)
 
+case "$host_os" in
+  cygwin*|mingw*)
+    CFLAGS="$CFLAGS -DFD_SETSIZE=256"
+    LDFLAGS="$LDFLAGS -Wl,--export-all" ;;
+esac
+
 # Transport selection macro from xtrans.m4
 XTRANS_CONNECTION_FLAGS
 
