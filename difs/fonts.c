@@ -1284,7 +1284,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 
 	    --cPtr->current.max_names;
 	    if (cPtr->current.max_names < 0)
-		abort();
+		break;
 	}
     }
 
