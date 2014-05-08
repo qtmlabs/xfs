@@ -189,26 +189,6 @@ XpClientIsPrintClient(ClientPtr client, FontPathElementPtr fpe)
     return FALSE;
 }
 
-void
-CopyISOLatin1Lowered(char *d, const char *s, int length)
-{
-    register int i;
-    unsigned char *dest = (unsigned char *)d;
-    const unsigned char *source = (const unsigned char *)s;
-
-    for (i = 0; i < length; i++, source++, dest++) {
-	if ((*source >= XK_A) && (*source <= XK_Z))
-	    *dest = *source + (XK_a - XK_A);
-	else if ((*source >= XK_Agrave) && (*source <= XK_Odiaeresis))
-	    *dest = *source + (XK_agrave - XK_Agrave);
-	else if ((*source >= XK_Ooblique) && (*source <= XK_Thorn))
-	    *dest = *source + (XK_oslash - XK_Ooblique);
-	else
-	    *dest = *source;
-    }
-    *dest = '\0';
-}
-
 int
 strncmpnocase(
     const char *first,
