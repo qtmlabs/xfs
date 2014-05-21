@@ -1034,11 +1034,6 @@ DoCloseDownClient(ClientPtr client)
 	CheckFileNumbers();
 #endif /* DebugConnectionTranslation */
 
-#ifdef NOTYET
-	/* reset server when last client goes away */
-	if (client->requestVector != InitialVector && nClients == 0)
-	    dispatchException |= DE_RESET;
-#endif
 
 	if (currentClient == client)
 	    currentClient = serverClient;
