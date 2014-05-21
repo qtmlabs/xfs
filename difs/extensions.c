@@ -89,14 +89,13 @@ AddExtension(
     ext = (ExtensionEntry *) fsalloc(sizeof(ExtensionEntry));
     if (!ext)
 	return ((ExtensionEntry *) 0);
-    ext->name = (char *) fsalloc(strlen(name) + 1);
     ext->num_aliases = 0;
     ext->aliases = (char **) NULL;
+    ext->name = strdup(name);
     if (!ext->name) {
 	fsfree(ext);
 	return ((ExtensionEntry *) 0);
     }
-    strcpy(ext->name, name);
     i = NumExtensions;
     newexts = (ExtensionEntry **) fsrealloc(extensions,
 					 (i + 1) * sizeof(ExtensionEntry *));
@@ -144,10 +143,9 @@ AddExtensionAlias(char *alias, ExtensionEntry *ext)
     if (!aliases)
 	return FALSE;
     ext->aliases = aliases;
-    name = (char *) fsalloc(strlen(alias) + 1);
+    name = strdup(alias);
     if (!name)
 	return FALSE;
-    strcpy(name, alias);
     ext->aliases[ext->num_aliases++] = name;
     return TRUE;
 }
