@@ -398,7 +398,7 @@ DoSendErrToClient(
 	.sequenceNumber = client->sequence,
 	.timestamp = GetTimeInMillis(),
 	.major_opcode = ((fsReq *) client->requestBuffer)->reqType,
-	.minor_opcode = MinorOpcodeOfRequest(client)
+	.minor_opcode = 0
     };
     int         extralen = 0;
 
