@@ -39,6 +39,7 @@ typedef void (*ReplySwapFunc)(ClientPtr, int, void *);
 
 extern InitialFunc InitialVector[3];
 extern ReplySwapFunc ReplySwapVector[NUM_PROC_VECTORS];
+extern EventSwapFunc EventSwapVector[NUM_EVENT_VECTORS];
 
 /* FIXME: this is derived from fontstruct.h; should integrate it */
 
