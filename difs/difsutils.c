@@ -177,18 +177,6 @@ GetDefaultPointSize(void)
 	return default_point_size;
 }
 
-Bool
-XpClientIsBitmapClient(ClientPtr client)
-{
-    return TRUE;
-}
-
-Bool
-XpClientIsPrintClient(ClientPtr client, FontPathElementPtr fpe)
-{
-    return FALSE;
-}
-
 int
 strncmpnocase(
     const char *first,

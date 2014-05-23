@@ -41,8 +41,6 @@ extern Bool ClientSleep (ClientPtr client, Bool (*function) (ClientPtr, pointer)
 extern Bool QueueWorkProc (DifsWorkFunc function, ClientPtr client, pointer data);
 extern Bool RegisterBlockAndWakeupHandlers (BlockHandlerProcPtr blockHandler, DifsWakeupFunc wakeupHandler, pointer blockData);
 #if 0
-extern Bool XpClientIsBitmapClient (ClientPtr client);
-extern Bool XpClientIsPrintClient (ClientPtr client, FontPathElementPtr fpe);
 extern FontResolutionPtr GetClientResolutions (int *num);
 #endif
 #if 0
