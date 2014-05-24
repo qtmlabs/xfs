@@ -192,8 +192,9 @@ usage(const char *errmsg)
 {
     if (errmsg != NULL)
         fprintf (stderr, "%s: %s\n", progname, errmsg);
-    fprintf(stderr, "usage: %s [-config config_file] [-port tcp_port] [-droppriv] [-daemon] [-nodaemon] [-user user_name] [-ls listen_socket]\n",
-	    progname);
+    fprintf(stderr, "usage: %s [-config config_file] [-port tcp_port] [-droppriv] [-daemon] [-nodaemon] [-user user_name] [-ls listen_socket]\n"
+	    "	    %s [-version]\n",
+	    progname, progname);
     exit(1);
 }
 
@@ -327,6 +328,10 @@ ProcessCmdLine(int argc, char **argv)
 		configfilename = argv[++i];
 	    else
 		usage("-config requires an argument");
+	}
+	else if (!strcmp(argv[i], "-version")) {
+	    puts(PACKAGE_STRING);
+	    exit(0);
 	}
 	else {
 	    fprintf (stderr, "%s: unrecognized option %s\n", progname, argv[i]);
