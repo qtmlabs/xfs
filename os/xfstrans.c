@@ -79,10 +79,7 @@ TRANS(GetInetdListenInfo) (int fd)
 #endif
 
     if (listen (fd, BACKLOG) < 0)
-    {
-	FatalError("listen() failed on inetd socket: %s\n",
-		   strerror(errno));
-    }
+        return NULL;
 
     /* Pass the inetd socket back through the connection setup code
      * the same way as a cloned listening port
