@@ -30,7 +30,13 @@
 
 #ifdef XFS_INETD
 /* xfs special handling for listen socket passed from inetd */
-#include "misc.h"
+
+/* XXX duplicated from misc.h */
+typedef struct {		/* when cloning, need old transport info */
+    int trans_id;
+    int fd;
+    int portnum;
+} OldListenRec;
 
 OldListenRec *
 TRANS(GetInetdListenInfo) (int fd)

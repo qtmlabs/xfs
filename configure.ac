@@ -129,8 +129,8 @@ AC_CHECK_FUNCS([daemon])
 
 # Checks for pkg-config packages
 #  - xproto >= 7.0.17 required for _X_NORETURN in <X11/Xfuncproto.h>
-#  - xfont >= 1.4.5 required for matching MakeAtom prototypes in fontmisc.h
-PKG_CHECK_MODULES(XFS, xproto >= 7.0.17 xfont >= 1.4.5 xtrans)
+#  - xfont >= 2.0.1 for new server API
+PKG_CHECK_MODULES(XFS, xproto >= 7.0.17 xfont2 >= 2.0.1 xtrans)
 
 case "$host_os" in
   cygwin*|mingw*)
