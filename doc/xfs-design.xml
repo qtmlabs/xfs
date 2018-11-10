@@ -551,12 +551,12 @@ int	client_died(pointer <parameter>client</parameter>, FontPathElementPtr <param
 
     <synopsis>
 typedef struct {
-	INT16	left B16,
-		right B16;
-	INT16	width B16;
-	INT16	ascent B16,
-		descent B16;
-	CARD16	attributes B16;
+	INT16	left,
+		right;
+	INT16	width;
+	INT16	ascent,
+		descent;
+	CARD16	attributes;
 }	fsCharInfo;
 
 typedef struct {
