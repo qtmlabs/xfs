@@ -1,25 +1,17 @@
 All questions regarding this software should be directed at the
 Xorg mailing list:
 
-        http://lists.freedesktop.org/mailman/listinfo/xorg
-
-Please submit bug reports to the Xorg bugzilla:
-
-        https://bugs.freedesktop.org/enter_bug.cgi?product=xorg
+  https://lists.x.org/mailman/listinfo/xorg
 
 The master development code repository can be found at:
 
-        git://anongit.freedesktop.org/git/xorg/app/xfs
+  https://gitlab.freedesktop.org/xorg/app/xfs
 
-        http://cgit.freedesktop.org/xorg/app/xfs
+Please submit bug reports and requests to merge patches there.
 
 For patch submission instructions, see:
 
-	http://www.x.org/wiki/Development/Documentation/SubmittingPatches
-
-For more information on the git code manager, see:
-
-        http://wiki.x.org/wiki/GitPage
+  https://www.x.org/wiki/Development/Documentation/SubmittingPatches
 
 ------------------------------------------------------------------------------
 
@@ -30,24 +22,24 @@ For more information on the git code manager, see:
 Installation instructions for fontserver
 
 1 - If you don't want to use the default config file location,
-    run configure with the --with-default-config-file=path option to 
-    point to the correct place.
+run configure with the --with-default-config-file=path option to
+point to the correct place.
 
-    An example config file is in ./config
+An example config file is in ./config
 
 2 - modify the config file so the 'catalogue'
-	parameter points to a set of valid font directories.
+parameter points to a set of valid font directories.
 
 At this point the test programs should work.  Start the font server
-	(xfs &) and try some tests.  Most of the clients take
-	a command line switch of where to find the server, and
-	FSlib understands the environment variable FONTSERVER.
-	The format is the same as Xlib, (ie, hostname:server_number).
+(xfs &) and try some tests.  Most of the clients take
+a command line switch of where to find the server, and
+FSlib understands the environment variable FONTSERVER.
+The format is the same as Xlib, (ie, hostname:server_number).
 
 The doc directory contains various pieces of documentation on the font
 server and associated software:
 
-	xfs-design.xml	- DocBook source of fontserver design overview
+    xfs-design.xml	- DocBook source of fontserver design overview
 
 Tested font formats:
 
