@@ -530,7 +530,7 @@ config_set_catalogue(
 	fsfree((char *) font_catalogue);	/* dump any previous one */
 	b = font_catalogue = (char *) fsalloc(strlen(val) + 1);
 	if (!font_catalogue)
-	    FatalError("insufficent memory for font catalogue\n");
+	    FatalError("insufficient memory for font catalogue\n");
 	while (*val) {		/* remove all the gunk */
 	    if (!isspace(*val)) {
 		*b++ = *val;

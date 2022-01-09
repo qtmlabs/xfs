@@ -740,7 +740,7 @@ bail:
 }
 
 /*
- * expects comma seperated string
+ * expects comma separated string
  */
 int
 SetFontCatalogue(
