@@ -164,7 +164,7 @@ ListCatalogues(const char *pattern, int patlen, int maxnames,
 	    if (!catlist)
 		goto bail;
 	    *catlist = size;
-	    memmove( &catlist[1], catalogue_name, size);
+	    memcpy(&catlist[1], catalogue_name, size);
 	    size++;		/* for length */
 	    count++;
 	}
@@ -227,7 +227,7 @@ SetAlternateServers(char *list)
 	    if (!a->name) {
 		goto unwind;
 	    }
-	    memmove( a->name, st, a->namelen);
+	    memcpy(a->name, st, a->namelen);
 	    a->subset = FALSE;	/* XXX */
 	    a++;
 	    t++;
@@ -242,7 +242,7 @@ SetAlternateServers(char *list)
     if (!a->name) {
 	goto unwind;
     }
-    memmove( a->name, st, a->namelen);
+    memcpy(a->name, st, a->namelen);
     a->subset = FALSE;		/* XXX */
 
     for (i = 0; i < num_alts; i++) {

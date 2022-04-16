@@ -441,7 +441,7 @@ WriteSConnectionInfo(
     pInfo += SIZEOF(fsConnSetup);
 
     i = (pConnSetup->vendor_len + 3) & ~3;
-    memmove( pInfoT, pInfo, i);
+    memcpy(pInfoT, pInfo, i);
 
     (void) WriteToClient(client, (int) size, (char *) pInfoTBase);
     DEALLOCATE_LOCAL(pInfoTBase);

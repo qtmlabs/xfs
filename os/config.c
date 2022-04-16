@@ -213,7 +213,7 @@ parse_config(char *data)
 		*c = tolower(*c);
 	    c++;
 	}
-	memmove( param_name, p, min(sizeof(param_name), (int) (c - p)));
+	memcpy(param_name, p, min(sizeof(param_name), (int) (c - p)));
 	param_name[(int) (c - p)] = '\0';
 
 	/* check for junk */
