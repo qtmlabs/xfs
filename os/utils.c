@@ -448,7 +448,6 @@ SetUserId(void)
 	    if (setgid(pwent->pw_gid)) {
 		FatalError("fatal: couldn't set groupid to xfs user's group\n");
 	    }
-#ifndef QNX4
 #ifndef __CYGWIN__
 	    if (setgroups(0, NULL)) {
 		FatalError("fatal: couldn't drop supplementary groups\n");
@@ -457,7 +456,6 @@ SetUserId(void)
 	    if (initgroups(user, pwent->pw_gid)) {
 		FatalError("fatal: couldn't init supplementary groups\n");
 	    }
-#endif /* QNX4 */
 	    if (setuid(pwent->pw_uid)) {
 		FatalError("fatal: couldn't set userid to %s user\n", user);
 	    }
