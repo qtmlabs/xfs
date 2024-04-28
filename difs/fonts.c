@@ -757,6 +757,8 @@ SetFontCatalogue(
     len = strlen(str) + 1;
     paths = p = (char *) ALLOCATE_LOCAL(len);
     npaths = 0;
+    if (p == NULL)
+        return FSBadAlloc;
 
     while (*str) {
 	end = index(str, ',');
