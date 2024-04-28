@@ -133,10 +133,9 @@ getCharInfos (
 	}
     }
 
-    xchars = (CharInfoPtr *) FSallocarray (nchars, sizeof (CharInfoPtr));
+    xchars = (CharInfoPtr *) FScalloc (nchars, sizeof (CharInfoPtr));
     if (!xchars)
 	return AllocError;
-    bzero (xchars, sizeof (CharInfoPtr) * nchars);
 
     if (ink_metrics)
 	metrics_func = (MetricsFunc)pfont->get_metrics;
@@ -465,14 +464,13 @@ packGlyphs (
     }
     if (size)
     {
-	gdata = (pointer) fsalloc(size);
+	gdata = (pointer) FScalloc(1, size);
 	if (!gdata) {
 	    fsfree (bitCharsFree);
 	    fsfree (inkCharsFree);
 	    fsfree (lengths);
 	    return AllocError;
 	}
-	bzero ((char *) gdata, size);
     }
     else
 	gdata = NULL;

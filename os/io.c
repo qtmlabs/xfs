@@ -579,7 +579,7 @@ WriteToClient(ClientPtr client, int count, char *buf)
     int flag = 0;
     if (NULL == buf) {
 	flag = -1;
-	buf = (char *)fsalloc(count); memset(buf, 0, count);
+	buf = (char *) FScalloc(1, count);
     }
      write_to_client_internal(client, count, buf, padlength[count & 3]);
     if (flag)

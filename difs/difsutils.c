@@ -512,12 +512,7 @@ Xfree(unsigned long *n)
 pointer
 Xcalloc(unsigned long n)
 {
-    pointer ret;
-
-    ret = fsalloc(n);
-    if (ret && n)
-	bzero(ret, n);
-    return ret;
+    return FScalloc(1, n);
 }
 
 int

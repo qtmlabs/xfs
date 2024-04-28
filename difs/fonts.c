@@ -231,13 +231,12 @@ make_clients_id_list(void)
     Font       *fids;
 
     ids = (FontIDListPtr) fsalloc(sizeof(FontIDListRec));
-    fids = (Font *) FSallocarray(NUM_IDS_PER_CLIENT, sizeof(Font));
+    fids = (Font *) FScalloc(NUM_IDS_PER_CLIENT, sizeof(Font));
     if (!ids || !fids) {
 	fsfree(ids);
 	fsfree(fids);
 	return (FontIDListPtr) 0;
     }
-    bzero((char *) fids, sizeof(Font) * NUM_IDS_PER_CLIENT);
     ids->client_list = fids;
     ids->size = NUM_IDS_PER_CLIENT;
     ids->num = 0;
@@ -362,7 +361,7 @@ do_open_font(ClientPtr client, pointer data)
 	orig = (ids->num > 0) ? ids->client_list[0] : (Font)0;
     } else {
 	idlist = (FontIDListPtr *)
-            FSallocarray(MAXCLIENTS, sizeof(FontIDListPtr));
+            FScalloc(MAXCLIENTS, sizeof(FontIDListPtr));
 	if (!idlist) {
 	    err = AllocError;
 	    fsfree(cfp);
@@ -375,7 +374,6 @@ do_open_font(ClientPtr client, pointer data)
 	    fsfree(cfp);
 	    goto dropout;
 	}
-	bzero((char *) idlist, (sizeof(FontIDListPtr) * MAXCLIENTS));
 	idlist[cPtr->client->index] = ids;
 	orig = (Font) 0;
 	pfont->svrPrivate = (pointer) idlist;
