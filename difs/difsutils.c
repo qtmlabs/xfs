@@ -219,11 +219,6 @@ strncmpnocase(
     return (n ? (((int) *ap) - ((int) *bp)) : 0);
 }
 
-void
-NoopDDA(void)
-{
-}
-
 /* block & wakeup handlers */
 
 typedef struct _BlockHandler {
