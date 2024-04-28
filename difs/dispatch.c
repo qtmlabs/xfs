@@ -1075,11 +1075,11 @@ InitProcVectors(void)
     for (i = 0; i < NUM_PROC_VECTORS; i++) {
 	if (!ProcVector[i]) {
 	    ProcVector[i] = SwappedProcVector[i] = ProcBadRequest;
-	    ReplySwapVector[i] = (ReplySwapFunc)NotImplemented;
+	    ReplySwapVector[i] = ReplySwapNotImplemented;
 	}
     }
     for (i = FSLASTEvent; i < NUM_EVENT_VECTORS; i++) {
-	EventSwapVector[i] = (EventSwapFunc)NotImplemented;
+	EventSwapVector[i] = EventSwapNotImplemented;
     }
 }
 

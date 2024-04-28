@@ -158,16 +158,6 @@ main(int argc, char *argv[])
     exit(0);
 }
 
-int
-NotImplemented(void)
-{
-    NoopDDA();			/* dummy to get difsutils.o to link */
-    /* Getting here can become the next xfs exploit... so don't exit */
-    ErrorF("not implemented\n");
-
-    return (FSBadImplementation);
-}
-
 static Bool
 create_connection_block(void)
 {

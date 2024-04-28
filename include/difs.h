@@ -77,7 +77,8 @@ extern int convert_props ( FontInfoPtr pinfo, fsPropInfo **props );
 extern int QueryExtents ( ClientPtr client, ClientFontPtr cfp, int item_size, int nranges, Bool range_flag, pointer range_data );
 extern int QueryBitmaps ( ClientPtr client, ClientFontPtr cfp, int item_size, fsBitmapFormat format, int nranges, Bool range_flag, pointer range_data );
 
-/* difs/main.c */
-extern int NotImplemented(void);
+/* difs/swaprep.c */
+extern void _X_COLD EventSwapNotImplemented(fsError *, fsError *);
+extern void _X_COLD ReplySwapNotImplemented(ClientPtr, int, void *);
 
 #endif
