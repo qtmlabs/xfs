@@ -1078,9 +1078,6 @@ InitProcVectors(void)
 	    ReplySwapVector[i] = ReplySwapNotImplemented;
 	}
     }
-    for (i = FSLASTEvent; i < NUM_EVENT_VECTORS; i++) {
-	EventSwapVector[i] = EventSwapNotImplemented;
-    }
 }
 
 void

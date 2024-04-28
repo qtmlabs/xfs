@@ -508,14 +508,6 @@ SwapExtents(fsXCharInfo *extents, int num)
 }
 
 void _X_COLD
-EventSwapNotImplemented(_X_UNUSED fsError *error, _X_UNUSED fsError *perror)
-{
-    /* Getting here can become the next xfs exploit... so don't exit */
-    ErrorF("event swapping not implemented\n");
-
-}
-
-void _X_COLD
 ReplySwapNotImplemented(_X_UNUSED ClientPtr client, _X_UNUSED int size,
                         _X_UNUSED void *data)
 {

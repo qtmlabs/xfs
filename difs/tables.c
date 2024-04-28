@@ -123,18 +123,6 @@ SwappedProcFunc SwappedProcVector[NUM_PROC_VECTORS] =
     NULL
 };
 
-EventSwapFunc EventSwapVector[NUM_EVENT_VECTORS] =
-{
-    SErrorEvent,
-    EventSwapNotImplemented,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
-    NULL
-};
-
 ReplySwapFunc ReplySwapVector[NUM_PROC_VECTORS] =
 {
     ReplySwapNotImplemented,	/* NoOp */
