@@ -57,6 +57,26 @@ typedef struct _auth *AuthPtr;
 #include "client.h"
 #include "misc.h"
 
+#if __has_attribute(alloc_size)
+#define XFS_ATTRIBUTE_ALLOC_SIZE(ARGS) __attribute__ ((alloc_size ARGS))
+#else
+#define XFS_ATTRIBUTE_ALLOC_SIZE(ARGS)
+#endif
+
+#if __has_attribute(malloc)
+# if defined(__clang__) || (defined(__GNUC__) && __GNUC__ < 11)
+/* Clang or older gcc do not support the optional deallocator argument */
+#  define XFS_ATTRIBUTE_MALLOC(ARGS) __attribute__((malloc))
+# else
+#  define XFS_ATTRIBUTE_MALLOC(ARGS) __attribute__((malloc ARGS))
+# endif
+#else
+# define XFS_ATTRIBUTE_MALLOC(ARGS)
+#endif
+
+#define XFS_ALLOCATOR(DEALLOC, SIZE) \
+    XFS_ATTRIBUTE_MALLOC(DEALLOC) XFS_ATTRIBUTE_ALLOC_SIZE(SIZE)
+
 typedef pointer FID;
 
 #define ALLOCATE_LOCAL_FALLBACK(_size) FSalloc((unsigned long)_size)
@@ -128,12 +148,17 @@ extern	void	GiveUp (int n);
 extern	void	ServerCacheFlush (int n);
 extern	void	ServerReconfig (int n);
 extern	unsigned int GetTimeInMillis (void);
-extern	pointer	FSalloc(unsigned long);
-extern	pointer	FSallocarray(unsigned long, unsigned long);
-extern	pointer	FScalloc (unsigned long, unsigned long);
-extern	pointer	FSrealloc(pointer, unsigned long);
-extern	pointer FSreallocarray (pointer, unsigned long, unsigned long);
 extern	void	FSfree(pointer);
+extern	pointer	FSalloc(unsigned long)
+    XFS_ATTRIBUTE_ALLOC_SIZE((1)) XFS_ATTRIBUTE_MALLOC((FSfree));
+extern	pointer	FSallocarray(unsigned long, unsigned long)
+    XFS_ATTRIBUTE_ALLOC_SIZE((1,2)) XFS_ATTRIBUTE_MALLOC((FSfree));
+extern	pointer	FScalloc (unsigned long, unsigned long)
+     XFS_ATTRIBUTE_ALLOC_SIZE((1,2)) XFS_ATTRIBUTE_MALLOC((FSfree));
+extern	pointer	FSrealloc(pointer, unsigned long)
+    XFS_ATTRIBUTE_ALLOC_SIZE((2));
+extern	pointer FSreallocarray (pointer, unsigned long, unsigned long)
+    XFS_ATTRIBUTE_ALLOC_SIZE((2,3));
 extern	void	ProcessCmdLine (int argc, char **argv);
 extern	void	ProcessLSoption (char *str);
 extern	void	SetUserId(void);
