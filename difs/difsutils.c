@@ -298,8 +298,8 @@ RegisterBlockAndWakeupHandlers(
     BlockHandlerPtr new;
 
     if (numHandlers >= sizeHandlers) {
-	new = (BlockHandlerPtr) fsrealloc(handlers, (numHandlers + 1) *
-					  sizeof(BlockHandlerRec));
+	new = (BlockHandlerPtr) FSreallocarray(handlers, (numHandlers + 1),
+                                               sizeof(BlockHandlerRec));
 	if (!new)
 	    return FALSE;
 	handlers = new;

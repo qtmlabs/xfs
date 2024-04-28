@@ -426,6 +426,20 @@ FSrealloc (pointer ptr, unsigned long amount)
 	FatalError("out of memory\n");
     return 0;
 }
+
+/* FSreallocarray: Array reallocation with overflow check */
+
+pointer
+FSreallocarray (pointer ptr, unsigned long num, unsigned long size)
+{
+    if (num != 0 && size != 0) {
+        if (size > (SIZE_MAX / num)) {
+            return NULL;
+        }
+    }
+    return FSrealloc(ptr, num * size);
+}
+
                     
 /*****************
  *  FSfree

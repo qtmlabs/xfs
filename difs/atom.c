@@ -121,8 +121,8 @@ MakeAtom(const char *string, unsigned int len, Bool makeit)
 	if ((lastAtom + 1) >= tableLength) {
 	    NodePtr    *table;
 
-	    table = (NodePtr *) fsrealloc(nodeTable,
-					tableLength * (2 * sizeof(NodePtr)));
+	    table = (NodePtr *) FSreallocarray(nodeTable, tableLength,
+                                               (2 * sizeof(NodePtr)));
 	    if (!table) {
 		if (nd->string != string)
 		    fsfree(nd->string);

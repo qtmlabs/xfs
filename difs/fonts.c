@@ -140,8 +140,8 @@ QueueFontWakeup(FontPathElementPtr fpe)
     }
     if (num_slept_fpes == size_slept_fpes) {
 	new = (FontPathElementPtr *)
-	    fsrealloc(slept_fpes,
-		      sizeof(FontPathElementPtr) * (size_slept_fpes + 4));
+	    FSreallocarray(slept_fpes, (size_slept_fpes + 4),
+			   sizeof(FontPathElementPtr));
 	if (!new)
 	    return;
 	slept_fpes = new;
@@ -194,8 +194,9 @@ add_id_to_list(FontIDListPtr ids, Font fid)
      */
     if (ids->num == ids->size) {
 	/* increase size of array */
-	newlist = (Font *) fsrealloc(ids->client_list,
-			      sizeof(Font) * (ids->size + NUM_IDS_PER_CLIENT));
+	newlist = (Font *) FSreallocarray(ids->client_list,
+					  (ids->size + NUM_IDS_PER_CLIENT),
+					  sizeof(Font));
 	if (!newlist)
 	    return FALSE;
 	ids->client_list = newlist;
@@ -712,7 +713,7 @@ set_font_path_elements(
     }
     if (validpaths < npaths) {
 	FontPathElementPtr *ftmp = (FontPathElementPtr *)
-	    fsrealloc(fplist, sizeof(FontPathElementPtr) * validpaths);
+	    FSreallocarray(fplist, validpaths, sizeof(FontPathElementPtr));
 
 	if (!ftmp && validpaths)
 	    goto bail;
@@ -1410,7 +1411,7 @@ register_fpe_funcs(const xfont2_fpe_funcs_rec *funcs)
     xfont2_fpe_funcs_rec *new;
 
     /* grow the list */
-    new = fsrealloc(fpe_functions, (num_fpe_types + 1) * sizeof(*new));
+    new = FSreallocarray(fpe_functions, (num_fpe_types + 1), sizeof(*new));
     if (!new)
 	return -1;
     fpe_functions = new;

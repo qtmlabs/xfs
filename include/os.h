@@ -135,6 +135,7 @@ extern	pointer	FSalloc(unsigned long);
 extern	pointer	FSallocarray(unsigned long, unsigned long);
 extern	pointer	FScalloc (unsigned long, unsigned long);
 extern	pointer	FSrealloc(pointer, unsigned long);
+extern	pointer FSreallocarray (pointer, unsigned long, unsigned long);
 extern	void	FSfree(pointer);
 extern	void	ProcessCmdLine (int argc, char **argv);
 extern	void	ProcessLSoption (char *str);
