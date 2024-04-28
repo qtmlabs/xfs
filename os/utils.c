@@ -198,12 +198,6 @@ usage(const char *errmsg)
     exit(1);
 }
 
-void
-OsInitAllocator (void)
-{
-    return;
-}
-
 
 /*
  * The '-ls' option is used for cloning the font server.

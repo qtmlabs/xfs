@@ -135,7 +135,6 @@ extern	pointer	FSalloc(unsigned long);
 extern	pointer	FScalloc (unsigned long amount);
 extern	pointer	FSrealloc(pointer, unsigned long);
 extern	void	FSfree(pointer);
-extern	void	OsInitAllocator (void);
 extern	void	ProcessCmdLine (int argc, char **argv);
 extern	void	ProcessLSoption (char *str);
 extern	void	SetUserId(void);
