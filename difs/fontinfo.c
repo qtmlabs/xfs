@@ -427,8 +427,10 @@ QueryBitmaps(
 	return FSBadRange;
     }
     c = (QBclosurePtr) FSalloc(sizeof(QBclosureRec));
-    if (!c)
+    if (!c) {
+	FSfree(fixed_range);
 	return FSBadAlloc;
+    }
     c->client = client;
     c->slept = FALSE;
     c->pfont = cfp->font;
