@@ -97,7 +97,8 @@ extern void	InitErrors(void);
 extern void	CloseErrors(void);
 extern void	NoticeF(const char *f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
 extern void	ErrorF(const char * f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
-extern void	FatalError(const char* f, ...) _X_ATTRIBUTE_PRINTF(1, 2);
+extern void	FatalError(const char* f, ...) _X_ATTRIBUTE_PRINTF(1, 2)
+    _X_NORETURN;
 
 /* os/io.c */
 extern	Bool	InsertFakeRequest(ClientPtr client, char *data, int count);
