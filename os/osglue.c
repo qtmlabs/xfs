@@ -215,7 +215,7 @@ SetAlternateServers(char *list)
 	t++;
     }
 
-    a = alts = (AlternateServerPtr) FScalloc(sizeof(AlternateServerRec) * num);
+    a = alts = (AlternateServerPtr) FScalloc(num, sizeof(AlternateServerRec));
     if (!alts)
 	return FSBadAlloc;
 

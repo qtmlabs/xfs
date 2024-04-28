@@ -392,13 +392,13 @@ FSallocarray (unsigned long num, unsigned long size)
  *****************/
 
 pointer
-FScalloc (unsigned long amount)
+FScalloc (unsigned long num, unsigned long size)
 {
     pointer ret;
 
-    ret = FSalloc (amount);
+    ret = FSallocarray(num, size);
     if (ret)
-	bzero ((char *) ret, (int) amount);
+	bzero (ret, num * size);
     return ret;
 }
 

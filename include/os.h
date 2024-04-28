@@ -133,7 +133,7 @@ extern	void	ServerReconfig (int n);
 extern	unsigned int GetTimeInMillis (void);
 extern	pointer	FSalloc(unsigned long);
 extern	pointer	FSallocarray(unsigned long, unsigned long);
-extern	pointer	FScalloc (unsigned long amount);
+extern	pointer	FScalloc (unsigned long, unsigned long);
 extern	pointer	FSrealloc(pointer, unsigned long);
 extern	void	FSfree(pointer);
 extern	void	ProcessCmdLine (int argc, char **argv);
