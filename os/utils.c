@@ -220,6 +220,10 @@ ProcessLSoption (char *str)
     int count = 0;
     int len, i;
 
+    if ((OldListenCount != 0) || (OldListen != NULL)) {
+        FatalError("-ls may only be specified once\n");
+    }
+
     while (*ptr != '\0')
     {
 	if (*ptr == ',')
