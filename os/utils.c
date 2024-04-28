@@ -398,7 +398,7 @@ FScalloc (unsigned long num, unsigned long size)
 
     ret = FSallocarray(num, size);
     if (ret)
-	bzero (ret, num * size);
+	memset (ret, 0, num * size);
     return ret;
 }
 
