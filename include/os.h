@@ -66,10 +66,6 @@ typedef pointer FID;
 
 #define	MAX_REQUEST_SIZE	8192
 
-#define	fsalloc(size)		FSalloc((unsigned long)size)
-#define	fsrealloc(ptr, size)	FSrealloc((pointer)ptr, (unsigned long)size)
-#define	fsfree(ptr)		FSfree((pointer)ptr)
-
 extern int  ListenPort;
 extern Bool UseSyslog;
 extern Bool CloneSelf;

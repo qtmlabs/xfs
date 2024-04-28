@@ -101,7 +101,7 @@ convert_props(
     /*
      * allocate the single chunk that the difs layer requires
      */
-    ptr = (pointer) fsalloc(SIZEOF(fsPropInfo)
+    ptr = (pointer) FSalloc(SIZEOF(fsPropInfo)
 			    + SIZEOF(fsPropOffset) * pinfo->nprops
 			    + data_len);
     if (!ptr)
@@ -181,7 +181,7 @@ build_range(
 
 	if (src_num >= SIZE_MAX / sizeof(fsRange) * 2 - 1) 
 		return NULL;
-	np = new = (fsRange *) fsalloc(sizeof(fsRange) * (src_num + 1) / 2);
+	np = new = (fsRange *) FSalloc(sizeof(fsRange) * (src_num + 1) / 2);
 	if (!np)
 	    return np;
 	/* Build a new range */
@@ -293,14 +293,14 @@ do_query_extents(ClientPtr client, pointer data)
 	    SwapExtents(extents, num_extents);
 	WriteReplyToClient(pPtr->client, SIZEOF(fsQueryXExtents8Reply), &reply);
 	WriteToClient(pPtr->client, lendata, (char *) extents);
-	fsfree((char *) extents);
+	FSfree((char *) extents);
     }
     if (pPtr->slept)
 	ClientWakeup(pPtr->client);
     if (pPtr->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
 	(*pPtr->pfont->unload_glyphs)(pPtr->pfont);
-    fsfree(pPtr->range);
-    fsfree(pPtr);
+    FSfree(pPtr->range);
+    FSfree(pPtr);
     return TRUE;
 }
 
@@ -327,7 +327,7 @@ QueryExtents(
 	SendErrToClient(client, FSBadRange, NULL);
 	return FSBadRange;
     }
-    c = (QEclosurePtr) fsalloc(sizeof(QEclosureRec));
+    c = (QEclosurePtr) FSalloc(sizeof(QEclosureRec));
     if (!c)
 	return FSBadAlloc;
     c->client = client;
@@ -387,16 +387,16 @@ do_query_bitmaps(ClientPtr client, pointer data)
 	WriteToClient(pPtr->client, (num_glyphs * SIZEOF(fsOffset32)),
 		      (char *) offsets);
 	WriteToClient(pPtr->client, data_size, (char *) glyph_data);
-	fsfree((char *) offsets);
+	FSfree((char *) offsets);
 	if (freedata)
-	    fsfree((char *) glyph_data);
+	    FSfree((char *) glyph_data);
     }
     if (pPtr->slept)
 	ClientWakeup(pPtr->client);
     if (pPtr->pfont->unload_glyphs)  /* For rasterizers that want to save memory */
 	(*pPtr->pfont->unload_glyphs)(pPtr->pfont);
-    fsfree(pPtr->range);
-    fsfree(pPtr);
+    FSfree(pPtr->range);
+    FSfree(pPtr);
     return TRUE;
 }
 
@@ -424,7 +424,7 @@ QueryBitmaps(
 	SendErrToClient(client, FSBadRange, NULL);
 	return FSBadRange;
     }
-    c = (QBclosurePtr) fsalloc(sizeof(QBclosureRec));
+    c = (QBclosurePtr) FSalloc(sizeof(QBclosureRec));
     if (!c)
 	return FSBadAlloc;
     c->client = client;

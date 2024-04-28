@@ -130,7 +130,7 @@ SetDefaultResolutions(char *str)
 	    continue;
 	}
 	if (!isdigit(*s)) {
-	    fsfree((char *) new);
+	    FSfree((char *) new);
 	    return FSBadResolution;
 	}
 	n = *s - '0';
@@ -144,7 +144,7 @@ SetDefaultResolutions(char *str)
     nr->point_size = default_point_size;
 
     if (default_resolutions) {
-	fsfree((char *) default_resolutions);
+	FSfree((char *) default_resolutions);
     }
     default_resolutions = new;
     num_resolutions = numr;
@@ -339,7 +339,7 @@ RemoveBlockAndWakeupHandlers(
 void
 InitBlockAndWakeupHandlers(void)
 {
-    fsfree(handlers);
+    FSfree(handlers);
     handlers = (BlockHandlerPtr) 0;
     numHandlers = 0;
     sizeHandlers = 0;
@@ -376,7 +376,7 @@ ProcessWorkQueue(void)
 		p->next = n;
 	    else
 		workQueue = n;
-	    fsfree(q);
+	    FSfree(q);
 	} else {
 	    n = q->next;	/* don't fetch until after func called */
 	    p = q;
@@ -397,7 +397,7 @@ QueueWorkProc(
 {
     WorkQueuePtr q;
 
-    q = (WorkQueuePtr) fsalloc(sizeof *q);
+    q = (WorkQueuePtr) FSalloc(sizeof *q);
     if (!q)
 	return FALSE;
     q->function = function;
@@ -434,7 +434,7 @@ ClientSleep(
 {
     SleepQueuePtr q;
 
-    q = (SleepQueuePtr) fsalloc(sizeof *q);
+    q = (SleepQueuePtr) FSalloc(sizeof *q);
     if (!q)
 	return FALSE;
 
@@ -469,7 +469,7 @@ ClientWakeup(ClientPtr client)
     while ((q = *prev) != (SleepQueuePtr) 0) {
 	if (q->client == client) {
 	    *prev = q->next;
-	    fsfree(q);
+	    FSfree(q);
 	    if (client->clientGone == CLIENT_GONE)
 		CloseDownClient(client);
 	    else
@@ -494,19 +494,19 @@ ClientIsAsleep(ClientPtr client)
 pointer
 Xalloc(unsigned long m)
 {
-    return fsalloc(m);
+    return FSalloc(m);
 }
 
 pointer
 Xrealloc(pointer n, unsigned long m)
 {
-    return fsrealloc(n, m);
+    return FSrealloc(n, m);
 }
 
 void
 Xfree(unsigned long *n)
 {
-    fsfree(n);
+    FSfree(n);
 }
 
 pointer

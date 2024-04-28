@@ -168,7 +168,7 @@ getCharInfos (
 					    &glyphCount, xci);
 		if (err != Successful)
 		{
-		    fsfree (xchars);
+		    FSfree (xchars);
 		    return err;
 		}
 #if 0
@@ -213,7 +213,7 @@ GetExtents(
     
     pci = (char *) FSallocarray(nchars, SIZEOF(fsXCharInfo));
     if (!pci) {
-	fsfree (xchars);
+	FSfree (xchars);
 	return AllocError;
     }
 
@@ -234,7 +234,7 @@ GetExtents(
 	pci += SIZEOF(fsXCharInfo);
     }
     
-    fsfree (xchars);
+    FSfree (xchars);
     
     *data = ci;
     
@@ -376,7 +376,7 @@ packGlyphs (
 	err = getCharInfos (pfont, num_ranges, range, TRUE, &nchars, &inkCharsFree);
 	if (err != Successful)
 	{
-	    fsfree (bitCharsFree);
+	    FSfree (bitCharsFree);
 	    return err;
 	}
 	reformat = TRUE;
@@ -385,8 +385,8 @@ packGlyphs (
     /* get space for glyph offsets */
     lengths = (fsOffset32 *) FSallocarray(nchars, SIZEOF(fsOffset32));
     if (!lengths) {
-	fsfree (bitCharsFree);
-	fsfree (inkCharsFree);
+	FSfree (bitCharsFree);
+	FSfree (inkCharsFree);
 	return AllocError;
     }
     
@@ -458,17 +458,17 @@ packGlyphs (
 	*data = gdata;
 	*tsize = size;
 	*offsets = lengths;
-	fsfree (bitCharsFree);
-	fsfree (inkCharsFree);
+	FSfree (bitCharsFree);
+	FSfree (inkCharsFree);
 	return Successful;
     }
     if (size)
     {
 	gdata = (pointer) FScalloc(1, size);
 	if (!gdata) {
-	    fsfree (bitCharsFree);
-	    fsfree (inkCharsFree);
-	    fsfree (lengths);
+	    FSfree (bitCharsFree);
+	    FSfree (inkCharsFree);
+	    FSfree (lengths);
 	    return AllocError;
 	}
     }
@@ -653,8 +653,8 @@ packGlyphs (
 	else if (scanlineunit == 4)
 	    FourByteSwap(gdata, size);
     }
-    fsfree (bitCharsFree);
-    fsfree (inkCharsFree);
+    FSfree (bitCharsFree);
+    FSfree (inkCharsFree);
     *num_glyphs = nchars;
     *data = gdata;
     *tsize = size;

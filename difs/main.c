@@ -112,7 +112,7 @@ main(int argc, char *argv[])
 	    for (i = MINCLIENT; i < MAXCLIENTS; i++)
 		clients[i] = NullClient;
 	    /* make serverClient */
-	    serverClient = (ClientPtr) fsalloc(sizeof(ClientRec));
+	    serverClient = (ClientPtr) FSalloc(sizeof(ClientRec));
 	    if (!serverClient)
 		FatalError("couldn't create server client\n");
 	}
@@ -147,7 +147,7 @@ main(int argc, char *argv[])
 	/* clean up per-cycle stuff */
 	if ((dispatchException & DE_TERMINATE) || drone_server)
 	    break;
-	fsfree(ConnectionInfo);
+	FSfree(ConnectionInfo);
 	/* note that we're parsing it again, for each time the server resets */
 	if (ReadConfigFile(configfilename) != FSSuccess)
 	    FatalError("couldn't read config file\n");
@@ -170,7 +170,7 @@ create_connection_block(void)
     setup.length = (SIZEOF(fsConnSetupAccept) + setup.vendor_len + 3) >> 2;
 
     ConnInfoLen = SIZEOF(fsConnSetupAccept) + ((setup.vendor_len + 3) & ~3);
-    ConnectionInfo = (char *) fsalloc(ConnInfoLen);
+    ConnectionInfo = (char *) FSalloc(ConnInfoLen);
     if (!ConnectionInfo)
 	return FALSE;
 

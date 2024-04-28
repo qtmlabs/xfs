@@ -108,8 +108,8 @@ FreeFPE(FontPathElementPtr fpe)
     fpe->refcount--;
     if (fpe->refcount == 0) {
 	(*fpe_functions[fpe->type].free_fpe) (fpe);
-	fsfree(fpe->name);
-	fsfree(fpe);
+	FSfree(fpe->name);
+	FSfree(fpe);
     }
 }
 
@@ -231,11 +231,11 @@ make_clients_id_list(void)
     FontIDListPtr ids;
     Font       *fids;
 
-    ids = (FontIDListPtr) fsalloc(sizeof(FontIDListRec));
+    ids = (FontIDListPtr) FSalloc(sizeof(FontIDListRec));
     fids = (Font *) FScalloc(NUM_IDS_PER_CLIENT, sizeof(Font));
     if (!ids || !fids) {
-	fsfree(ids);
-	fsfree(fids);
+	FSfree(ids);
+	FSfree(fids);
 	return (FontIDListPtr) 0;
     }
     ids->client_list = fids;
@@ -255,11 +255,11 @@ free_svrPrivate(pointer svrPrivate)
 	for (i = 0; i < MAXCLIENTS; i++) {
 	    ids = idlist[i];
 	    if (ids) {
-		fsfree((char *) ids->client_list);
-		fsfree((char *) ids);
+		FSfree((char *) ids->client_list);
+		FSfree((char *) ids);
 	    }
 	}
-	fsfree((char *) idlist);
+	FSfree((char *) idlist);
     }
 }
 
@@ -302,7 +302,7 @@ do_open_font(ClientPtr client, pointer data)
 
 	if (err == FontNameAlias && alias) {
 	    newlen = strlen(alias);
-	    newname = (char *) fsrealloc(cPtr->fontname, newlen);
+	    newname = (char *) FSrealloc(cPtr->fontname, newlen);
 	    if (!newname) {
 		err = AllocError;
 		break;
@@ -334,7 +334,7 @@ do_open_font(ClientPtr client, pointer data)
 	err = BadFontName;
 	goto dropout;
     }
-    cfp = (ClientFontPtr) fsalloc(sizeof(ClientFontRec));
+    cfp = (ClientFontPtr) FSalloc(sizeof(ClientFontRec));
     if (!cfp) {
 	err = AllocError;
 	goto dropout;
@@ -354,7 +354,7 @@ do_open_font(ClientPtr client, pointer data)
 	    ids = make_clients_id_list();
 	    if (!ids) {
 		err = AllocError;
-		fsfree(cfp);
+		FSfree(cfp);
 		goto dropout;
 	    }
 	    idlist[cPtr->client->index] = ids;
@@ -365,14 +365,14 @@ do_open_font(ClientPtr client, pointer data)
             FScalloc(MAXCLIENTS, sizeof(FontIDListPtr));
 	if (!idlist) {
 	    err = AllocError;
-	    fsfree(cfp);
+	    FSfree(cfp);
 	    goto dropout;
 	}
 	ids = make_clients_id_list();
 	if (!ids) {
 	    err = AllocError;
-	    fsfree(idlist);
-	    fsfree(cfp);
+	    FSfree(idlist);
+	    FSfree(cfp);
 	    goto dropout;
 	}
 	idlist[cPtr->client->index] = ids;
@@ -380,7 +380,7 @@ do_open_font(ClientPtr client, pointer data)
 	pfont->svrPrivate = (pointer) idlist;
     }
     if (!AddResource(cPtr->client->index, cPtr->fontid, RT_FONT, (pointer) cfp)) {
-	fsfree(cfp);
+	FSfree(cfp);
 	free_svrPrivate(pfont->svrPrivate);
 	pfont->svrPrivate = (pointer) 0;
 	err = AllocError;
@@ -415,9 +415,9 @@ dropout:
     for (i = 0; i < cPtr->num_fpes; i++) {
 	FreeFPE(cPtr->fpe_list[i]);
     }
-    fsfree(cPtr->fpe_list);
-    fsfree(cPtr->fontname);
-    fsfree(cPtr);
+    FSfree(cPtr->fpe_list);
+    FSfree(cPtr->fontname);
+    FSfree(cPtr);
     return TRUE;
 }
 
@@ -475,7 +475,7 @@ OpenFont(
 	    }
 	    idlist[client->index] = ids;
 	}
-	cfp = (ClientFontPtr) fsalloc(sizeof(ClientFontRec));
+	cfp = (ClientFontPtr) FSalloc(sizeof(ClientFontRec));
 	if (!cfp) {
     lowmem:
 	    SendErrToClient(client, FSBadAlloc, (pointer) 0);
@@ -504,12 +504,12 @@ OpenFont(
 	    return FSSuccess;
 	}
     }
-    c = (OFclosurePtr) fsalloc(sizeof(OFclosureRec));
+    c = (OFclosurePtr) FSalloc(sizeof(OFclosureRec));
     if (!c)
 	goto lowmem;
-    c->fontname = (char *) fsalloc(namelen);
+    c->fontname = (char *) FSalloc(namelen);
     if (!c->fontname) {
-	fsfree(c);
+	FSfree(c);
 	goto lowmem;
     }
     /*
@@ -519,8 +519,8 @@ OpenFont(
     c->fpe_list = (FontPathElementPtr *)
 	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
-	fsfree(c->fontname);
-	fsfree(c);
+	FSfree(c->fontname);
+	FSfree(c);
 	goto lowmem;
     }
     memcpy(c->fontname, name, namelen);
@@ -577,7 +577,7 @@ CloseClientFont(
     ids = idlist[cfp->clientindex];
     remove_id_from_list(ids, fid);
     ret = close_font(cfp->font);
-    fsfree((char *) cfp);
+    FSfree((char *) cfp);
     return ret;
 }
 
@@ -604,7 +604,7 @@ free_font_path(FontPathElementPtr *list, int n)
     for (i = 0; i < n; i++) {
 	FreeFPE(list[i]);
     }
-    fsfree((char *) list);
+    FSfree((char *) list);
 }
 
 static FontPathElementPtr
@@ -673,7 +673,7 @@ set_font_path_elements(
 		}
 		/* can't do it, so act like it's a new one */
 	    }
-	    name = (char *) fsalloc(len + 1);
+	    name = (char *) FSalloc(len + 1);
 	    if (!name) {
 		err = FSBadAlloc;
 		goto bail;
@@ -684,14 +684,14 @@ set_font_path_elements(
 	    if (type == -1)
 	    {
 		NoticeF("ignoring font path element %s (bad font path descriptor)\n", name);
-		fsfree(name);
+		FSfree(name);
 		cp += len;
 		continue;
 	    }
 	    /* must be new -- make it */
-	    fpe = (FontPathElementPtr) fsalloc(sizeof(FontPathElementRec));
+	    fpe = (FontPathElementPtr) FSalloc(sizeof(FontPathElementRec));
 	    if (!fpe) {
-		fsfree(name);
+		FSfree(name);
 		err = FSBadAlloc;
 		goto bail;
 	    }
@@ -704,8 +704,8 @@ set_font_path_elements(
 	    err = (*fpe_functions[fpe->type].init_fpe) (fpe);
 	    if (err != Successful) {
 		NoticeF("ignoring font path element %s (unreadable)\n", fpe->name);
-		fsfree(fpe->name);
-		fsfree(fpe);
+		FSfree(fpe->name);
+		FSfree(fpe);
 		continue;
 	    }
 	    fplist[validpaths++] = fpe;
@@ -735,7 +735,7 @@ bail:
     *bad = validpaths;
     while (--validpaths >= 0)
 	FreeFPE(fplist[i]);
-    fsfree(fplist);
+    FSfree(fplist);
     return err;
 }
 
@@ -923,8 +923,8 @@ do_list_fonts_and_aliases(ClientPtr client, pointer data)
 		    cPtr->saved = cPtr->current;
 		    cPtr->haveSaved = TRUE;
 		    if (cPtr->savedName)
-			fsfree(cPtr->savedName);
-		    cPtr->savedName = (char *)fsalloc(namelen + 1);
+			FSfree(cPtr->savedName);
+		    cPtr->savedName = (char *)FSalloc(namelen + 1);
 		    if (cPtr->savedName)
 			memcpy(cPtr->savedName, name, namelen + 1);
 		    cPtr->savedNameLen = namelen;
@@ -1033,10 +1033,10 @@ bail:
 	ClientWakeup(client);
     for (i = 0; i < cPtr->num_fpes; i++)
 	FreeFPE(cPtr->fpe_list[i]);
-    fsfree(cPtr->fpe_list);
-    if (cPtr->savedName) fsfree(cPtr->savedName);
+    FSfree(cPtr->fpe_list);
+    if (cPtr->savedName) FSfree(cPtr->savedName);
     xfont2_free_font_names(names);
-    fsfree(cPtr);
+    FSfree(cPtr);
     return TRUE;
 }
 
@@ -1061,19 +1061,19 @@ ListFonts(
 	return TRUE;
     }
 
-    if (!(c = (LFclosurePtr) fsalloc(sizeof *c)))
+    if (!(c = (LFclosurePtr) FSalloc(sizeof *c)))
 	goto badAlloc;
     c->fpe_list = (FontPathElementPtr *)
 	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
-	fsfree(c);
+	FSfree(c);
 	goto badAlloc;
     }
     c->names = xfont2_make_font_names_record(maxNames < 100 ? maxNames : 100);
     if (!c->names)
     {
-	fsfree(c->fpe_list);
-	fsfree(c);
+	FSfree(c->fpe_list);
+	FSfree(c);
 	goto badAlloc;
     }
     memmove( c->current.pattern, pattern, length);
@@ -1199,8 +1199,8 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 		cPtr->haveSaved = TRUE;
 		cPtr->savedNumFonts = numFonts;
 		if (cPtr->savedName)
-		  fsfree(cPtr->savedName);
-		cPtr->savedName = (char *)fsalloc(namelen + 1);
+		  FSfree(cPtr->savedName);
+		cPtr->savedName = (char *)FSalloc(namelen + 1);
 		if (cPtr->savedName)
 		  memcpy(cPtr->savedName, name, namelen + 1);
 		aliascount = 20;
@@ -1237,7 +1237,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 	    length = sizeof(*reply) + pFontInfo->nprops * sizeof(xFontProp);
 	    reply = cPtr->reply;
 	    if (cPtr->length < length) {
-		reply = (fsListFontsWithXInfoReply *) fsrealloc(cPtr->reply, length);
+		reply = (fsListFontsWithXInfoReply *) FSrealloc(cPtr->reply, length);
 		if (!reply) {
 		    err = AllocError;
 		    break;
@@ -1280,10 +1280,10 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 		(void) WriteToClient(client, lenpropdata, (char *) prop_info);
 	    }
 	    if (pFontInfo == &fontInfo) {
-		fsfree(fontInfo.props);
-		fsfree(fontInfo.isStringProp);
+		FSfree(fontInfo.props);
+		FSfree(fontInfo.isStringProp);
 	    }
-	    fsfree(prop_info);
+	    FSfree(prop_info);
 
 	    --cPtr->current.max_names;
 	    if (cPtr->current.max_names < 0)
@@ -1303,7 +1303,7 @@ do_list_fonts_with_info(ClientPtr client, pointer data)
 	else
 	    length = SIZEOF(fsListFontsWithXInfoReply);
 	if (cPtr->length < length) {
-	    final_reply = (fsGenericReply *) fsrealloc(cPtr->reply, length);
+	    final_reply = (fsGenericReply *) FSrealloc(cPtr->reply, length);
 	    if (final_reply) {
 		cPtr->reply = (fsListFontsWithXInfoReply *)final_reply;
 		cPtr->length = length;
@@ -1325,10 +1325,10 @@ bail:
 	ClientWakeup(client);
     for (i = 0; i < cPtr->num_fpes; i++)
 	FreeFPE(cPtr->fpe_list[i]);
-    fsfree(cPtr->fpe_list);
-    if (cPtr->savedName) fsfree(cPtr->savedName);
-    fsfree(cPtr->reply);
-    fsfree(cPtr);
+    FSfree(cPtr->fpe_list);
+    if (cPtr->savedName) FSfree(cPtr->savedName);
+    FSfree(cPtr->reply);
+    FSfree(cPtr);
     return TRUE;
 }
 
@@ -1353,12 +1353,12 @@ StartListFontsWithInfo(
 	return TRUE;
     }
 
-    if (!(c = (LFWXIclosurePtr) fsalloc(sizeof *c)))
+    if (!(c = (LFWXIclosurePtr) FSalloc(sizeof *c)))
 	goto badAlloc;
     c->fpe_list = (FontPathElementPtr *)
 	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
-	fsfree(c);
+	FSfree(c);
 	goto badAlloc;
     }
     memmove( c->current.pattern, pattern, length);

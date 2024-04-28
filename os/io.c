@@ -133,8 +133,8 @@ ReadRequest(ClientPtr client)
 	    ConnectionInputPtr aci = AvailableInput->input;
 
 	    if (aci->size > BUFWATERMARK) {
-		fsfree(aci->buffer);
-		fsfree(aci);
+		FSfree(aci->buffer);
+		FSfree(aci);
 	    } else {
 		aci->next = FreeInputs;
 		FreeInputs = aci;
@@ -177,7 +177,7 @@ ReadRequest(ClientPtr client)
 	    if (needed > oci->size) {
 		char       *ibuf;
 
-		ibuf = (char *) fsrealloc(oci->buffer, needed);
+		ibuf = (char *) FSrealloc(oci->buffer, needed);
 		if (!ibuf) {
 		    yield_control_death();
 		    return -1;
@@ -216,7 +216,7 @@ ReadRequest(ClientPtr client)
 		(oci->bufcnt < BUFSIZE) && (needed < BUFSIZE)) {
 	    char       *ibuf;
 
-	    ibuf = (char *) fsrealloc(oci->buffer, BUFSIZE);
+	    ibuf = (char *) FSrealloc(oci->buffer, BUFSIZE);
 	    if (ibuf) {
 		oci->size = BUFSIZE;
 		oci->buffer = ibuf;
@@ -273,8 +273,8 @@ InsertFakeRequest(ClientPtr client, char *data, int count)
 	    register ConnectionInputPtr aci = AvailableInput->input;
 
 	    if (aci->size > BUFWATERMARK) {
-		fsfree(aci->buffer);
-		fsfree(aci);
+		FSfree(aci->buffer);
+		FSfree(aci);
 	    } else {
 		aci->next = FreeInputs;
 		FreeInputs = aci;
@@ -297,7 +297,7 @@ InsertFakeRequest(ClientPtr client, char *data, int count)
     if ((gotnow + count) > oci->size) {
 	char       *ibuf;
 
-	ibuf = (char *) fsrealloc(oci->buffer, gotnow + count);
+	ibuf = (char *) FSrealloc(oci->buffer, gotnow + count);
 	if (!ibuf)
 	    return FALSE;
 	oci->size = gotnow + count;
@@ -436,7 +436,7 @@ FlushClient(
 	    if (notWritten > oco->size) {
 		unsigned char *obuf;
 
-		obuf = (unsigned char *) fsrealloc(oco->buf,
+		obuf = (unsigned char *) FSrealloc(oco->buf,
 					      notWritten + OutputBufferSize);
 		if (!obuf) {
 		    if (oc->trans_conn)
@@ -483,8 +483,8 @@ FlushClient(
 	    AnyClientsWriteBlocked = FALSE;
     }
     if (oco->size > BUFWATERMARK) {
-	fsfree(oco->buf);
-	fsfree(oco);
+	FSfree(oco->buf);
+	FSfree(oco);
     } else {
 	oco->next = FreeOutputs;
 	FreeOutputs = oco;
@@ -583,7 +583,7 @@ WriteToClient(ClientPtr client, int count, char *buf)
     }
      write_to_client_internal(client, count, buf, padlength[count & 3]);
     if (flag)
-	fsfree(buf);
+	FSfree(buf);
 }
 
 static ConnectionInputPtr
@@ -591,12 +591,12 @@ AllocateInputBuffer(void)
 {
     register ConnectionInputPtr oci;
 
-    oci = (ConnectionInputPtr) fsalloc(sizeof(ConnectionInput));
+    oci = (ConnectionInputPtr) FSalloc(sizeof(ConnectionInput));
     if (!oci)
 	return (ConnectionInputPtr) NULL;
-    oci->buffer = (char *) fsalloc(BUFSIZE);
+    oci->buffer = (char *) FSalloc(BUFSIZE);
     if (!oci->buffer) {
-	fsfree(oci);
+	FSfree(oci);
 	return (ConnectionInputPtr) NULL;
     }
     oci->next = NULL;
@@ -612,12 +612,12 @@ AllocateOutputBuffer(void)
 {
     register ConnectionOutputPtr oco;
 
-    oco = (ConnectionOutputPtr) fsalloc(sizeof(ConnectionOutput));
+    oco = (ConnectionOutputPtr) FSalloc(sizeof(ConnectionOutput));
     if (!oco)
 	return (ConnectionOutputPtr) NULL;
-    oco->buf = (unsigned char *) fsalloc(BUFSIZE);
+    oco->buf = (unsigned char *) FSalloc(BUFSIZE);
     if (!oco->buf) {
-	fsfree(oco);
+	FSfree(oco);
 	return (ConnectionOutputPtr) NULL;
     }
     oco->size = BUFSIZE;
@@ -636,8 +636,8 @@ FreeOsBuffers(OsCommPtr oc)
 	AvailableInput = (OsCommPtr) NULL;
     if ((oci = oc->input) != (ConnectionInputPtr) 0) {
 	if (FreeInputs) {
-	    fsfree(oci->buffer);
-	    fsfree(oci);
+	    FSfree(oci->buffer);
+	    FSfree(oci);
 	} else {
 	    FreeInputs = oci;
 	    oci->next = (ConnectionInputPtr) NULL;
@@ -648,8 +648,8 @@ FreeOsBuffers(OsCommPtr oc)
     }
     if ((oco = oc->output) != (ConnectionOutputPtr) 0) {
 	if (FreeOutputs) {
-	    fsfree(oco->buf);
-	    fsfree(oco);
+	    FSfree(oco->buf);
+	    FSfree(oco);
 	} else {
 	    FreeOutputs = oco;
 	    oco->next = (ConnectionOutputPtr) NULL;
@@ -666,12 +666,12 @@ ResetOsBuffers(void)
 
     while ((oci = FreeInputs) != (ConnectionInputPtr) 0) {
 	FreeInputs = oci->next;
-	fsfree(oci->buffer);
-	fsfree(oci);
+	FSfree(oci->buffer);
+	FSfree(oci);
     }
     while ((oco = FreeOutputs) != (ConnectionOutputPtr) 0) {
 	FreeOutputs = oco->next;
-	fsfree(oco->buf);
-	fsfree(oco);
+	FSfree(oco->buf);
+	FSfree(oco);
     }
 }
