@@ -580,8 +580,10 @@ WriteToClient(ClientPtr client, int count, char *buf)
     if (NULL == buf) {
 	flag = -1;
 	buf = (char *) FScalloc(1, count);
+	if (buf == NULL)
+	    FatalError("WriteToClient couldn't create client buffer\n");
     }
-     write_to_client_internal(client, count, buf, padlength[count & 3]);
+    write_to_client_internal(client, count, buf, padlength[count & 3]);
     if (flag)
 	FSfree(buf);
 }
