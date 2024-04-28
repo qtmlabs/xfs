@@ -328,8 +328,10 @@ QueryExtents(
 	return FSBadRange;
     }
     c = (QEclosurePtr) FSalloc(sizeof(QEclosureRec));
-    if (!c)
+    if (!c) {
+	FSfree(fixed_range);
 	return FSBadAlloc;
+    }
     c->client = client;
     c->slept = FALSE;
     c->pfont = cfp->font;
