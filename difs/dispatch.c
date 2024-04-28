@@ -757,7 +757,7 @@ ProcSetResolution(ClientPtr client)
 	return FSBadLength;
     }
     new_res = (fsResolution *)
-	fsalloc(SIZEOF(fsResolution) * stuff->num_resolutions);
+	FSallocarray(stuff->num_resolutions, SIZEOF(fsResolution));
     if (!new_res) {
 	SendErrToClient(client, FSBadAlloc, NULL);
 	return FSBadAlloc;

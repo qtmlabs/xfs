@@ -106,7 +106,7 @@ main(int argc, char *argv[])
 	    /* do first time init */
 	    CreateSockets(OldListenCount, OldListen);
 	    InitProcVectors();
-	    clients = (ClientPtr *) fsalloc(MAXCLIENTS * sizeof(ClientPtr));
+	    clients = (ClientPtr *) FSallocarray(MAXCLIENTS, sizeof(ClientPtr));
 	    if (!clients)
 		FatalError("couldn't create client array\n");
 	    for (i = MINCLIENT; i < MAXCLIENTS; i++)

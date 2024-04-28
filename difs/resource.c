@@ -132,8 +132,8 @@ InitClientResources(ClientPtr client)
 	TypeMask = RC_LASTPREDEF - 1;
 	if (DeleteFuncs)
 	    fsfree(DeleteFuncs);
-	DeleteFuncs = (DeleteType *) fsalloc((lastResourceType + 1) *
-					     sizeof(DeleteType));
+	DeleteFuncs = (DeleteType *) FSallocarray((lastResourceType + 1),
+                                                  sizeof(DeleteType));
 	if (!DeleteFuncs)
 	    return FALSE;
 	DeleteFuncs[RT_NONE & TypeMask] = NoneDeleteFunc;
@@ -141,7 +141,7 @@ InitClientResources(ClientPtr client)
 	DeleteFuncs[RT_AUTHCONT & TypeMask] = (DeleteType)DeleteAuthCont;
     }
     clientTable[i = client->index].resources =
-	(ResourcePtr *) fsalloc(INITBUCKETS * sizeof(ResourcePtr));
+	(ResourcePtr *) FSallocarray(INITBUCKETS, sizeof(ResourcePtr));
     if (!clientTable[i].resources)
 	return FALSE;
     clientTable[i].buckets = INITBUCKETS;
@@ -306,7 +306,7 @@ rebuild_table(int client)
     tails = (ResourcePtr **) ALLOCATE_LOCAL(j * sizeof(ResourcePtr *));
     if (!tails)
 	return;
-    resources = (ResourcePtr *) fsalloc(j * sizeof(ResourcePtr));
+    resources = (ResourcePtr *) FSallocarray(j, sizeof(ResourcePtr));
     if (!resources) {
 	DEALLOCATE_LOCAL(tails);
 	return;

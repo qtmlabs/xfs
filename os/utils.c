@@ -374,6 +374,19 @@ FSalloc (unsigned long amount)
     return 0;
 }
 
+/* FSallocarray: Array allocation with overflow check */
+
+pointer
+FSallocarray (unsigned long num, unsigned long size)
+{
+    if (num != 0 && size != 0) {
+        if (size > (SIZE_MAX / num)) {
+            return NULL;
+        }
+    }
+    return FSalloc(num * size);
+}
+
 /*****************
  * FScalloc
  *****************/

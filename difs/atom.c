@@ -195,7 +195,7 @@ InitAtoms(void)
 {
     free_all_atoms();
     tableLength = InitialTableSize;
-    nodeTable = (NodePtr *) fsalloc(InitialTableSize * sizeof(NodePtr));
+    nodeTable = (NodePtr *) FSallocarray(InitialTableSize, sizeof(NodePtr));
     if (!nodeTable)
 	atom_error();
     nodeTable[None] = (NodePtr) NULL;

@@ -212,7 +212,7 @@ build_range(
 	src_num = *num;
 	if (src_num >= SIZE_MAX / sizeof(fsRange)) 
 		return NULL;
-	np = new = (fsRange *) fsalloc(SIZEOF(fsRange) * src_num);
+	np = new = (fsRange *) FSallocarray(src_num, SIZEOF(fsRange));
 	if (!np)
 	    return np;
 

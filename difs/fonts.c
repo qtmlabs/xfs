@@ -231,7 +231,7 @@ make_clients_id_list(void)
     Font       *fids;
 
     ids = (FontIDListPtr) fsalloc(sizeof(FontIDListRec));
-    fids = (Font *) fsalloc(sizeof(Font) * NUM_IDS_PER_CLIENT);
+    fids = (Font *) FSallocarray(NUM_IDS_PER_CLIENT, sizeof(Font));
     if (!ids || !fids) {
 	fsfree(ids);
 	fsfree(fids);
@@ -361,7 +361,8 @@ do_open_font(ClientPtr client, pointer data)
 	}
 	orig = (ids->num > 0) ? ids->client_list[0] : (Font)0;
     } else {
-	idlist = (FontIDListPtr *) fsalloc(sizeof(FontIDListPtr) * MAXCLIENTS);
+	idlist = (FontIDListPtr *)
+            FSallocarray(MAXCLIENTS, sizeof(FontIDListPtr));
 	if (!idlist) {
 	    err = AllocError;
 	    fsfree(cfp);
@@ -517,7 +518,7 @@ OpenFont(
      * while we're blocking, the request still appears atomic
      */
     c->fpe_list = (FontPathElementPtr *)
-	fsalloc(sizeof(FontPathElementPtr) * num_fpes);
+	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
 	fsfree(c->fontname);
 	fsfree(c);
@@ -644,7 +645,7 @@ set_font_path_elements(
     FontPathElementPtr fpe, *fplist;
 
     fplist = (FontPathElementPtr *)
-	fsalloc(sizeof(FontPathElementPtr) * npaths);
+	FSallocarray(npaths, sizeof(FontPathElementPtr));
     if (!fplist) {
 	*bad = 0;
 	return FSBadAlloc;
@@ -1064,7 +1065,7 @@ ListFonts(
     if (!(c = (LFclosurePtr) fsalloc(sizeof *c)))
 	goto badAlloc;
     c->fpe_list = (FontPathElementPtr *)
-	fsalloc(sizeof(FontPathElementPtr) * num_fpes);
+	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
 	fsfree(c);
 	goto badAlloc;
@@ -1356,7 +1357,7 @@ StartListFontsWithInfo(
     if (!(c = (LFWXIclosurePtr) fsalloc(sizeof *c)))
 	goto badAlloc;
     c->fpe_list = (FontPathElementPtr *)
-	fsalloc(sizeof(FontPathElementPtr) * num_fpes);
+	FSallocarray(num_fpes, sizeof(FontPathElementPtr));
     if (!c->fpe_list) {
 	fsfree(c);
 	goto badAlloc;

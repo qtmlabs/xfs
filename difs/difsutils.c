@@ -107,8 +107,8 @@ SetDefaultResolutions(char *str)
 	return FSBadResolution;
     }
     numr = (numr + 1) / 2;
-    nr = new = (FontResolutionPtr) fsalloc(sizeof(FontResolutionRec)
-					   * numr);
+    nr = new = (FontResolutionPtr) FSallocarray(numr,
+                                                sizeof(FontResolutionRec));
     if (!new)
 	return FSBadAlloc;
     s = str;

@@ -133,7 +133,7 @@ getCharInfos (
 	}
     }
 
-    xchars = (CharInfoPtr *) fsalloc (sizeof (CharInfoPtr) * nchars);
+    xchars = (CharInfoPtr *) FSallocarray (nchars, sizeof (CharInfoPtr));
     if (!xchars)
 	return AllocError;
     bzero (xchars, sizeof (CharInfoPtr) * nchars);
@@ -196,7 +196,6 @@ GetExtents(
     unsigned long *num_extents,	/* return */
     fsXCharInfo **data)		/* return */
 {
-    unsigned long size;
     fsXCharInfo *ci;
     fsXCharInfo cilocal;
     char *pci;
@@ -213,8 +212,7 @@ GetExtents(
     if (err != Successful)
 	return err;
     
-    size = SIZEOF(fsXCharInfo) * nchars;
-    pci = (char *) fsalloc(size);
+    pci = (char *) FSallocarray(nchars, SIZEOF(fsXCharInfo));
     if (!pci) {
 	fsfree (xchars);
 	return AllocError;
@@ -386,7 +384,7 @@ packGlyphs (
     }
 
     /* get space for glyph offsets */
-    lengths = (fsOffset32 *) fsalloc(SIZEOF(fsOffset32) * nchars);
+    lengths = (fsOffset32 *) FSallocarray(nchars, SIZEOF(fsOffset32));
     if (!lengths) {
 	fsfree (bitCharsFree);
 	fsfree (inkCharsFree);
