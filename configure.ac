@@ -46,6 +46,9 @@ XORG_WITH_FOP
 XORG_CHECK_SGML_DOCTOOLS(1.5)
 XORG_WITH_LINT
 
+# Checks for typedefs, structures, and compiler characteristics.
+AC_SYS_LARGEFILE
+
 AC_CHECK_HEADERS([stdint.h])
 
 AC_ARG_WITH(default-config-file,
