@@ -23,8 +23,8 @@ dnl Process this file with autoconf to create configure.
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xfs],
-        [1.2.1],
-        [https://gitlab.freedesktop.org/xorg/app/xfs/issues],
+        [1.2.2],
+        [https://gitlab.freedesktop.org/xorg/app/xfs/-/issues],
         [xfs])
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
 # Must be called before any macros that run the compiler (like AC_PROG_LIBTOOL)
