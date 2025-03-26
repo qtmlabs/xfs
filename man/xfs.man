@@ -39,34 +39,13 @@
 .SH NAME
 xfs \- X font server
 .SH SYNOPSIS
-.B xfs
-[
-.BI "\-config " configuration_file
-]
-[
-.B \-daemon
-]
-[
-.B \-droppriv
-]
-[
-.B \-inetd
-]
-[
-.BI "\-ls " listen_socket
-]
-[
-.B \-nodaemon
-]
-[
-.BI "\-port " tcp_port
-]
-[
-.BI "\-user " username
-]
-[
-.B \-version
-]
+.nf
+\fBxfs\fP [\fB\-config\fP \fIconfiguration_file\fP] [\fB\-daemon\fP] \
+[\fB\-droppriv\fP] [\fB\-inetd\fP]
+    [\fB\-ls\fP \fIlisten_socket\fP] [\fB\-nodaemon\fP] \
+[\fB\-port\fP \fItcp_port\fP] [\fB\-user\fP \fIusername\fP]
+\fBxfs\fP \fB-help\fP|\fB\-version\fP
+.fi
 .SH DESCRIPTION
 .B xfs
 is the X Window System font server.
@@ -170,6 +149,11 @@ for why this may be desired.
 By default,
 .B xfs
 runs with the user and group IDs of the user who invoked it.
+.TP
+.B \-help
+instructs
+.B xfs
+to print the program usage and exit.
 .TP
 .B \-version
 instructs

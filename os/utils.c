@@ -188,14 +188,14 @@ GetTimeInMillis(void)
 }
 
 static void _X_NORETURN
-usage(const char *errmsg)
+usage(const char *errmsg, int exitstatus)
 {
     if (errmsg != NULL)
         fprintf (stderr, "%s: %s\n", progname, errmsg);
     fprintf(stderr, "usage: %s [-config config_file] [-port tcp_port] [-droppriv] [-daemon] [-nodaemon] [-user user_name] [-ls listen_socket]\n"
-	    "	    %s [-version]\n",
+	    "       %s -help|-version\n",
 	    progname, progname);
-    exit(1);
+    exit(exitstatus);
 }
 
 
@@ -236,7 +236,7 @@ ProcessLSoption (char *str)
 	OldListenCount * sizeof (OldListenRec));
     if (OldListen == NULL) {
 	fprintf(stderr, "ProcessLSoption: malloc error\n");
-	exit(1);
+	exit(EXIT_FAILURE);
     }
     ptr = str;
 
@@ -244,7 +244,7 @@ ProcessLSoption (char *str)
     {
 	slash = (char *) strchr (ptr, '/');
 	if (slash == NULL) {
-	    usage("invalid argument for -ls");
+	    usage("invalid argument for -ls", EXIT_FAILURE);
 	}
 	len = slash - ptr;
 	strncpy (number, ptr, len);
@@ -255,7 +255,7 @@ ProcessLSoption (char *str)
 
 	slash = (char *) strchr (ptr, '/');
 	if (slash == NULL) {
-	    usage("invalid argument for -ls");
+	    usage("invalid argument for -ls", EXIT_FAILURE);
 	}
 	len = slash - ptr;
 	strncpy (number, ptr, len);
@@ -270,7 +270,7 @@ ProcessLSoption (char *str)
 	{
 	    char *comma = (char *) strchr (ptr, ',');
 	    if (comma == NULL) {
-		usage("invalid argument for -ls");
+		usage("invalid argument for -ls", EXIT_FAILURE);
 	    }
 	    len = comma - ptr;
 	    strncpy (number, ptr, len);
@@ -297,12 +297,12 @@ ProcessCmdLine(int argc, char **argv)
 		ListenPort = atoi(argv[++i]);
 		portFromCmdline = TRUE;
 	    } else
-		usage("-port requires an argument");
+		usage("-port requires an argument", EXIT_FAILURE);
 	} else if (!strcmp(argv[i], "-ls")) {
 	    if (argv[i + 1])
 		ProcessLSoption (argv[++i]);
 	    else
-		usage("-ls requires an argument");
+		usage("-ls requires an argument", EXIT_FAILURE);
 	} else if (!strcmp(argv[i], "-droppriv")) {
 	        dropPriv = TRUE;
 	} else if (!strcmp(argv[i], "-daemon")) {
@@ -320,20 +320,23 @@ ProcessCmdLine(int argc, char **argv)
 	    if (argv[i + 1])
 		userId = argv[++i];
 	    else
-		usage("-user requires an argument");
+		usage("-user requires an argument", EXIT_FAILURE);
 	} else if (!strcmp(argv[i], "-cf") || !strcmp(argv[i], "-config")) {
 	    if (argv[i + 1])
 		configfilename = argv[++i];
 	    else
-		usage("-config requires an argument");
+		usage("-config requires an argument", EXIT_FAILURE);
 	}
 	else if (!strcmp(argv[i], "-version")) {
 	    puts(PACKAGE_STRING);
-	    exit(0);
+	    exit(EXIT_SUCCESS);
+	}
+        else if (!strcmp(argv[i], "-help")) {
+            usage(NULL, EXIT_SUCCESS);
 	}
 	else {
 	    fprintf (stderr, "%s: unrecognized option %s\n", progname, argv[i]);
-	    usage(NULL);
+	    usage(NULL, EXIT_FAILURE);
 	}
     }
 }
@@ -534,7 +537,7 @@ SetDaemonState(void)
 	    else
 		ErrorF ("process-id file %s indicates another xfs is "
 			  "running (pid %d); exiting\n", pidFile, oldpid);
-	    exit(1);
+	    exit(EXIT_FAILURE);
 	}
     }
 }
