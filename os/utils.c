@@ -327,11 +327,13 @@ ProcessCmdLine(int argc, char **argv)
 	    else
 		usage("-config requires an argument", EXIT_FAILURE);
 	}
-	else if (!strcmp(argv[i], "-version")) {
+	else if (!strcmp(argv[i], "-version") ||
+                 !strcmp(argv[i], "--version")) {
 	    puts(PACKAGE_STRING);
 	    exit(EXIT_SUCCESS);
 	}
-        else if (!strcmp(argv[i], "-help")) {
+        else if (!strcmp(argv[i], "-help") ||
+                 !strcmp(argv[i], "--help")) {
             usage(NULL, EXIT_SUCCESS);
 	}
 	else {
