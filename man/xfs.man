@@ -35,7 +35,7 @@
 .\" no representations about the
 .\" suitability of this software for any purpose.  It is provided "as is"
 .\" without express or implied warranty.
-.TH xfs __appmansuffix__ __xorgversion__
+.TH XFS __appmansuffix__ 2025-05-25 __xorgversion__
 .SH NAME
 xfs \- X font server
 .SH SYNOPSIS
@@ -142,7 +142,7 @@ File Format\(rq below).
 instructs
 .B xfs
 to run as the user
-.IR username.
+.IR username .
 See
 .B \-droppriv
 for why this may be desired.
@@ -261,9 +261,9 @@ The symlink can be suffixed by attributes such as '\fBunscaled\fR', which
 will be passed through to the underlying fontfile FPE. The only exception is
 the newly introduced '\fBpri\fR' attribute, which will be used for ordering
 the font paths specified by the symlinks.
-
+.PP
 An example configuration:
-
+.sp
 .nf
     75dpi:unscaled:pri=20 \-> /usr/share/X11/fonts/75dpi
     ghostscript:pri=60 \-> /usr/share/fonts/default/ghostscript
@@ -271,12 +271,16 @@ An example configuration:
     type1:pri=40 \-> /usr/share/X11/fonts/Type1
     type1:pri=50 \-> /usr/share/fonts/default/Type1
 .fi
-
-This will add /usr/share/X11/fonts/misc as the first FPE with the attribute
-'unscaled', second FPE will be /usr/share/X11/fonts/75dpi, also with
-the attribute unscaled etc. This is functionally equivalent to setting
-the following font path:
-
+.PP
+This will add
+.B /usr/share/X11/fonts/misc
+as the first FPE with the attribute
+.RB \(oq unscaled \(cq.
+The second FPE will be
+.BR /usr/share/X11/fonts/75dpi ,
+also with the attribute unscaled etc.
+This is functionally equivalent to setting the following font path:
+.sp
 .nf
     /usr/share/X11/fonts/misc:unscaled,
     /usr/share/X11/fonts/75dpi:unscaled,
@@ -289,16 +293,16 @@ the following font path:
  #
  # sample font server configuration file
  #
-
+.sp
  # allow a max of 10 clients to connect to this font server.
  client\-limit = 10
-
+.sp
  # When a font server reaches the above limit, start up a new one.
  clone\-self = on
-
+.sp
  # Identify alternate font servers for clients to use.
  alternate\-servers = hansen:7101,hansen:7102
-
+.sp
  # Look for fonts in the following directories.  The first is a set of
  # TrueType outlines, the second is a set of misc bitmaps (such as terminal
  # and cursor fonts), and the last is a set of 100dpi bitmaps.
@@ -306,16 +310,16 @@ the following font path:
  catalogue = /usr/share/X11/fonts/TTF,
              /usr/share/X11/fonts/misc,
              /usr/share/X11/fonts/100dpi/
-
+.sp
  # in 12 points, decipoints
  default\-point\-size = 120
-
+.sp
  # 100 x 100 and 75 x 75
  default\-resolutions = 100,100,75,75
-
+.sp
  # Specify our log filename.
  error\-file = /var/log/xfs.log
-
+.sp
  # Direct diagnostics to our own log file instead of using syslog.
  use\-syslog = off
 .fi
