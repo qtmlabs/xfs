@@ -952,20 +952,6 @@ do_list_fonts_and_aliases(ClientPtr client, pointer data)
 	    err = Successful;
 	    if (cPtr->haveSaved)
 	    {
-		/* If we're searching for an alias, limit the search to
-		   FPE's of the same type as the one the alias came
-		   from.  This is unnecessarily restrictive, but if we
-		   have both fontfile and fs FPE's, this restriction can
-		   drastically reduce network traffic to the fs -- else
-		   we could poll the fs for *every* local alias found;
-		   on a typical system enabling FILE_NAMES_ALIASES, this
-		   is significant.  */
-
-		while (cPtr->current.current_fpe < cPtr->num_fpes &&
-		       cPtr->fpe_list[cPtr->current.current_fpe]->type !=
-		       cPtr->fpe_list[cPtr->saved.current_fpe]->type)
-		cPtr->current.current_fpe++;
-
 		if (cPtr->names->nnames == cPtr->current.max_names ||
 			cPtr->current.current_fpe == cPtr->num_fpes) {
 		    cPtr->haveSaved = FALSE;
